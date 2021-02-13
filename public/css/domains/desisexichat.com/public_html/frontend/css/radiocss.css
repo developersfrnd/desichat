@@ -1,0 +1,82 @@
+.radioContainer {
+  display: block;
+  position: relative;
+  margin-bottom: 21px;
+  cursor: pointer;
+  font-size: 14px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-style: italic;
+  border: 0.01mm solid rgb(70 69 69 / 54%);
+  height: 50px;
+  padding: 7px;
+  padding-right: 160px;
+}
+
+/* Hide the browser's default radio button */
+.radioContainer input {
+  position: absolute;
+  opacity: 1;
+  cursor: pointer;
+  border: 0px;
+  width: 100%;
+  height: 2em;
+  margin-top: -21px;
+}
+.radioContainer input:checked{
+  background-color: #e0006c;
+}
+
+.radioContainer2 {
+  height: 33px;
+  width:58px;
+}
+
+/* DatePicker */
+.DayPickerInput {
+  display: inline-block;
+  width: 100%;
+}
+
+.DayPickerInput input {
+  display:block;
+  width:100%;
+  height:40px;
+  padding:9px 20px 9px;
+  font-size:14px;
+  font-style: italic;
+  line-height:1.42857143;
+  color:#555;
+  background-image:none;
+  border:1px solid #ccc;
+  border-radius:0px;
+  -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.075);
+  -webkit-transition:border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition:border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  transition:border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  
+  color: #a0a0a0;
+	background-color: #1a1a1a;
+	border-color: rgba(255, 255, 255, 0.1);
+	padding-left: 36px;
+}
+
+.DayPickerInput-Overlay {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+  width: 50%;
+  background: black;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.DayPickerInput.invalid {
+	box-shadow: 0 0 0 2px #e0006c;
+}
+
+.DayPickerInput input:focus {
+	border-color: rgba(0, 0, 0, 0.4);
+}
+
