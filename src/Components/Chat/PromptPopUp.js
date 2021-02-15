@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Prompt } from 'react-router-dom';
+import { Prompt } from 'react-router';
 import usersModel from '../../ApiManager/user';
 //import { isPrompt } from 'react-dom'
 const PromptPopUp = ({isDirtystatus}) => {
