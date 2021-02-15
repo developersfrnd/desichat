@@ -44,6 +44,12 @@ const usersModel = {
     },
     startbroadcast: (sessionId) => {
         return ApiCall.get(`user/startbroadcast/${sessionId}`, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
+    },
+    createchatroom: (sessionId) => {
+        return ApiCall.get(`user/createchatroom`, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
+    },
+    removechatroom: (sessionId) => {
+        return ApiCall.get(`user/removechatroom`, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
     }
 }
 
