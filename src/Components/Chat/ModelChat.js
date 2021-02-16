@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client';
-const EndPoint = 'http://localhost:8003'
+const EndPoint = 'http://51.195.91.41:8004'
 let socket
 const ModelChat = ({props, login_user}) => {
     let guestuser = 'guest-'+generate(6)
@@ -54,9 +54,9 @@ const ModelChat = ({props, login_user}) => {
                     <div class="col-md-16">
                         <div class="item-media">
                             <div class="item-content chat-body" id="chatmessage">
-                            <ul class="media-list">
-                                {renderChat()}
-                            </ul>
+                                <ul class="media-list">
+                                    {renderChat()}
+                                </ul>
                             </div>
                         </div>
                     </div>

@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client';
 import authModel from '../../ApiManager/auth';
 import usersModel from '../../ApiManager/user';
-const EndPoint = 'http://localhost:8003'
+const EndPoint = 'http://chatserver.desisexichat.com:8004'
 let socket
 
 const PublicChat = ({modelname, modelroom}) => {
