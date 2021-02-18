@@ -65,8 +65,7 @@ class PageRoutes extends BaseComponent {
                     <Route path="/payment" exact component={Payment} />
                     <Route path="/orders" exact component={Orders} />
                     <Route path="/bookings" exact component={Bookings} />
-                    {/* <Route path="/meeting/:scheduleId" exact component={Meeting} /> */}
-
+                    
                     <Route path="/add-edit-schedule" exact component={AddEditSchedule} />
                 </Authenticated>    
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import VideoChatSessionModel from '../../ApiManager/VideoChatSessionModel'
 import Constants from '../../Config/Constants'
-import Call from './Call'
 import Summary from './Summary'
 
 function Article(props) {
