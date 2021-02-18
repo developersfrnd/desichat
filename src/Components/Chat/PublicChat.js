@@ -1,22 +1,23 @@
 import { remove } from 'lodash';
 import React, {useState, useEffect} from 'react';
-import io from 'socket.io-client';
 import authModel from '../../ApiManager/auth';
 import usersModel from '../../ApiManager/user';
-const EndPoint = 'http://chatserver.desisexichat.com:8004'
-let socket
 
-const PublicChat = ({modelname, modelroom}) => {
+const PublicChat = ({modelname, modelroom, socket}) => {
     const [state, setState] = useState({message:''});
     const [chat, setChat] = useState([]);
     const [room, setRoom] = useState(modelroom)
-    const [name, setName] = useState(modelname)    
+    const [name, setName] = useState(modelname)
+
     useEffect(() => { 
-        socket = io.connect(EndPoint)
         socket.emit('modeljoin',{name, room}) // Join user 
         socket.on('message', ({name, message}) => {
             setChat([...chat, {name, message}])            
         })
+        return () => {
+            console.log("umounting")
+                   
+        } 
     },[modelname, modelroom])
 
     useEffect(() => {  
@@ -25,9 +26,9 @@ const PublicChat = ({modelname, modelroom}) => {
             var elem = document.getElementById('chatmessage');
             elem.scrollTop = elem.scrollHeight;
         })
-        socket.on('disconnected-user', ({id}) => {
-            //RemoveRoomFromServer()
-        })
+        return () => {
+            console.log("umounting")                  
+        }        
     }, [chat, name])
 
     const TextChange = e => {
@@ -48,13 +49,6 @@ const PublicChat = ({modelname, modelroom}) => {
                 <li class="media" key={index}><div class="media-body"><span class="bold fontsize_12 text-uppercase grey  with_padding">{name}:</span><span>{message}</span></div></li>
             ))
         )
-    }
-
-    function RemoveRoomFromServer() {
-        const login_user = authModel.getAuthUserObj()
-        if(login_user){
-            usersModel.removechatroom()
-        }
     }
 
     return (

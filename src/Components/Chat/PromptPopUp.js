@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import { Prompt } from 'react-router';
+import { io } from 'socket.io-client';
 import usersModel from '../../ApiManager/user';
-//import { isPrompt } from 'react-dom'
-const PromptPopUp = ({isDirtystatus}) => {
+
+const PromptPopUp = ({isDirtystatus, socket}) => {
     const [isDirty, setDirty] = useState(false)
     useEffect(() => {
-        console.log(isDirtystatus)
         setDirty(isDirtystatus) 
         window.addEventListener('beforeunload', alertUser)
         window.addEventListener('unload', handleEndConcert)
@@ -19,9 +19,15 @@ const PromptPopUp = ({isDirtystatus}) => {
         e.preventDefault()
         e.returnValue = ''
     }
-    const handleEndConcert = () => {
+    const handleEndConcert = (e) => {
        (isDirty &&
-            usersModel.removechatroom()
+            usersModel.offlineuser()
+            .then( response => {
+                socket.emit("leaveroom")
+            })
+            .catch((error) => { 
+                this.showMessage(error);
+            })
        )
     }
     return (

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client';
-const EndPoint = 'http://51.195.91.41:8004'
+import usersModel from '../../ApiManager/user';
+const EndPoint = 'http://chatserver.desisexichat.com:8004'
 let socket
 const ModelChat = ({props, login_user}) => {
     let guestuser = 'guest-'+generate(6)
@@ -10,7 +11,7 @@ const ModelChat = ({props, login_user}) => {
     const [state, setState] = useState({message:''});
     const [chat, setChat] = useState([]);
     const [model, setModel] = useState(props.name)
-    const [room, setRoom] = useState(props.room)
+    const [room, setRoom] = useState(props.id)
     const [name, setName] = useState(guestuser)
    
     useEffect(() => { 
@@ -26,7 +27,7 @@ const ModelChat = ({props, login_user}) => {
             setChat([...chat, {name, message}])
             var elem = document.getElementById('chatmessage');
             elem.scrollTop = elem.scrollHeight;
-        })
+        })        
     }, [chat])
     
     const TextChange = e => {

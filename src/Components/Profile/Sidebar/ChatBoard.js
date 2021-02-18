@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import Aux from '../../../hoc/Aux'
-import { Link } from 'react-router-dom'
+import { Link, Redirect} from 'react-router-dom'
+
 
 function ChatBoard(props) {
 

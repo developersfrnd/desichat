@@ -69,9 +69,16 @@ const listItem = (props) => {
                         <div>
                         <br />
                             <span>
-                                <Link to={`model/${props.id}`}>
-                                    <button type="button" className="theme_button" style={{"backgroundColor":"#51de4e !important"}}>Free Chat</button>
-                                </Link>
+                                { 
+                                    (props.is_online) ?
+                                        <Link to={`model/${props.id}`}>
+                                        <button type="button" className="theme_button" style={{"backgroundColor":"#4cb80e !important"}}>Free Chat</button>
+                                        </Link>  
+                                    :     
+                                    <Link to={`model/${props.id}`}>
+                                    <button type="button" className="theme_button" style={{"backgroundColor":"#999999 !important"}}>Offline</button>
+                                    </Link>  
+                                }                                
                             </span>
                         </div>
                     </div>
