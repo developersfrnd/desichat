@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import Aux from '../../../hoc/Aux'
 import { Link } from 'react-router-dom'
 
-function Model(props) {
+function ChatBoard(props) {
 
     return (
         <Aux>
@@ -56,7 +56,7 @@ function Model(props) {
                             <span className="grey"></span>
                         </li>
                         <li>
-                            <Link to="/chatboard">Start Chat</Link>
+                            <Link to="/chat">Start Chat</Link>
                             <span className="grey"></span>
                         </li>
                     </ul>
@@ -66,4 +66,4 @@ function Model(props) {
     )
 }
 
-export default Model
+export default ChatBoard

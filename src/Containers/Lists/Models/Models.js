@@ -1,131 +1,101 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react';
 import Filters from '../../../Components/Search/Filters/FIlters'
 import ListItem from '../../../Components/Content/List/ListItem'
 import PaginationLinks from '../../Pagination/PaginationLinks'
-import BaseComponent from '../../BaseComponent'
 import userModel from '../../../ApiManager/user'
 import Loading from '../../../Components/Loaders/Loading'
+import { toast } from 'react-toastify';
 
-class Models extends BaseComponent {
-    constructor(){
-        super()
-        this.state = {
-            loading:true,
-            models: [],
-            links:{},
-            meta: {},
-            page:1,
-            category:null,
-            ethnicity:null,
-            language:null,
-            orientation:null,
-            sort:null
+
+function Models() {
+
+    const [category, setcategory] = useState(null);
+    const [ethnicity, setethnicity] = useState(null);
+    const [language, setlanguage] = useState(null);
+    const [orientation, setorientation] = useState(null);
+    const [sort, setsort] = useState(null);
+    const [page, setpage] = useState(1);
+    const [meta, setmeta] = useState({});
+    const [links, setlinks] = useState({});
+    const [models, setmodels] = useState([]);
+    const [loading, setloading] = useState(true);
+
+    const clearFilters = () => {
+        setlanguage(null);
+        setcategory(null);
+        setethnicity(null);
+        setpage(1);
+        setloading(true);
+    }
+
+    const setSorting = (event) => {
+        setsort(event.target.value);
+        setpage(1);
+        setloading(true);
+    }
+
+    const setPageNumber = (pageNumber) => {
+        setpage(pageNumber);
+        setloading(true);
+    }
+
+    useEffect(() => {
+        let params = {page:page};
+        if(category){
+            params['category'] = category;
         }
-    }
-
-    setPageNumber = (pageNumber) => {
-        this.setState({page:pageNumber,loading:true});
-    }
-
-    setCategory = (category) => {
-        this.setState({category:category,page:1,loading:true});
-    }
-
-    setEthnicity = (ethnicity) => {
-        this.setState({ethnicity:ethnicity,page:1,loading:true});
-    }
-
-    setLanguage = (language) => {
-        this.setState({language:language,page:1,loading:true});
-    }
-
-    setOrientation = (orientation) => {
-        this.setState({orientation:orientation,page:1,loading:true});
-    }
-
-    clearFilters = () => {
-        this.setState({language:null,category:null, ethnicity:null, page:1, loading:true});
-    }
-
-    setSorting = (event) => {
-        this.setState({sort:event.target.value,page:1,loading:true});
-    }
-
-    fetchUsers = () => {
-        let params = {page:this.state.page};
-        if(this.state.category){
-            params['category'] = this.state.category;
+        if(ethnicity){
+            params['ethnicity'] = ethnicity;
         }
-        if(this.state.ethnicity){
-            params['ethnicity'] = this.state.ethnicity;
+        if(language){
+            params['language'] = language;
         }
-        if(this.state.language){
-            params['language'] = this.state.language;
+        if(orientation){
+            params['orientation'] = orientation;
         }
-        if(this.state.orientation){
-            params['orientation'] = this.state.orientation;
-        }
-        if(this.state.sort){
-            params['sort'] = this.state.sort;
+        if(sort){
+            params['sort'] = sort;
         }
 
         userModel.getUsers({params:params})
             .then( response => {
-                this.setState({
-                    ...this.state,
-                    loading:false,
-                    models: response.data.data,
-                    links: response.data.links,
-                    meta: response.data.meta
-                })
+
+                setloading(false);
+                setmodels(response.data.data);
+                setlinks(response.data.links);
+                setmeta(response.data.meta);
             })
             .catch((error) => { 
-                this.showMessage(error)
+                toast.error(error);
             });
-    }
+        
+    }, [page,category,ethnicity,language,orientation,sort]);
 
-    componentDidMount(){
-        this.fetchUsers()
-    }
 
-    componentDidUpdate(prevProps,prevState){
-        if(prevState.page !== this.state.page || 
-            prevState.category !== this.state.category || 
-            prevState.ethnicity !== this.state.ethnicity ||
-            prevState.language !== this.state.language ||
-            prevState.orientation !== this.state.orientation ||
-            prevState.sort !== this.state.sort
-        ) {
-            this.fetchUsers()
-        }        
-    }
-
-    render(){
-        return (
-            (this.state.loading) ? <Loading /> : 
+    return (
+        (loading) ? <Loading /> : 
             <section className="ds page_models models_square gorizontal_padding section_padding_70 columns_padding_0">
 				<div className="container-fluid">
                     <Filters 
-                        setCategory={this.setCategory}  
-                        setEthnicity={this.setEthnicity}  
-                        setLanguage={this.setLanguage} 
-                        setSorting={this.setSorting}
-                        clearFilters={this.clearFilters} 
-                        setOrientation={this.setOrientation}
+                        setCategory={setcategory}  
+                        setEthnicity={setethnicity}  
+                        setLanguage={setlanguage} 
+                        setSorting={setsort}
+                        clearFilters={clearFilters} 
+                        setOrientation={setorientation}
                     />
 
 					<div className="isotope_container isotope row masonry-layout bottommargin_20" data-filters=".isotope_filters">
                         {
-                            this.state.models.map(model => {
+                            models.map(model => {
                                 return <ListItem key={model.id}  {...model} />
                             })    
                         }
                     </div>
-                    <PaginationLinks links={this.state.links} meta={this.state.meta} clickEvent={this.setPageNumber} />
+                    <PaginationLinks links={links} meta={meta} clickEvent={setPageNumber} />
                 </div>
 			</section>
-        )
-    }
+    )
 }
 
-export default Models;
+export default Models

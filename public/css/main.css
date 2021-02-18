@@ -10942,3 +10942,12 @@ isotope portfolio and gallery pos
     border: 3px solid white;
     border-radius: 3px;
 }
+.chat-body {
+	height: 200px;
+    overflow: auto;
+	background-color: #0d0d0d;
+	padding: 10px;
+	flex-direction: column-reverse;
+	display: flex;
+	padding-top: 20px;
+}

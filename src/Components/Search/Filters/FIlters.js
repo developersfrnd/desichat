@@ -1,29 +1,25 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react';
 import { getCategories } from '../../../ApiManager/categories'
 import { getEthnicities } from '../../../ApiManager/ethnicities'
 import { getLanguages } from '../../../ApiManager/languages'
-import Loading from '../../Loaders/Loading';
 import Constants from '../../../Config/Constants';
+import { toast } from 'react-toastify';
 
-class Filters extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            loading:true,
-            categories:[],
-            languages:[],
-            ethnicities:[],
-            sort:''
-        }
-        
-    }
-    
-    handleSortingEvent = (event) => {
-        this.setState({sort:event.target.value});
+
+function FIlters(props) {
+
+    const [categories, setcategory] = useState(null);
+    const [ethnicities, setethnicity] = useState(null);
+    const [language, setlanguage] = useState(null);
+    const [sort, setsort] = useState(null);
+    const [loading, setloading] = useState(true);
+
+    const handleSortingEvent = (event) => {
+        setsort(event.target.value);
     }
 
-    componentDidMount(){
+    useEffect(() => {
         let categories = [];
         let languages = [];
         let ethnicities = [];
@@ -41,22 +37,25 @@ class Filters extends Component {
                     languages.push(language)
                 })
 
-                this.setState({categories:categories,ethnicities:ethnicities,languages:languages,loading:false})
+                setcategory(categories);
+                setethnicity(ethnicities);
+                setlanguage(languages);
+                setloading(false);
             })
             .catch(error => {
-                this.showMessage(error);
+                toast.error(error);
             });
-    }
+    }, []);
 
-    render(){
-        return (
-            (this.state.loading) ? <Loading /> : 
+
+    return (
+        (loading) ? 'Loading...' : 
             <div className="row bottommargin_50 boxed-padding">
                 <div className="col-lg-9">
                     <div className="filters isotope_filters inline-block margin_0">
                     
                     <div className="dropdown">
-                        <a href="#" data-filter="*" onClick={() => this.props.clearFilters()}>All </a>
+                        <a href="#" data-filter="*" onClick={() => props.clearFilters()}>All </a>
                     </div>
 
                     <div className="dropdown">
@@ -64,8 +63,8 @@ class Filters extends Component {
                         <div className="dropdown-content">
 
                             {
-                                this.state.categories.map(category => {
-                                    return <p className="mm" onClick={() => this.props.setCategory(category.name)}>{category.name}</p>
+                                categories.map(category => {
+                                    return <p className="mm" onClick={() => props.setCategory(category.name)}>{category.name}</p>
                                 })
                             }
                         </div>
@@ -75,8 +74,8 @@ class Filters extends Component {
                         <a href="#" data-filter=".fashion">Ethnicities</a>
                         <div className="dropdown-content">
                             {
-                                this.state.ethnicities.map(ethnicity => {
-                                    return <p className="mm" onClick={() => this.props.setEthnicity(ethnicity.id)}>{ethnicity.name}</p>
+                                ethnicities.map(ethnicity => {
+                                    return <p className="mm" onClick={() => props.setEthnicity(ethnicity.id)}>{ethnicity.name}</p>
                                 })
                             }
                         </div>
@@ -88,7 +87,7 @@ class Filters extends Component {
                             {
                                 Constants.orientation.map(orien => {
                                     if(orien.value) {
-                                        return <p className="mm" onClick={() => this.props.setOrientation(orien.value)}>{orien.displayValue}</p>;
+                                        return <p className="mm" onClick={() => props.setOrientation(orien.value)}>{orien.displayValue}</p>;
                                     }
                                 })
                             }
@@ -110,7 +109,7 @@ class Filters extends Component {
                     <form className="form-inline models-orderby">
                         <div className="form-group select-group">
                             <label className="sr-only" htmlFor="orderby">Sort By:</label>
-                            <select className="form-control orderby" name="orderby" id="orderby" value={this.state.sort} onChange={(val) => this.props.setSorting(val)}>
+                            <select className="form-control orderby" name="orderby" id="orderby" value={sort} onChange={(val) => props.setSorting(val)}>
                                 <option value="" defaultValue="">Default sorting</option>
                                 <option value="name">Sort by name</option>
                                 <option value="dob">Sort by age</option>
@@ -120,8 +119,7 @@ class Filters extends Component {
                     </form>
                 </div>
             </div>
-        );
-    }    
+    )
 }
 
-export default Filters;
+export default FIlters

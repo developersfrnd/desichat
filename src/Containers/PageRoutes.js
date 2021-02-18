@@ -25,6 +25,8 @@ import Payment from '../Components/Forms/Payment/Payment';
 import Orders from '../Components/Orders/Orders';
 import AddEditSchedule from '../Components/Forms/Schedules/AddEditSchedule';
 import Bookings from '../Components/Bookings/Bookings';
+import Board from "../Components/Chat/Board";
+//import Meeting from '../Components/Videochat/Meeting';
 
 
 class PageRoutes extends BaseComponent {
@@ -56,7 +58,8 @@ class PageRoutes extends BaseComponent {
                     <Route path="/add-photos" exact component={AddPhotos} />
                     <Route path="/add-videos" exact component={AddVideos} />
                     <Route path="/myvideos" exact component={MyVideos} />
-                    <Route path="/profile" exact component={Profile} />	
+                    <Route path="/profile" exact component={Profile} />
+                    <Route path="/chatboard" exact component={Board} />	
                     <Route path="/logout" exact component={Logout} />
                     
                     <Route path="/payment" exact component={Payment} />

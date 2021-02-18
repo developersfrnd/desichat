@@ -7,12 +7,16 @@ import usersModel from '../../../ApiManager/user';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import Loading from '../../../Components/Loaders/Loading';
+import ModelChat from "../../../Components/Chat/ModelChat";
+import authModel from '../../../ApiManager/auth'
 
 function Model() {
 
     const [model, setmodel] = useState({})
     const [loading, setloading] = useState(true)
     const { userId } = useParams()
+    const [isuser, setisUser] = useState(true)
+    const login_user = authModel.getAuthUserObj();
 
     useEffect(() => {
         usersModel.getUser(userId)
@@ -23,6 +27,10 @@ function Model() {
             .catch((error) => { 
                 toast.error(error.message)
             });
+        if(login_user && login_user.role == 1){
+        
+            setisUser(false)
+        }   
     }, [])
 
     return (
@@ -34,6 +42,11 @@ function Model() {
                     <div className="col-sm-7 col-md-8 col-lg-8">
                         <Article {...model} /> 
                     </div>
+                    { isuser && (
+                        <div class="col-sm-4">
+                            <ModelChat  props={model} login_user={login_user}/>
+                        </div>
+                    )}
                     <Aside />
                 </div>
             </div>
