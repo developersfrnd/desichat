@@ -68,10 +68,13 @@ function Models() {
                 }    
             })
             .catch((error) => {
-                toast.error(error);
+                if(isMounted){
+                    setloading(false);
+                    toast.error(error);
+                }    
             });
 
-            return function cleanup() {
+            return () => {
                 isMounted = false
             }
 
