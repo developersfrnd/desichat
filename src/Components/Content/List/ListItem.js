@@ -26,38 +26,39 @@ const listItem = (props) => {
 
                     <div className="bg_overlay"></div>
                     <div className="model-parameters">
-                        <div className="iSpeak">
-                            {
-                                (props.speaking) ?
-                                    <>
-                                        <span className="bold">I speak</span>
-                                        <br />
-                                        <span>
-                                            {props.speaking.map((speak) => {
-                                                let flag = `images/flag/${speak.flag}`
-                                                return <img src={flag} style={{ "width": "10%", "padding-left": "2px" }} />
-                                            })}
-                                        </span>
-                                    </>
 
-                                    : null
-                            }
-                        </div>
-                        <div>
-                            <span className="bold">Rating</span>
-                            <br />
-                            <span>
-                                <span className="fa fa-star checked"></span>
-                                <span className="fa fa-star checked"></span>
-                                <span className="fa fa-star checked"></span>
-                                <span className="fa fa-star"></span>
-                                <span className="fa fa-star"></span>
-                            </span>
-                        </div>
-                        <div>
-                            <span className="bold">Group</span>
-                            <br />
-                            <span>30 Credit/min.</span>
+                        {
+                            (props.speaking) ?
+                                <div className="iSpeak">
+                                    <span className="bold">I speak</span>
+                                    <br />
+                                    <span>
+                                        {props.speaking.map((speak) => {
+                                            let flag = `images/flag/${speak.flag}`
+                                            return <img src={flag} style={{ "width": "10%", "padding-left": "2px" }} />
+                                        })}
+                                    </span>
+                                </div>
+
+                                : null
+                        }
+                        <div className="ratingRow">
+                            <div>
+                                <span className="bold">Rating</span>
+                                <br />
+                                <span>
+                                    <span className="fa fa-star checked"></span>
+                                    <span className="fa fa-star checked"></span>
+                                    <span className="fa fa-star checked"></span>
+                                    <span className="fa fa-star"></span>
+                                    <span className="fa fa-star"></span>
+                                </span>
+                            </div>
+                            <div>
+                                <span className="bold">Group</span>
+                                <br />
+                                <span>30 Credit/min.</span>
+                            </div>
                         </div>
                         <div>
                             <br />

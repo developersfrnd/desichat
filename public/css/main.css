@@ -3868,6 +3868,17 @@ a.logo.vertical_logo img {
   min-height: 41px;
   width: 100%;
 }
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+.models_square .model-parameters .ratingRow {
+  min-height: 41px;
+  width: 100%;
+}
+>>>>>>> Stashed changes
+
+=======
+>>>>>>> b7a5d16eac75684a16c4e911eee929dc13736a07
 .models_square .vertical-item.content-absolute .item-content {
   padding: 15px 5px;
   -webkit-transform: translateY(100%);
