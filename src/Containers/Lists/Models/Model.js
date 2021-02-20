@@ -9,6 +9,10 @@ import { toast } from 'react-toastify';
 import Loading from '../../../Components/Loaders/Loading';
 import ModelChat from "../../../Components/Chat/ModelChat";
 import authModel from '../../../ApiManager/auth'
+import io from "socket.io-client"
+const EndPoint = "https://chatserver.desisexichat.com:8004"
+//const EndPoint = "http://localhost:8004"
+const socket = io.connect(EndPoint)
 
 function Model() {
 
@@ -40,11 +44,11 @@ function Model() {
                 <Filters />
                 <div className="row">
                     <div className="col-sm-7 col-md-8 col-lg-8">
-                        <Article {...model} /> 
+                        <Article socket={socket} {...model} /> 
                     </div>
                     { isuser && (
                         <div class="col-sm-4">
-                            <ModelChat  props={model} login_user={login_user}/>
+                            <ModelChat socket={socket}  props={model} login_user={login_user}/>
                         </div>
                     )}
                     <Aside />
