@@ -11,7 +11,7 @@ const pageHeader = (props) => {
 					<div className="row">
 						<div className="col-md-3 col-sm-6 text-center">
 							<Link to="/" className="logo logo_image">
-								<img src="images/logo2.png" alt="" style={{'maxWidth':'250px'}} />
+								<img src="images/logo2.png" alt="" />
 							</Link>
 						</div>
 						<div className="col-md-6 text-center">
@@ -39,13 +39,13 @@ const pageHeader = (props) => {
 							</span>
 						</div>
 
-						<div className="col-sm-4 col-md-3 col-lg-2 text-xs-center text-right text-lg-left">
+						<div className=" col-md-3 col-sm-4 text-xs-center text-right mobileTopMargin">
 							<ul className="inline-dropdown inline-block">
-                                <li className="dropdown login-dropdown">
+								<li className="dropdown login-dropdown">
 									<a className="topline-button" id="login" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
 										<i className="rt-icon2-user"></i>
 									</a>
-									<Usernav  />
+									<Usernav />
 								</li>
 								<li className="dropdown">
 									<a href="#" className="search_modal_button topline-button">
@@ -57,8 +57,8 @@ const pageHeader = (props) => {
 					</div>
 				</div>
 			</header>
-		</Aux>	
-    )
+		</Aux>
+	)
 }
 
 

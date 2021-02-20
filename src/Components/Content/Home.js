@@ -9,12 +9,13 @@ import Models from '../../../src/Containers/Lists/Models/Models'
 const home = () => {
     return (
         <Aux>
+
             <Models />
             <AddStrip />
             <About />
             <WantToBeAModel />
         </Aux>
-    )    
+    )
 }
 
 export default home;
