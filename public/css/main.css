@@ -1998,6 +1998,10 @@ animated elements
     padding-right: 60px;
     padding-left: 60px;
   }
+  .page_social {
+    padding-right: 60px;
+    padding-left: 60px;
+  }
 }
 
 /*
@@ -3314,6 +3318,7 @@ a.logo.vertical_logo img {
   right: 0;
   position: relative;
   z-index: 1000;
+  padding: 0 60px;
 }
 
 .page_header.mobile-active {
@@ -3868,7 +3873,7 @@ a.logo.vertical_logo img {
   min-height: 41px;
   width: 100%;
 }
- 
+
 .models_square .model-parameters .ratingRow {
   min-height: 41px;
   width: 100%;
