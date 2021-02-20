@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/runtime": "^7.12.1",
     "@stripe/react-stripe-js": "^1.1.2",
     "@stripe/stripe-js": "^1.9.0",
     "ajv-keywords": "^3.5.2",
@@ -24,8 +25,10 @@
     "react-scripts": "^4.0.2",
     "react-toastify": "^6.0.8",
     "redux": "^4.0.5",
+    "simple-peer": "^9.9.3",
     "socket.io": "^3.1.1",
-    "socket.io-client": "^3.1.1"
+    "socket.io-client": "^3.1.1",
+    "styled-components": "^5.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -34,6 +37,7 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.12.13",
     "ajv": "^6.12.3",
     "fslightbox-react": "^1.4.9"
   },
