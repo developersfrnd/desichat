@@ -6,20 +6,21 @@ import styled from "styled-components";
 import { useRef } from 'react/cjs/react.development';
 import Peer from 'simple-peer'
 
-const Video = styled.video`
-  border: 1px solid blue;
-  width: 50%;
-  height: 50%;
-`;
 
-function Article({socket, props}) {
+
+const Article = ({socket, props}) => {
 
     const [token, settoken] = useState(null);
     const [channel, setchannel] = useState(null)
     const [stream, setStream] = useState()
     const [room, setRoom] = useState(props.id)
     const [callerSignal, setCallerSignal] = useState();
-    const partnerVideo = useRef()
+    const partnerVideo = React.useRef()
+    const Video = styled.video`
+        border: 1px solid blue;
+        width: 50%;
+        height: 50%;
+    `;
 
     useEffect(() => { 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
@@ -35,14 +36,6 @@ function Article({socket, props}) {
             acceptCall()
         })                
     }, [])
-
-    const startStream = () => {
-        VideoChatSessionModel.postVideoChat({})
-            .then(res => {
-                console.log(res)
-                settoken(res.data.data.token);
-            })
-    }
 
     function acceptCall(){
         

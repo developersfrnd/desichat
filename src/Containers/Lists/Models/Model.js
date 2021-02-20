@@ -44,7 +44,7 @@ function Model() {
                 <Filters />
                 <div className="row">
                     <div className="col-sm-7 col-md-8 col-lg-8">
-                        <Article socket={socket} {...model} /> 
+                        <Article socket={socket} props={model} /> 
                     </div>
                     { isuser && (
                         <div class="col-sm-4">

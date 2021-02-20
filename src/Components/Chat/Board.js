@@ -10,6 +10,7 @@ import PublicChat from './PublicChat';
 import VideoChat from './VideoChat';
 import io from "socket.io-client"
 const EndPoint = "http://chatserver.desisexichat.com:8004"
+//const EndPoint = "http://localhost:8004"
 class Board extends BaseComponent {
     
     static contextType = AppContext;

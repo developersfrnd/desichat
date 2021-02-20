@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 
 const VideoChat = ({modelname, modelroom, socket}) => {
-    const uservideo = useRef()
-    const [stream, setStream] = useState({})
     const [room, setRoom] = useState(modelroom)
     const [name, setName] = useState(modelname)
+    const [stream, setStream] = useState()
+    const uservideo = React.useRef()
     useEffect(() => { 
 
         navigator.mediaDevices.getUserMedia({video:true, audio:false}).then(stream => {
