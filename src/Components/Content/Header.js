@@ -9,7 +9,7 @@ const pageHeader = (props) => {
 			<header className="page_header header_darkgrey columns_padding_0 table_section">
 				<div className="container-fluid">
 					<div className="row">
-						<div className="col-md-3 col-sm-6 text-center">
+						<div className="col-md-3 col-sm-6 text-left">
 							<Link to="/" className="logo logo_image">
 								<img src="images/logo2.png" alt="" />
 							</Link>

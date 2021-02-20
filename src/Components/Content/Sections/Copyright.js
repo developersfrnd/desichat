@@ -6,7 +6,7 @@ const copyright = () => {
 	return (
 		<Aux>
 			<section className="ds ms section_padding_30 page_social">
-				<div className="container">
+				<div className="container-fluid">
 					<div className="row">
 						<div className="col-sm-9 text-left topmargin_0 bottommargin_0">
 							<ul className="footer-links">
