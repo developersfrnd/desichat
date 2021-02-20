@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import usersModel from '../../ApiManager/user';
 const EndPoint = 'http://chatserver.desisexichat.com:8004'
 let socket
-const ModelChat = ({props, login_user}) => {
+const ModelChat = ({socket, props, login_user}) => {
     let guestuser = 'guest-'+generate(6)
     if(login_user){
         guestuser = login_user.name
@@ -15,7 +15,6 @@ const ModelChat = ({props, login_user}) => {
     const [name, setName] = useState(guestuser)
    
     useEffect(() => { 
-        socket = io.connect(EndPoint)
         socket.emit('join',{name, room, model}) // Join user 
         socket.on('message', ({name, message}) => {
             setChat([...chat, {name, message}])            
