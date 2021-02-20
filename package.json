@@ -39,6 +39,7 @@
   "devDependencies": {
     "@babel/preset-react": "^7.12.13",
     "ajv": "^6.12.3",
+    "babel-preset-react-app": "^10.0.0",
     "fslightbox-react": "^1.4.9"
   },
   "browserslist": {
