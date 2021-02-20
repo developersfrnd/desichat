@@ -57,17 +57,23 @@ function Models() {
             params['sort'] = sort;
         }
 
+        let isMounted = true;
         userModel.getUsers({ params: params })
             .then(response => {
-
-                setloading(false);
-                setmodels(response.data.data);
-                setlinks(response.data.links);
-                setmeta(response.data.meta);
+                if(isMounted){
+                    setloading(false);
+                    setmodels(response.data.data);
+                    setlinks(response.data.links);
+                    setmeta(response.data.meta);
+                }    
             })
             .catch((error) => {
                 toast.error(error);
             });
+
+            return function cleanup() {
+                isMounted = false
+            }
 
     }, [page, category, ethnicity, language, orientation, sort]);
 
