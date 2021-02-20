@@ -50,7 +50,7 @@ const VideoChat = ({modelname, modelroom, socket}) => {
                     <div className="col-md-12">
                         <div className="item-media">
                             <div className="item-content with_padding">
-                                    <video muted ref={uservideo} autoPlay></video>
+                                <video muted ref={uservideo} autoPlay></video>
                             </div>
                         </div>
                     </div>
