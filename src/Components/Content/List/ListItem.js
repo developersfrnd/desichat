@@ -26,22 +26,23 @@ const listItem = (props) => {
 
                     <div className="bg_overlay"></div>
                     <div className="model-parameters">
-                        {
-                            (props.speaking) ?
-                                <div>
-                                    <span className="bold">I speak</span>
-                                    <br />
-                                    <span>
-                                        {props.speaking.map((speak) => {
-                                            let flag = `images/flag/${speak.flag}`
-                                            return <img src={flag} style={{ "width": "10%", "padding-left": "2px" }} />
-                                        })}
-                                    </span>
-                                </div>
+                        <div className="iSpeak">
+                            {
+                                (props.speaking) ?
+                                    <>
+                                        <span className="bold">I speak</span>
+                                        <br />
+                                        <span>
+                                            {props.speaking.map((speak) => {
+                                                let flag = `images/flag/${speak.flag}`
+                                                return <img src={flag} style={{ "width": "10%", "padding-left": "2px" }} />
+                                            })}
+                                        </span>
+                                    </>
 
-                                : null
-                        }
-
+                                    : null
+                            }
+                        </div>
                         <div>
                             <span className="bold">Rating</span>
                             <br />

@@ -3864,7 +3864,10 @@ a.logo.vertical_logo img {
   padding: 0px 1.5%;
   display: inline-block;
 }
-
+.models_square .model-parameters .iSpeak {
+  min-height: 41px;
+  width: 100%;
+}
 .models_square .vertical-item.content-absolute .item-content {
   padding: 15px 5px;
   -webkit-transform: translateY(100%);
