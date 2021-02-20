@@ -9,8 +9,7 @@ import PromptPopUp from './PromptPopUp';
 import PublicChat from './PublicChat';
 import VideoChat from './VideoChat';
 import io from "socket.io-client"
-//const EndPoint = "http://chatserver.desisexichat.com:8004"
-const EndPoint = "http://localhost:8004"
+const EndPoint = "http://chatserver.desisexichat.com:8004"
 class Board extends BaseComponent {
     
     static contextType = AppContext;
@@ -57,7 +56,6 @@ class Board extends BaseComponent {
                                     modelroom={this.state.user.id}  
                                 />
                                 <VideoChat
-                                    socket={socket}
                                     modelname={this.state.user.name} 
                                     modelroom={this.state.user.id}
                                 />

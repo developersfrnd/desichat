@@ -40,61 +40,61 @@ function Models() {
     }
 
     useEffect(() => {
-        let params = {page:page};
-        if(category){
+        let params = { page: page };
+        if (category) {
             params['category'] = category;
         }
-        if(ethnicity){
+        if (ethnicity) {
             params['ethnicity'] = ethnicity;
         }
-        if(language){
+        if (language) {
             params['language'] = language;
         }
-        if(orientation){
+        if (orientation) {
             params['orientation'] = orientation;
         }
-        if(sort){
+        if (sort) {
             params['sort'] = sort;
         }
 
-        userModel.getUsers({params:params})
-            .then( response => {
+        userModel.getUsers({ params: params })
+            .then(response => {
 
                 setloading(false);
                 setmodels(response.data.data);
                 setlinks(response.data.links);
                 setmeta(response.data.meta);
             })
-            .catch((error) => { 
+            .catch((error) => {
                 toast.error(error);
             });
-        
-    }, [page,category,ethnicity,language,orientation,sort]);
+
+    }, [page, category, ethnicity, language, orientation, sort]);
 
 
     return (
-        (loading) ? <Loading /> : 
-            <section className="ds page_models models_square gorizontal_padding section_padding_70 columns_padding_0">
-				<div className="container-fluid">
-                    <Filters 
-                        setCategory={setcategory}  
-                        setEthnicity={setethnicity}  
-                        setLanguage={setlanguage} 
+        (loading) ? <Loading /> :
+            <section className="ds page_models models_square gorizontal_padding section_padding_20 columns_padding_5">
+                <div className="container-fluid">
+                    <Filters
+                        setCategory={setcategory}
+                        setEthnicity={setethnicity}
+                        setLanguage={setlanguage}
                         setSorting={setsort}
-                        clearFilters={clearFilters} 
+                        clearFilters={clearFilters}
                         setOrientation={setorientation}
                     />
 
-					<div className="isotope_container isotope row masonry-layout bottommargin_20" data-filters=".isotope_filters">
+                    <div className="isotope_container isotope row masonry-layout bottommargin_20" data-filters=".isotope_filters">
                         {
                             models.map(model => {
                                 return <ListItem key={model.id}  {...model} />
-                            })    
+                            })
                         }
                     </div>
                     <PaginationLinks links={links} meta={meta} clickEvent={setPageNumber} />
                 </div>
-			</section>
+            </section>
     )
 }
 

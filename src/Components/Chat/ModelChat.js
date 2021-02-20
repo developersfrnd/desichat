@@ -1,26 +1,25 @@
 import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client';
-import Peer from 'simple-peer'
 import usersModel from '../../ApiManager/user';
-import { useRef } from 'react/cjs/react.development';
-
-
-const ModelChat = ({socket, props, login_user}) => {
-    
+const EndPoint = 'http://chatserver.desisexichat.com:8004'
+let socket
+const ModelChat = ({props, login_user}) => {
     let guestuser = 'guest-'+generate(6)
     if(login_user){
         guestuser = login_user.name
-    }    
+    }
     const [state, setState] = useState({message:''});
     const [chat, setChat] = useState([]);
     const [model, setModel] = useState(props.name)
     const [room, setRoom] = useState(props.id)
     const [name, setName] = useState(guestuser)
-    useEffect(() => {       
+   
+    useEffect(() => { 
+        socket = io.connect(EndPoint)
         socket.emit('join',{name, room, model}) // Join user 
         socket.on('message', ({name, message}) => {
-            setChat([...chat, {name, message}])        
-        })         
+            setChat([...chat, {name, message}])            
+        })
     },[props])
 
     useEffect(() => {  
@@ -28,10 +27,9 @@ const ModelChat = ({socket, props, login_user}) => {
             setChat([...chat, {name, message}])
             var elem = document.getElementById('chatmessage');
             elem.scrollTop = elem.scrollHeight;
-        })               
+        })        
     }, [chat])
-
-        
+    
     const TextChange = e => {
         setState({... state, [e.target.name]: e.target.value})
     }
@@ -49,11 +47,8 @@ const ModelChat = ({socket, props, login_user}) => {
                 <li class="media" key={index}><div class="media-body"><span class="bold fontsize_12 text-uppercase grey  with_padding">{name}:</span><span>{message}</span></div></li>
             ))
         )
-    }
-
+    }    
     return (
-
-        
             
         <section>
                 <div class="row">
@@ -83,7 +78,6 @@ const ModelChat = ({socket, props, login_user}) => {
                                 <div className="form-group">
                                     <button class="theme_button color1">Send</button>
                                 </div>
-                                
                         </form>
                     </div>
                 </div>                

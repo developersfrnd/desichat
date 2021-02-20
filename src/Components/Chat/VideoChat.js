@@ -1,53 +1,7 @@
 import React from 'react';
-import { useRef } from 'react';
-import { useEffect } from 'react';
-import Peer from 'simple-peer'
-import { useState } from 'react/cjs/react.development';
+import { Link } from 'react-router-dom'
 
-let pc
-const VideoChat = ({modelname, modelroom, socket}) => {
-    const uservideo = useRef()
-    const [stream, setStream] = useState({})
-    const [room, setRoom] = useState(modelroom)
-    const [name, setName] = useState(modelname)    
-    useEffect(() => { 
-
-        navigator.mediaDevices.getUserMedia({video:true, audio:false}).then(stream => {
-            setStream(stream)
-            
-            uservideo.current.srcObject = stream
-
-            const peer = new Peer(room, {
-                initiator: true,
-                trickle:false,
-                stream: stream,
-                config: {
-
-                    iceServers: [
-                        {
-                            urls: "stun:numb.viagenie.ca"
-                            
-                        },
-                        {
-                            urls: "turn:numb.viagenie.ca"
-                            
-                        }
-                    ]
-                }
-            })
-            peer.on('signal', data => {
-                socket.emit("callUser", { usertoCall: room, signaldata: data, from:name})
-            })
-    
-            socket.on("callAccepted", signal => {
-                peer.signal(signal);
-            })
-
-        }).catch((error) => {
-            console.log(error)
-        })
-    },[modelroom])
-
+const VideoChat = ({modelname, modelroom}) => {
     return (
         <div className="col-sm-12 bottommargin_40">
             <div className="side-item event-item content-padding with_background">
@@ -55,7 +9,7 @@ const VideoChat = ({modelname, modelroom, socket}) => {
                     <div className="col-md-12">
                         <div className="item-media">
                             <div className="item-content with_padding">
-                                    <video muted ref={uservideo} autoPlay></video>  
+                                    Video Chat
                             </div>
                         </div>
                     </div>
