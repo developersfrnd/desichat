@@ -25,7 +25,7 @@ function FIlters(props) {
         let ethnicities = [];
 
         Promise.all([getCategories(), getEthnicities(), getLanguages()])
-            .then( results => {
+            .then(results => {
 
                 results[0].data.data.map(category => {
                     categories.push(category)
@@ -49,61 +49,61 @@ function FIlters(props) {
 
 
     return (
-        (loading) ? 'Loading...' : 
-            <div className="row bottommargin_50 boxed-padding">
+        (loading) ? 'Loading...' :
+            <div className="row bottommargin_0 topmargin_0 boxed-padding">
                 <div className="col-lg-9">
                     <div className="filters isotope_filters inline-block margin_0">
-                    
-                    <div className="dropdown">
-                        <a href="#" data-filter="*" onClick={() => props.clearFilters()}>All </a>
-                    </div>
 
-                    <div className="dropdown">
-                        <a href="#" data-filter="*">Categories </a>
-                        <div className="dropdown-content">
+                        <div className="dropdown">
+                            <a href="#" data-filter="*" onClick={() => props.clearFilters()}>All </a>
+                        </div>
 
-                            {
-                                categories.map(category => {
-                                    return <p className="mm" onClick={() => props.setCategory(category.name)}>{category.name}</p>
-                                })
-                            }
+                        <div className="dropdown">
+                            <a href="#" data-filter="*">Categories </a>
+                            <div className="dropdown-content">
+
+                                {
+                                    categories.map(category => {
+                                        return <p className="mm" onClick={() => props.setCategory(category.name)}>{category.name}</p>
+                                    })
+                                }
+                            </div>
+                        </div>
+
+                        <div className="dropdown">
+                            <a href="#" data-filter=".fashion">Ethnicities</a>
+                            <div className="dropdown-content">
+                                {
+                                    ethnicities.map(ethnicity => {
+                                        return <p className="mm" onClick={() => props.setEthnicity(ethnicity.id)}>{ethnicity.name}</p>
+                                    })
+                                }
+                            </div>
+                        </div>
+
+                        <div className="dropdown">
+                            <a href="#" data-filter=".session">Orientation</a>
+                            <div className="dropdown-content">
+                                {
+                                    Constants.orientation.map(orien => {
+                                        if (orien.value) {
+                                            return <p className="mm" onClick={() => props.setOrientation(orien.value)}>{orien.displayValue}</p>;
+                                        }
+                                    })
+                                }
+                            </div>
+                        </div>
+
+                        <div className="dropdown">
+                            <a href="#" data-filter=".session">Popularity</a>
+                            <div className="dropdown-content">
+                                <p className="mm"> Any </p>
+                                <p className="mm"> 5 Stars Only </p>
+                                <p className="mm"> 4 Stars Only </p>
+                                <p className="mm"> 3 Stars Only </p>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div className="dropdown">
-                        <a href="#" data-filter=".fashion">Ethnicities</a>
-                        <div className="dropdown-content">
-                            {
-                                ethnicities.map(ethnicity => {
-                                    return <p className="mm" onClick={() => props.setEthnicity(ethnicity.id)}>{ethnicity.name}</p>
-                                })
-                            }
-                        </div>
-                    </div>
-
-                    <div className="dropdown">
-                        <a href="#" data-filter=".session">Orientation</a>
-                        <div className="dropdown-content">
-                            {
-                                Constants.orientation.map(orien => {
-                                    if(orien.value) {
-                                        return <p className="mm" onClick={() => props.setOrientation(orien.value)}>{orien.displayValue}</p>;
-                                    }
-                                })
-                            }
-                        </div>
-                    </div>
-
-                    <div className="dropdown">
-                        <a href="#" data-filter=".session">Popularity</a>
-                        <div className="dropdown-content">
-                            <p className="mm"> Any </p>
-                            <p className="mm"> 5 Stars Only </p>
-                            <p className="mm"> 4 Stars Only </p>
-                            <p className="mm"> 3 Stars Only </p>
-                        </div>
-                    </div>    
-                </div>
                 </div>
                 <div className="col-lg-3 text-lg-right">
                     <form className="form-inline models-orderby">

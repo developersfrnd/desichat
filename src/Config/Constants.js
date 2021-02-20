@@ -1,6 +1,6 @@
 import { uk } from "date-fns/locale";
 
-const Host = (window.location.hostname == 'localhost') ?  'https://localhost/apidesichat/public/' : 'https://api.desisexichat.com/public/';
+const Host = (window.location.hostname == 'localhost') ?  'https://api.desisexichat.com/public/' : 'https://api.desisexichat.com/public/';
 const Enviornment =  (window.location.hostname == 'localhost') ?  'local' : 'production';
 
 const Constants = {

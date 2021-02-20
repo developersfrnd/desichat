@@ -32,18 +32,18 @@ function PageTopLine() {
 
 	return (
 			(loading) ? 'page Loading...' : 
-			<section className="page_topline ds ms gorizontal_padding table_section">
+			<section className="page_topline ds ms gorizontal_padding">
 				<div className="container-fluid with_border">
 					<div className="row">
-						<div className="col-sm-4 col-md-3 col-lg-2 text-xs-center text-left text-lg-right">
+						<div className="col-md-4 col-sm-6 col-xs-12 text-xs-center text-left  topmargin_0 bottommargin_0">
 							<a href="#">
 								<em>support@desisexichat.com</em>
 							</a>
 						</div>
 
 						
-						<div className="col-md-3 col-sm-6 header-contacts text-center hidden-xs">
-							<div className="fontsize_20 grey topmargin_-5">
+						<div className="col-md-8 col-sm-6 col-xs-6  header-contacts text-center hidden-xs  topmargin_0 bottommargin_0">
+							<div className="fontsize_20 grey">
 								{ 
 									(isAuthenticated) ? `Welcome ${authUser.name}` :
 									

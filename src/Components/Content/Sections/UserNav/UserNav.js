@@ -7,7 +7,7 @@ function UserNav() {
 
     const [isCustomerLogin, setisCustomerLogin] = useState(false);
     const [isLoggedIn, setisLoggedIn] = useState(false);
-    const [minWidth, setminWidth] = useState('430px');
+    const [minWidth, setminWidth] = useState('250px');
 
     useEffect(() => {
         let authToken = authModel.getAuthToken();
@@ -21,7 +21,7 @@ function UserNav() {
 
 
     return (
-        <div className="dropdown-menu" aria-labelledby="tab" id="tab" style={{fontWeight:'400', fontSize:'15px', paddingLeft:'20px',minWidth:minWidth,boxShadow:'2px 2px 4px 0px #575757;z-index: 999999'}}>
+        <div className="dropdown-menu topSignupNav" aria-labelledby="tab" id="tab">
             {
                 (!isLoggedIn) ?
                     <Aux>
