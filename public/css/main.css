@@ -3791,6 +3791,13 @@ a.logo.vertical_logo img {
 	padding: 0px 1.5%;
 	display: inline-block;
 }
+<<<<<<< Updated upstream
+=======
+.models_square .model-parameters .ratingRow {
+  min-height: 41px;
+  width: 100%;
+}
+>>>>>>> Stashed changes
 
 .models_square .vertical-item.content-absolute .item-content {
 	padding: 15px 5px;
