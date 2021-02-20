@@ -6,7 +6,7 @@ const listItem = (props) => {
     const countryFlag = (props.country) ? `<img src="images/flag/${props.country}.png" style={{width:"10%"}} />` : null
 
     return (
-        <div className="isotope-item col-lg-3 col-md-4 col-sm-6 fashion">
+        <div className="isotope-item col-lg-3 col-md-4 col-sm-4 fashion">
             <div className="vertical-item content-absolute">
                 <div className="item-media">
                     <img src={profilePicture} alt="" />

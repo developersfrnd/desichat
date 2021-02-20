@@ -2,10 +2,10 @@ import React from 'react';
 
 const addStrip = () => {
     return (
-        <section className="ds column_margin_0 section_padding_bottom_80">
+        <section className="ds column_margin_0 section_padding_bottom_20">
             <div className="container">
                 <div className="row">
-                    <div className="col-sm-12">
+                    <div>
                         <div className="flexslider banner-slider">
                             <ul className="slides">
                                 <li className="gradient_bg_goriz">

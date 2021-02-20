@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Layout from './Components/Content/Home';
 import { BrowserRouter } from 'react-router-dom'
 import PageHeader from './Components/Content/Header'
 import Search from './Components/Search/Search'
