@@ -1,55 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
-import BaseComponent from '../../../../Containers/BaseComponent'
-import { AppContext } from '../../../../Context'
 import Aux from '../../../../hoc/Aux';
 import authModel from '../../../../ApiManager/auth';
 
-class Usernav extends BaseComponent {
+function UserNav() {
 
-    static contextType = AppContext;
-    constructor() {
-        super();
+    const [isCustomerLogin, setisCustomerLogin] = useState(false);
+    const [isLoggedIn, setisLoggedIn] = useState(false);
+    const [minWidth, setminWidth] = useState('250px');
 
-    }
+    useEffect(() => {
+        let authToken = authModel.getAuthToken();
+        if(authToken){
+            setminWidth('500px');
+            setisLoggedIn(true);
+            setisCustomerLogin(authModel.isCustomerLogin());
+        }
+        
+    }, [])
 
-    render() {
-        let minWidth = (!authModel.getAuthToken()) ? "250px" : "500px";
-        return (
-            <div className="dropdown-menu topSignupNav" aria-labelledby="tab" id="tab"
-            >
-                {
-                    (!authModel.getAuthToken()) ?
-                        <Aux>
-                            <ul>
-                                <li><Link to="/registration/user"> SignUp </Link></li>
-                                <li><Link to="/registration/model"> SignUp as Model </Link></li>
-                                <li><Link to="/login"> Login </Link></li>
-                            </ul>
-                        </Aux> :
 
-                        (authModel.isCustomerLogin()) ?
-                            <Aux>
-                                <ul>
-                                    <li><Link to="/Profile"> Manage Profile </Link></li>
-                                    <li><Link to="/logout"> Logout </Link></li>
-                                </ul>
-                            </Aux>
-                            :
+    return (
+        <div className="dropdown-menu topSignupNav" aria-labelledby="tab" id="tab">
+            {
+                (!isLoggedIn) ?
+                    <Aux>
+                        <Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
+                        <Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
+                        <Link to="/login"> Login </Link>
+                    </Aux> : 
+                    
+                    (isCustomerLogin) ?
+                    <Aux>
+                        <Link to="/Profile"> Manage Profile </Link>&nbsp;|&nbsp;
+                        <Link to="/logout"> Logout </Link>
+                    </Aux>
+                    :
 
-                            <Aux>
-                                <ul>
-                                    <li><Link to="/Profile"> Manage Profile </Link></li>
-                                    <li><Link to="/gallery"> Manage Gallery </Link></li>
-                                    <li><Link to="/myvideos"> Manage Videos </Link></li>
-                                    <li><Link to="/logout"> Logout </Link></li>
-                                </ul>
-                            </Aux>
-                }
-
+                    <Aux>    
+                        <Link to="/Profile"> Manage Profile </Link>&nbsp;|&nbsp;
+                        <Link to="/gallery"> Manage Gallery </Link>&nbsp;|&nbsp;
+                        <Link to="/myvideos"> Manage Videos </Link>&nbsp;|&nbsp;
+                        <Link to="/logout"> Logout </Link>
+                    </Aux>    
+            }
+            
             </div>
-        )
-    }
+    )
 }
 
-export default Usernav;
+export default UserNav

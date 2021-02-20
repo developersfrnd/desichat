@@ -1,11 +1,37 @@
-import React, { Component } from 'react';
-import { Route, Link, Switch } from 'react-router-dom'
-import { AppContext } from '../../../Context';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'
+import usersModel from '../../../ApiManager/user';
 import Aux from '../../../hoc/Aux';
 
-class PageTopLine extends Component {
-	render() {
-		return (
+function PageTopLine() {
+
+	const [isAuthenticated, setisAuthenticated] = useState(false);
+	const [authUser, setauthUser] = useState(null)
+    const [loading, setloading] = useState(true);
+
+	useEffect(() => {
+        let authToken = usersModel.authToken();
+		if(authToken){ 
+            setisAuthenticated(true);
+
+			usersModel.getAuthUser()
+			.then(user => {
+				console.log("Hello",user.data.data);
+				setauthUser(user.data.data);
+				setloading(false);
+			})
+			.catch(error => {
+				console.log(error);
+			})
+		}else{
+			setloading(false);
+		}
+         
+        
+    }, [])
+
+	return (
+			(loading) ? 'page Loading...' : 
 			<section className="page_topline ds ms gorizontal_padding">
 				<div className="container-fluid with_border">
 					<div className="row">
@@ -15,33 +41,27 @@ class PageTopLine extends Component {
 							</a>
 						</div>
 
-
+						
 						<div className="col-md-8 col-sm-6 col-xs-6  header-contacts text-center hidden-xs  topmargin_0 bottommargin_0">
 							<div className="fontsize_20 grey">
-								<AppContext.Consumer>
-									{
-										(contextState) => {
-											return (
-												(contextState.stateData.authUser) ? `Welcome ${contextState.stateData.authUser.name}` :
-													(
-														<Aux>
-															<Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
-															<Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
-															<Link to="/login"> Login </Link>
-														</Aux>
-													)
-											)
-										}
-									}
-								</AppContext.Consumer>
+								{ 
+									(isAuthenticated) ? `Welcome ${authUser.name}` :
+									
+									(
+										<Aux>
+											<Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
+											<Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
+											<Link to="/login"> Login </Link>
+										</Aux> 
+									)
+								
+								}
 							</div>
 						</div>
 					</div>
 				</div>
 			</section>
-		)
-	}
+	)
 }
 
-
-export default PageTopLine;
+export default PageTopLine

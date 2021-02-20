@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import Aux from '../../../hoc/Aux'
 import { Link } from 'react-router-dom'
 
@@ -9,7 +9,7 @@ function Customer(props) {
                 <div className="widget widget_banner">
                     <h3 className="widget-title">&nbsp;</h3>
                         
-                        <div className="highlight inline-block fontsize_30 bold">{props.creditPoints}</div>
+                        <div className="highlight inline-block fontsize_30 bold">{ (props.creditPoints) ? props.creditPoints : 0 }</div>
                         <div className="media-links">
                             <a href="#" className="abs-link"></a>
                         </div>
