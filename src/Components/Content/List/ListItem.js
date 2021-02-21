@@ -85,6 +85,9 @@ const listItem = (props) => {
                         </div>
                     </div>
                 </div>
+                <div className="onlineSign">
+                    Online
+                </div>
             </div>
         </div>
     );
