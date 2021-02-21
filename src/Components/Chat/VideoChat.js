@@ -8,39 +8,38 @@ const VideoChat = ({modelname, modelroom, socket}) => {
     const uservideo = React.useRef()
     useEffect(() => { 
 
-        navigator.mediaDevices.getUserMedia({video:true, audio:false}).then(stream => {
-            setStream(stream)
-            
-            uservideo.current.srcObject = stream
-            const peer = new Peer(room, {
-                initiator: true,
-                trickle:false,
-                stream: stream,
-                config: {
+        // navigator.mediaDevices.getUserMedia({video:true, audio:false}).then(stream => {
+        //     setStream(stream)            
+        //     uservideo.current.srcObject = stream
+        //     const peer = new Peer(room, {
+        //         initiator: true,
+        //         trickle:false,
+        //         stream: stream,
+        //         config: {
 
-                    iceServers: [
-                        {
-                            urls: "stun:numb.viagenie.ca"
+        //             iceServers: [
+        //                 {
+        //                     urls: "stun:numb.viagenie.ca"
                             
-                        },
-                        {
-                            urls: "turn:numb.viagenie.ca"
+        //                 },
+        //                 {
+        //                     urls: "turn:numb.viagenie.ca"
                             
-                        }
-                    ]
-                }
-            })
-            peer.on('signal', data => {
-                socket.emit("callUser", { usertoCall: room, signaldata: data, from:name})
-            })
+        //                 }
+        //             ]
+        //         }
+        //     })
+        //     peer.on('signal', data => {
+        //         socket.emit("callUser", { usertoCall: room, signaldata: data, from:name})
+        //     })
     
-            socket.on("callAccepted", signal => {
-                peer.signal(signal);
-            })
+        //     socket.on("callAccepted", signal => {
+        //         peer.signal(signal);
+        //     })
 
-        }).catch((error) => {
-            console.log(error)
-        })
+        // }).catch((error) => {
+        //     console.log(error)
+        // })
     },[modelroom])
 
     return (
@@ -50,7 +49,7 @@ const VideoChat = ({modelname, modelroom, socket}) => {
                     <div className="col-md-12">
                         <div className="item-media">
                             <div className="item-content with_padding">
-                                <video muted ref={uservideo} autoPlay></video>
+                                <video></video>
                             </div>
                         </div>
                     </div>
