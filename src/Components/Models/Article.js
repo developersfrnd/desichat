@@ -23,10 +23,10 @@ const Article = ({socket, props}) => {
     `;
 
     useEffect(() => { 
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-            setStream(stream);
-            partnerVideo.current.srcObject = stream
-        })         
+        // navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+        //     setStream(stream);
+        //     partnerVideo.current.srcObject = stream
+        // })         
          
     },[])
 
