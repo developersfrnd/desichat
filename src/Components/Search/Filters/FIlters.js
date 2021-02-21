@@ -24,27 +24,33 @@ function FIlters(props) {
         let languages = [];
         let ethnicities = [];
 
+        let isMounted = true;
         Promise.all([getCategories(), getEthnicities(), getLanguages()])
             .then(results => {
 
-                results[0].data.data.map(category => {
-                    categories.push(category)
-                })
-                results[1].data.data.map(ethnicity => {
-                    ethnicities.push(ethnicity)
-                })
-                results[2].data.data.map(language => {
-                    languages.push(language)
-                })
+                if(isMounted){
 
-                setcategory(categories);
-                setethnicity(ethnicities);
-                setlanguage(languages);
-                setloading(false);
+                    results[0].data.data.map(category => {
+                        categories.push(category)
+                    })
+                    results[1].data.data.map(ethnicity => {
+                        ethnicities.push(ethnicity)
+                    })
+                    results[2].data.data.map(language => {
+                        languages.push(language)
+                    })
+
+                    setcategory(categories);
+                    setethnicity(ethnicities);
+                    setlanguage(languages);
+                    setloading(false);
+                }    
             })
             .catch(error => {
                 toast.error(error);
             });
+
+            return () => isMounted = false;
     }, []);
 
 
