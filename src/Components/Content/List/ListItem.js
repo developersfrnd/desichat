@@ -85,9 +85,13 @@ const listItem = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className="onlineSign">
-                    Online
-                </div>
+                {
+                   (props.is_online) ?
+                    <div className="onlineSign">
+                        Online
+                    </div>
+                    : null
+                }
             </div>
         </div>
     );
