@@ -10,6 +10,42 @@ function PersonalInfo() {
 
     const { register, errors, handleSubmit } = useForm();
 
+    submitEventHandler = (event) => {
+        event.preventDefault();
+        if(this.checkValidation()){
+            let formData = new FormData(document.getElementById('personalInfo'));
+            formData.append('profile_picture', this.state.selectedFile)
+
+            this.setState({loading:true})
+            axios.post(
+                    `${Constants.apiEndPoint}users/${this.context.stateData.authUser.id}`,
+                    formData,
+                    this.axiosConfig()
+                )
+                .then( response => {
+                    let redirect = '/questionnire'
+                    if(this.props.location.search == '?edit=1'){
+                        redirect = "/profile"
+                    }
+
+                    let updatedAuthUser = {...this.context.stateData.authUser,
+                        address: response.data.data.address,
+                        city: response.data.data.city,
+                        state: response.data.data.state,
+                        country: response.data.data.country,
+                        zipcode: response.data.data.zipcode,
+                        phone: response.data.data.phone,
+                        profilePicture: `${response.data.data.profilePicture}`
+                    }
+                    this.setContextState({authUser:updatedAuthUser,redirect:`${redirect}`})
+                    this.setState({formSubmitted:true,loading:false})
+                })
+                .catch(error => {
+                    this.showMessage(error);
+                });
+        }        
+    }
+    
     return (
         <section className="ds section_padding_70">
             <div className="container">
