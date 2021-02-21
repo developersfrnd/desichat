@@ -8299,6 +8299,7 @@ h2 .muellerhoff {
 .item-media img {
   max-width: 100%;
   width: 100%;
+  min-height: 280px;
 }
 
 .media-links {
