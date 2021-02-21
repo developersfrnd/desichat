@@ -8,14 +8,14 @@ function UserNav() {
 
     const [isCustomerLogin, setisCustomerLogin] = useState(false);
     const [isLoggedIn, setisLoggedIn] = useState(false);
-    
+
     useEffect(() => {
         let authToken = authModel.getAuthToken();
-        if(authToken){
+        if (authToken) {
             setisLoggedIn(true);
             setisCustomerLogin(authModel.isCustomerLogin());
         }
-        
+
     }, [isLoggedIn])
 
 
@@ -25,31 +25,37 @@ function UserNav() {
                 {
                     (contextState) => {
                         return (
-                            (!contextState.stateData.authUser) ? 
-                            <Aux>
-                                <Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
-                                <Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
-                                <Link to="/login"> Login </Link>
-                            </Aux> :
+                            (!contextState.stateData.authUser) ?
+                                <Aux>
+                                    <ul>
+                                        <li> <Link to="/registration/user"> SignUp </Link></li>
+                                        <li> <Link to="/registration/model"> SignUp as Model </Link></li>
+                                        <li> <Link to="/login"> Login </Link></li>
+                                    </ul>
+                                </Aux> :
 
-                            (isCustomerLogin) ?
-                            <Aux>
-                                <Link to="/Profile"> Manage Profile </Link>&nbsp;|&nbsp;
-                                <Link to="/logout"> Logout </Link>
-                            </Aux>
-                            :
+                                (isCustomerLogin) ?
+                                    <Aux>
+                                        <ul>
+                                            <li><Link to="/Profile"> Manage Profile </Link></li>
+                                            <li><Link to="/logout"> Logout </Link></li>
+                                        </ul>
+                                    </Aux>
+                                    :
 
-                            <Aux>    
-                                <Link to="/Profile"> Manage Profile </Link>&nbsp;|&nbsp;
-                                <Link to="/gallery"> Manage Gallery </Link>&nbsp;|&nbsp;
-                                <Link to="/myvideos"> Manage Videos </Link>&nbsp;|&nbsp;
-                                <Link to="/logout"> Logout </Link>
-                            </Aux>
+                                    <Aux>
+                                        <ul>
+                                            <li><Link to="/Profile"> Manage Profile </Link></li>
+                                            <li><Link to="/gallery"> Manage Gallery </Link></li>
+                                            <li><Link to="/myvideos"> Manage Videos </Link></li>
+                                            <li><Link to="/logout"> Logout </Link></li >
+                                        </ul>
+                                    </Aux >
                         )
                     }
                 }
-            </AppContext.Consumer>
-        </div>
+            </AppContext.Consumer >
+        </div >
     )
 }
 

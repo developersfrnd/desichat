@@ -18,7 +18,7 @@ function PageTopLine() {
 			usersModel.getAuthUser()
 				.then(user => {
 					setauthUser(user.data.data);
-					setloading(false);
+					// setloading(false);
 				})
 				.catch(error => {
 					console.log(error);
@@ -45,20 +45,20 @@ function PageTopLine() {
 						<div className="col-md-8 col-sm-6 col-xs-6  header-contacts text-right hidden-xs  topmargin_0 bottommargin_0">
 							<div className="fontsize_14 grey">
 								<AppContext.Consumer>
-								{
-									(contextState) => {
-										return (
-											(contextState.stateData.authUser) ? `Welcome ${contextState.stateData.authUser.name}` : 
-											(
-												<Aux>
-													<Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
-													<Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
-													<Link to="/login"> Login </Link>
-												</Aux> 
+									{
+										(contextState) => {
+											return (
+												(contextState.stateData.authUser) ? `Welcome ${contextState.stateData.authUser.name}` :
+													(
+														<Aux>
+															<Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
+															<Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
+															<Link to="/login"> Login </Link>
+														</Aux>
+													)
 											)
-										)
+										}
 									}
-								}
 								</AppContext.Consumer>
 							</div>
 						</div>
