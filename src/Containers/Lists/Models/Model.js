@@ -24,37 +24,37 @@ function Model() {
 
     useEffect(() => {
         usersModel.getUser(userId)
-            .then( res => {
+            .then(res => {
                 setmodel(res.data.data)
                 setloading(false);
             })
-            .catch((error) => { 
+            .catch((error) => {
                 toast.error(error.message)
             });
-        if(login_user && login_user.role == 1){
-        
+        if (login_user && login_user.role == 1) {
+
             setisUser(false)
-        }   
+        }
     }, [])
 
     return (
-        (loading) ? <Loading /> : 
-        <section className="ds section_padding_top_100 section_padding_bottom_50 columns_padding_25">
-            <div className="container">
-                <Filters />
-                <div className="row">
-                    <div className="col-sm-7 col-md-8 col-lg-8">
-                        <Article socket={socket} props={model} /> 
-                    </div>
-                    { isuser && (
-                        <div class="col-sm-4">
-                            <ModelChat socket={socket}  props={model} login_user={login_user}/>
+        (loading) ? <Loading /> :
+            <section className="ds section_padding_top_20 section_padding_bottom_50 columns_padding_25">
+                <div className="container">
+                    <Filters />
+                    <div className="row">
+                        <div className="col-sm-7 col-md-8 col-lg-8">
+                            <Article socket={socket} props={model} />
                         </div>
-                    )}
-                    <Aside />
+                        {isuser && (
+                            <div class="col-sm-4">
+                                <ModelChat socket={socket} props={model} login_user={login_user} />
+                            </div>
+                        )}
+                        <Aside />
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
     )
 }
 

@@ -3949,6 +3949,14 @@ a.logo.vertical_logo img {
 .models_square .links-wrap a {
   top: -40px !important;
 }
+.models_square .onlineSign {
+  background: #4cb80e;
+  height: 4px;
+  position: absolute;
+  z-index: 99999;
+  bottom: 0;
+  width: 100%;
+}
 
 .models_square .links-wrap a.p-link {
   margin: 0;
