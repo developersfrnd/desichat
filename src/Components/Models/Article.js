@@ -8,7 +8,7 @@ import Peer from 'simple-peer'
 
 
 
-const Article = ({socket, props}) => {
+const Article = ({ socket, props }) => {
 
     const [token, settoken] = useState(null);
     const [channel, setchannel] = useState(null)
@@ -22,31 +22,31 @@ const Article = ({socket, props}) => {
         height: 50%;
     `;
 
-    useEffect(() => { 
+    useEffect(() => {
         // navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
         //     setStream(stream);
         //     partnerVideo.current.srcObject = stream
         // })         
-         
-    },[])
 
-    useEffect(() => {  
-        socket.on('hey', ({signaldata, from}) => {
-            setCallerSignal(signaldata)
-            acceptCall()
-        })                
     }, [])
 
-    function acceptCall(){
-        
+    useEffect(() => {
+        socket.on('hey', ({ signaldata, from }) => {
+            setCallerSignal(signaldata)
+            acceptCall()
+        })
+    }, [])
+
+    function acceptCall() {
+
         const peer = new Peer(room, {
             initiator: false,
-            trickle:false,
+            trickle: false,
             stream: stream
         })
 
         peer.on('signal', data => {
-            socket.emit('acceptCall', { signal: data, to: room})
+            socket.emit('acceptCall', { signal: data, to: room })
         })
 
         peer.on("stream", stream => {
@@ -59,7 +59,7 @@ const Article = ({socket, props}) => {
 
     const PartnerVideo = (
         <Video ref={partnerVideo} autoPlay />
-      )
+    )
 
     return (
         <article className="vertical-item post format-video with_background">
@@ -67,8 +67,8 @@ const Article = ({socket, props}) => {
                 <div className="entry-meta-corner">
                     <span className="date">
                         <time dateTime="2016-08-01T15:05:23+00:00" className="entry-date">
-                            <strong>{ new Date().getDate() }</strong>
-                            { Constants.monthNames[new Date().getMonth()] }
+                            <strong>{new Date().getDate()}</strong>
+                            {Constants.monthNames[new Date().getMonth()]}
                         </time>
                     </span>
 
@@ -79,18 +79,18 @@ const Article = ({socket, props}) => {
                     </span>
                 </div>
                 <div className="embed-responsive embed-responsive-3by2">
-                    { 
-                        (token) ? <Call token={token} channel={channel}  /> : <img src={props.profilePicture} alt={props.name} /> 
+                    {
+                        (token) ? <Call token={token} channel={channel} /> : <img src={props.profilePicture} alt={props.name} />
                     }
-                    
-                    {PartnerVideo} 
-                    
+
+                    {PartnerVideo}
+
                 </div>
                 <button> Start Broadcasting </button>
                 <button> Start Private Chat </button>
             </div>
 
-            <Summary {...props} /> 
+
         </article>
     )
 }
