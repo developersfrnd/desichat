@@ -86,11 +86,11 @@ const listItem = (props) => {
                     </div>
                 </div>
                 {
-                   (props.is_online) ?
-                    <div className="onlineSign">
-                        Online
+                    (props.is_online) ?
+                        <div className="onlineSign">
+                            Online
                     </div>
-                    : null
+                        : null
                 }
             </div>
         </div>

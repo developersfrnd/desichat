@@ -60,23 +60,23 @@ function Models() {
         let isMounted = true;
         userModel.getUsers({ params: params })
             .then(response => {
-                if(isMounted){
+                if (isMounted) {
                     setloading(false);
                     setmodels(response.data.data);
                     setlinks(response.data.links);
                     setmeta(response.data.meta);
-                }    
+                }
             })
             .catch((error) => {
-                if(isMounted){
+                if (isMounted) {
                     setloading(false);
                     toast.error(error);
-                }    
+                }
             });
 
-            return () => {
-                isMounted = false
-            }
+        return () => {
+            isMounted = false
+        }
 
     }, [page, category, ethnicity, language, orientation, sort]);
 

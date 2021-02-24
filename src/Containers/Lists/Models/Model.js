@@ -9,8 +9,11 @@ import { toast } from 'react-toastify';
 import Loading from '../../../Components/Loaders/Loading';
 import ModelChat from "../../../Components/Chat/ModelChat";
 import authModel from '../../../ApiManager/auth'
-import io from "socket.io-client"
-const EndPoint = "http://chatserver.desisexichat.com:8004"
+import io from "socket.io-client";
+import Summary from '../../../Components/Models/Summary';
+import AsideModels from '../../../Components/Models/AsideModels';
+
+const EndPoint = "https://chatserver.desisexichat.com"
 //const EndPoint = "http://localhost:8004"
 const socket = io.connect(EndPoint)
 
@@ -42,16 +45,25 @@ function Model() {
             <section className="ds section_padding_top_20 section_padding_bottom_50 columns_padding_25">
                 <div className="container">
                     <Filters />
-                    <div className="row">
-                        <div className="col-sm-7 col-md-8 col-lg-8">
-                            <Article socket={socket} props={model} />
-                        </div>
-                        {isuser && (
-                            <div class="col-sm-4">
+                    {isuser &&
+                        <div className="row">
+                            <div className="col-sm-7 col-md-8 col-lg-8 modelPictureContainer">
+                                <Article socket={socket} props={model} />
+                            </div>
+
+                            <div class="col-sm-4 chatboxcontainer">
                                 <ModelChat socket={socket} props={model} login_user={login_user} />
                             </div>
-                        )}
-                        <Aside />
+                        </div>
+                    }
+                    <div className="bottomSummaryContainer">
+                        <div className="tabsContainer">
+                            <Summary {...model} />
+                        </div>
+                        <div class="similarModelContainer">
+                            <AsideModels />
+                        </div>
+
                     </div>
                 </div>
             </section>
