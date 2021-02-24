@@ -162,7 +162,7 @@ const aside = () => {
                     <h3 className="widget-title">Similar Models</h3>
                     {
                         dummyModels.map(model => {
-                            return (<div className="isotope-item fashion">
+                            return (<div className="profileContainer">
                                 <div className="vertical-item content-absolute">
                                     <div className="item-media">
                                         <img src={model.profilePicture} alt="" />

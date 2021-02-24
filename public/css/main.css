@@ -4081,7 +4081,25 @@ a.logo.vertical_logo img {
   top: 0;
   opacity: 1;
 }
+/***** custom css starts ***********/
 
+.bottomSummaryContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.bottomSummaryContainer .tabsContainer {
+  width: 67%;
+  background: #333;
+}
+
+.bottomSummaryContainer .similarModelContainer {
+  width: 30%;
+}
+.profileContainer {
+  margin-bottom: 15px;
+}
+
+/***** custom css ends ***********/
 @media (max-width: 540px),
   (min-width: 768px) and (max-width: 1100px),
   (min-width: 1200px) and (max-width: 1600px) {

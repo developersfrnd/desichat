@@ -56,11 +56,11 @@ function Model() {
                             </div>
                         </div>
                     }
-                    <div className="row">
-                        <div className="col-sm-7 col-md-8 col-lg-8 tabsContainer">
+                    <div className="bottomSummaryContainer">
+                        <div className="tabsContainer">
                             <Summary {...model} />
                         </div>
-                        <div class="col-sm-5 col-md-4 col-lg-4 similarModelContainer">
+                        <div class="similarModelContainer">
                             <AsideModels />
                         </div>
 
