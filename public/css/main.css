@@ -651,7 +651,8 @@ p + .progress {
   border-bottom-color: transparent;
   margin-top: 0px;
   margin-bottom: -1px;
-  width: 717px;
+  width: 100%;
+  background: #1a1a1a;
 }
 
 .nav-tabs > li > a {
@@ -11517,7 +11518,6 @@ isotope portfolio and gallery pos
 .cart-dropdown .dropdown-menu a {
   color: rgb(224, 0, 108);
 }
-
 
 /* item media links */
 .video-media {
