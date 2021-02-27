@@ -12,9 +12,9 @@ import authModel from '../../../ApiManager/auth'
 import io from "socket.io-client";
 import Summary from '../../../Components/Models/Summary';
 import AsideModels from '../../../Components/Models/AsideModels';
+import Constants from '../../../Config/Constants';
 
-const EndPoint = "https://chatserver.desisexichat.com"
-//const EndPoint = "http://localhost:8004"
+const EndPoint = Constants.chatServer
 const socket = io.connect(EndPoint)
 
 function Model() {
@@ -37,6 +37,9 @@ function Model() {
         if (login_user && login_user.role == 1) {
 
             setisUser(false)
+        }
+        return () => {
+            console.log("clean model")
         }
     }, [])
 

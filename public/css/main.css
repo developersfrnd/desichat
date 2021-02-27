@@ -11511,3 +11511,14 @@ isotope portfolio and gallery pos
 .cart-dropdown .dropdown-menu a {
   color: rgb(224, 0, 108);
 }
+
+
+/* item media links */
+.video-media {
+  position: relative;
+  overflow: hidden;
+}
+.video-media img {
+  max-width: 100%;
+  width: 100%;
+}
