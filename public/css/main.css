@@ -4098,6 +4098,12 @@ a.logo.vertical_logo img {
 .profileContainer {
   margin-bottom: 15px;
 }
+.profileContainer .theme_buttons a,
+.profileContainer .theme_button {
+  min-width: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
 
 /***** custom css ends ***********/
 @media (max-width: 540px),
