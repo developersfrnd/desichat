@@ -157,9 +157,9 @@ const dummyModels = [
 const aside = () => {
     return (
         <aside>
-            <div className="with_background with_padding models_square">
+            <div className="models_square">
                 <div className="widget widget_popular_entries">
-                    <h3 className="widget-title">Similar Models</h3>
+                    <h3 className="headingtag headingBg">Similar Models</h3>
                     {
                         dummyModels.map(model => {
                             return (<div className="profileContainer">
