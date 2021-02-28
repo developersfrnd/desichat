@@ -622,9 +622,20 @@ p + .progress {
   background-color: transparent !important;
 }
 .headingtag {
-  font-size: 22px;
+  font-size: 26px;
 }
-
+.headingtag.headingBg {background:#000; padding:15px; margin-bottom:15px}
+.topChatontainerrow {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 25px;
+}
+.chatboxcontainer {
+  width: 48.5%;
+}
+.modelPictureContainer {
+  width: 48.5%;
+}
 .tab-content.top-color-border {
   position: relative;
 }
@@ -4091,12 +4102,12 @@ a.logo.vertical_logo img {
   justify-content: space-between;
 }
 .bottomSummaryContainer .tabsContainer {
-  width: 67%;
+  width: 72%;
   background: #333;
 }
 
 .bottomSummaryContainer .similarModelContainer {
-  width: 30%;
+  width: 25%;
 }
 .profileContainer {
   margin-bottom: 15px;
@@ -7285,12 +7296,22 @@ aside .widget_tag_cloud a:hover {
 .contact-form {
   position: relative;
   z-index: 3;
+  display: flex;
 }
 
 .contact-form textarea {
   max-height: 140px;
 }
-
+.contact-form input[type="text"] {
+  width: 100%;
+  padding-left:15px
+}
+.chatboxcontainer section {
+  height: 100%;
+}
+.chatboxcontainer section .item-media {
+  height: calc(100% - 41px);
+}
 .contact-form.parallax {
   padding: 50px 50px 35px;
   background-image: url(../images/parallax/progress.html);
@@ -8329,7 +8350,7 @@ h2 .muellerhoff {
 .item-media {
   position: relative;
   overflow: hidden;
-  max-height: 280px;
+   
 }
 .item-media img {
   max-width: 100%;
@@ -11440,7 +11461,7 @@ isotope portfolio and gallery pos
   border-radius: 3px;
 }
 .chat-body {
-  height: 200px;
+  height: 100%;
   overflow: auto;
   background-color: #0d0d0d;
   padding: 10px;
