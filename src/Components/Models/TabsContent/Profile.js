@@ -4,7 +4,7 @@ import Constants from '../../../Config/Constants';
 const profile = (props) => {
     return (
         <div className="item-content .about-content">
-            <h2 className="big topmargin_0 bottommargin_30">
+            <h2 className="headingtag topmargin_0 bottommargin_30">
                 About {props.name}
             </h2>
             <p>Basic Profile</p>
@@ -39,13 +39,13 @@ const profile = (props) => {
                                 <span className="fa fa-star checked"></span>
                                 <span className="fa fa-star"></span>
                                 <span className="fa fa-star"></span>
-                            </span>    
+                            </span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-    ) 
+    )
 }
 
 export default profile;

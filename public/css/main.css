@@ -618,9 +618,11 @@ p + .progress {
 }
 
 .tab-content.no-border {
-  padding: 36px 0 0;
   border: none;
   background-color: transparent !important;
+}
+.headingtag {
+  font-size: 22px;
 }
 
 .tab-content.top-color-border {
