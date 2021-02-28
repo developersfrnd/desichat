@@ -112,7 +112,7 @@ const SplitForm = (props) => {
             })
             .then((res) => {
               setloading(false);
-              resetPaymentForm()
+              resetPaymentForm();
               authUserContext.handleEvent({authUser:res.data.data})
               toast.success(Messages.paymentSuccess)
             })

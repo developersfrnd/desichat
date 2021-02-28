@@ -16,7 +16,6 @@ class App extends BaseComponent {
   constructor(){
     super();
     this.state = {
-      loading: false,
       authUser: null,
       redirect:null,
       flashMessage:null

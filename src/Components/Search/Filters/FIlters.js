@@ -70,7 +70,7 @@ function FIlters(props) {
 
                                 {
                                     categories.map(category => {
-                                        return <p className="mm" onClick={() => props.setCategory(category.name)}>{category.name}</p>
+                                        return <p className="mm" key={category.id} onClick={() => props.setCategory(category.name)}>{category.name}</p>
                                     })
                                 }
                             </div>
@@ -81,7 +81,7 @@ function FIlters(props) {
                             <div className="dropdown-content">
                                 {
                                     ethnicities.map(ethnicity => {
-                                        return <p className="mm" onClick={() => props.setEthnicity(ethnicity.id)}>{ethnicity.name}</p>
+                                        return <p className="mm" key={ethnicity.id} onClick={() => props.setEthnicity(ethnicity.id)}>{ethnicity.name}</p>
                                     })
                                 }
                             </div>
@@ -93,7 +93,7 @@ function FIlters(props) {
                                 {
                                     Constants.orientation.map(orien => {
                                         if (orien.value) {
-                                            return <p className="mm" onClick={() => props.setOrientation(orien.value)}>{orien.displayValue}</p>;
+                                            return <p className="mm" key={orien.value} onClick={() => props.setOrientation(orien.value)}>{orien.displayValue}</p>;
                                         }
                                     })
                                 }
@@ -110,19 +110,6 @@ function FIlters(props) {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="col-lg-3 text-lg-right">
-                    <form className="form-inline models-orderby">
-                        <div className="form-group select-group">
-                            <label className="sr-only" htmlFor="orderby">Sort By:</label>
-                            <select className="form-control orderby" name="orderby" id="orderby" value={sort} onChange={(val) => props.setSorting(val)}>
-                                <option value="" defaultValue="">Default sorting</option>
-                                <option value="name">Sort by name</option>
-                                <option value="dob">Sort by age</option>
-                            </select>
-                            <i className="rt-icon2-chevron-thin-down form-button"></i>
-                        </div>
-                    </form>
                 </div>
             </div>
     )

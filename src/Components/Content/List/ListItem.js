@@ -35,7 +35,7 @@ const listItem = (props) => {
                                     <span>
                                         {props.speaking.map((speak) => {
                                             let flag = `images/flag/${speak.flag}`
-                                            return <img src={flag} style={{ "width": "10%", "padding-left": "2px" }} />
+                                            return <img src={flag} key={flag} style={{ "width": "10%", "paddingLeft": "2px" }} />
                                         })}
                                     </span>
                                 </div>

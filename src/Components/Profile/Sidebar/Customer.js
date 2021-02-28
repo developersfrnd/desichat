@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Aux from '../../../hoc/Aux'
 import { Link } from 'react-router-dom'
+import { AppContext } from '../../../Context';
 
 function Customer(props) {
+
+    const context = useContext(AppContext)
+    
     return (
         <Aux>
             <div className="with_background with_padding">
                 <div className="widget widget_banner">
                     <h3 className="widget-title">&nbsp;</h3>
                         
-                        <div className="highlight inline-block fontsize_30 bold">{ (props.creditPoints) ? props.creditPoints : 0 }</div>
+                        <div className="highlight inline-block fontsize_30 bold">{ context.stateData.authUser.creditPoints }</div>
                         <div className="media-links">
                             <a href="#" className="abs-link"></a>
                         </div>

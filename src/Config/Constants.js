@@ -1,6 +1,6 @@
 import { uk } from "date-fns/locale";
 
-const Host = (window.location.hostname == 'localhost') ?  'http://localhost/apidesichat/public/' : 'https://api.desisexichat.com/public/';
+const Host = (window.location.hostname == 'localhost') ?  'https://api.desisexichat.com/public/' : 'https://api.desisexichat.com/public/';
 const Enviornment =  (window.location.hostname == 'localhost') ?  'local' : 'production';
 
 const Constants = {
@@ -104,9 +104,11 @@ const Constants = {
 
     countriesFlags: {
         India:'indian.png',
-        Pakisatan: 'indian.png',
+        Germany: 'germany.png',
         USA:'uk.png',
-        Russia: 'uk.png'
+        Russia: 'russia.png',
+        France: '',
+        Japan: ''
     },
     
     roles: {

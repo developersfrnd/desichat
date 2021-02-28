@@ -1,49 +1,110 @@
-import { ValidationError } from 'ajv';
 import React, { useState, useEffect } from 'react';
+import Constants from '../../../Config/Constants'
 import { useForm } from 'react-hook-form';
 import Messages from '../../../Config/Messages';
 import SubmitBtn from '../SubmitBtn';
-
-
+import ValidationError from '../ValidationError';
+import usersModel from '../../../ApiManager/user';
+import { Link, useHistory, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function PersonalInfo() {
 
     const { register, errors, handleSubmit } = useForm();
+    const [fileTypeError, setfileTypeError] = useState('')
+    const [selectedPhotos, setselectedPhotos] = useState([]);
+    const [inprogress, setinprogress] = useState(false);
+    const [countries, setcountries] = useState([]);
+    const [authUser, setauthUser] = useState('')
+    const history = useHistory();
 
-    submitEventHandler = (event) => {
-        event.preventDefault();
-        if(this.checkValidation()){
-            let formData = new FormData(document.getElementById('personalInfo'));
-            formData.append('profile_picture', this.state.selectedFile)
+    useEffect(() => {
+        setcountries(Constants.countries);
+        usersModel.getAuthUser()
+        .then(user => {
+            setauthUser(user.data.data); 
+        })
+    }, [])
 
-            this.setState({loading:true})
-            axios.post(
-                    `${Constants.apiEndPoint}users/${this.context.stateData.authUser.id}`,
-                    formData,
-                    this.axiosConfig()
-                )
-                .then( response => {
-                    let redirect = '/questionnire'
-                    if(this.props.location.search == '?edit=1'){
-                        redirect = "/profile"
-                    }
 
-                    let updatedAuthUser = {...this.context.stateData.authUser,
-                        address: response.data.data.address,
-                        city: response.data.data.city,
-                        state: response.data.data.state,
-                        country: response.data.data.country,
-                        zipcode: response.data.data.zipcode,
-                        phone: response.data.data.phone,
-                        profilePicture: `${response.data.data.profilePicture}`
-                    }
-                    this.setContextState({authUser:updatedAuthUser,redirect:`${redirect}`})
-                    this.setState({formSubmitted:true,loading:false})
-                })
-                .catch(error => {
-                    this.showMessage(error);
-                });
-        }        
+    const isFileObject = (file) => {
+        if(file && typeof file === 'object'){
+            return true;
+        }else{
+            return false;
+        }    
+    }
+
+    const isValidFile = () => (fileTypeError === '') ? true : false;
+
+    const validateImageDimensions = async (imgFile) => {
+
+        return new Promise((resolve) => {
+            let _URL = window.URL || window.webkitURL;
+            let validDimension = true;
+            let width = 0;
+            let height = 0;
+
+            let img = new Image();
+            img.src = _URL.createObjectURL(imgFile);
+            img.onload = () => {
+                width = img.width;
+                height = img.height;
+                
+                if((width < 300) || (height < 300)){
+                    validDimension = false;
+                }
+
+                resolve(validDimension); 
+            }
+        });
+    }
+
+    const onChangeImageFileInputHandler = async (event) => {
+        let valid = true;
+        let photosInput = event.target.files; 
+        
+        let file = photosInput[0];
+        if(isFileObject(file) && file.type != 'image/jpeg' && file.type != 'image/jpg' && file.type != 'image/png'){
+            valid = false;
+        }
+        
+        let isValidDimension = await validateImageDimensions(file);
+        
+        if(!valid){
+            setfileTypeError(Messages.imageFileTypeError);
+        }else if(!isValidDimension){
+            setfileTypeError(Messages.imageDimensionError);
+        }else{
+            setselectedPhotos(photosInput);
+            setfileTypeError('');   
+        }
+
+        
+    }
+
+    const submitEventHandler = (data) => {
+        
+        let qryString = window.location.search;
+        setinprogress(true);
+
+        let formData = new FormData(document.getElementById('personalInfo'));
+        
+        formData.profile_picture = data.profile_picture[0];
+        formData.id = authUser.id;
+        
+        usersModel.updateUser(formData)
+        .then(res => {
+            let pushUrl = '/questionnire'
+            
+            if(qryString && qryString == '?edit=1'){
+                pushUrl = "/profile"
+            }
+            
+            setinprogress(false);
+            history.push(pushUrl)
+        })
+        .catch(error => toast.error(error));
     }
     
     return (
@@ -55,10 +116,14 @@ function PersonalInfo() {
                         <h2 className="muellerhoff topmargin_5 bottommargin_50 highlight">Personal Information</h2>
                         
                         <form id="personalInfo" name="personalInfo" className="contact-form" method="post" onSubmit={ handleSubmit(submitEventHandler) }>
-                            <input type="hidden" name="_method" value="PUT" />
-                            <div className="form-group select-group col-md-12">
+                            <input type="hidden" name="_method" value="PUT" ref={register} />
+                            <div className="form-group col-md-12">
                                 <select className="form-control" name="country" ref={register({required:{value:true,message:Messages.isRequired}})}>
-                                    <option value="" key=""></option>
+                                    {countries.map(option => (
+                                        <option value={option.value} key={option.value} selected={(authUser.country && authUser.country == option.value) ? 'selected' : ''}>
+                                            {option.displayValue}
+                                        </option>
+                                    ))}    
                                 </select>
                                 {errors.country && <ValidationError message={errors.country.message} />}
                             </div>
@@ -67,7 +132,8 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">Address
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="address" className="form-control" placeholder="Address" ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="address" className="form-control" placeholder="Address" value={authUser.address} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <i className="rt-icon2-pen2"></i>
                                 {errors.address && <ValidationError message={errors.address.message} />}
                             </div>
 
@@ -75,7 +141,8 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">City
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="city" className="form-control" placeholder="City" ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="city" className="form-control" placeholder="City" value={authUser.city} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <i className="rt-icon2-pen2"></i>
                                 {errors.city && <ValidationError message={errors.city.message} />}
                             </div>
 
@@ -83,7 +150,8 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">State
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="state" className="form-control" placeholder="State" ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="state" className="form-control" placeholder="State" value={authUser.State} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <i className="rt-icon2-pen2"></i>
                                 {errors.state && <ValidationError message={errors.state.message} />}
                             </div>
 
@@ -91,7 +159,8 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">Zip Code
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="zipcode" className="form-control" placeholder="Zip Code" ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="zipcode" className="form-control" placeholder="Zip Code" value={authUser.zipcode} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <i className="rt-icon2-pen2"></i>
                                 {errors.zipcode && <ValidationError message={errors.zipcode.message} />}
                             </div>
 
@@ -99,7 +168,8 @@ function PersonalInfo() {
                                 <label htmlFor="phone" className="sr-only">Phone Number
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="phone" className="form-control" placeholder="Phone Number" ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="phone" className="form-control" placeholder="Phone Number" value={authUser.phone} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <i className="rt-icon2-pen2"></i>
                                 {errors.phone && <ValidationError message={errors.phone.message} />}
                             </div>
 
@@ -108,11 +178,10 @@ function PersonalInfo() {
                                     <span className="required">*</span>
                                 </label>
                                 <input type="file" 
-                                    multiple={true} 
                                     name="profile_picture" 
                                     className="form-control"
                                     onChange={onChangeImageFileInputHandler} 
-                                    ref={register({required:{value:true,message:Messages.isRequired}})} 
+                                    ref={register({required:{value:true,message:Messages.isRequired},validate:isValidFile})} 
                                 />
                                 {errors.photos && <ValidationError message={errors.photos.message} />}
                                 {(fileTypeError) ? <ValidationError message={fileTypeError} /> : ''}
