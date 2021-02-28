@@ -3,8 +3,9 @@ import { Prompt } from 'react-router';
 import { io } from 'socket.io-client';
 import usersModel from '../../ApiManager/user';
 
-const PromptPopUp = ({isDirtystatus, socket}) => {
+const PromptPopUp = ({isDirtystatus, modelroom, socket}) => {
     const [isDirty, setDirty] = useState(false)
+    const [room, setRoom] = useState(modelroom)
     useEffect(() => {
         setDirty(isDirtystatus) 
         window.addEventListener('beforeunload', alertUser)
@@ -23,7 +24,7 @@ const PromptPopUp = ({isDirtystatus, socket}) => {
        (isDirty &&
             usersModel.offlineuser()
             .then( response => {
-                socket.emit("leaveroom")
+                socket.emit("leaveroom", room)
             })
             .catch((error) => { 
                 this.showMessage(error);

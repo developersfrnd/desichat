@@ -44,7 +44,7 @@ class Board extends BaseComponent {
     }
 
     render() {
-        const socket = io.connect(EndPoint)
+        const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
         return (
             (this.state.loading) ? <Loading /> :
             <section className="ds section_padding_70 section_padding_bottom_60 columns_padding_25">
@@ -67,7 +67,7 @@ class Board extends BaseComponent {
                         <ModelSidebar profilePicture={this.state.user.profilePicture} userRole={this.state.user.role}  />                       
 					</div>
 				</div>
-                <PromptPopUp isDirtystatus = {this.state.isDirtystatus} socket={socket} />
+                <PromptPopUp isDirtystatus = {this.state.isDirtystatus} modelroom={this.state.user.id} socket={socket} />
             </section>
         )
     }
