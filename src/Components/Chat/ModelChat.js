@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client';
 import usersModel from '../../ApiManager/user';
-const EndPoint = 'http://chatserver.desisexichat.com:8004'
+import Constants from '../../Config/Constants';
+const EndPoint = Constants.chatServer
 let socket
 const ModelChat = ({socket, props, login_user}) => {
     let guestuser = 'guest-'+generate(6)

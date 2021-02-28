@@ -651,7 +651,8 @@ p + .progress {
   border-bottom-color: transparent;
   margin-top: 0px;
   margin-bottom: -1px;
-  width: 717px;
+  width: 100%;
+  background: #1a1a1a;
 }
 
 .nav-tabs > li > a {
@@ -4097,6 +4098,12 @@ a.logo.vertical_logo img {
 }
 .profileContainer {
   margin-bottom: 15px;
+}
+.profileContainer .theme_buttons a,
+.profileContainer .theme_button {
+  min-width: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 /***** custom css ends ***********/
@@ -11510,4 +11517,14 @@ isotope portfolio and gallery pos
 .login-dropdown .dropdown-menu a,
 .cart-dropdown .dropdown-menu a {
   color: rgb(224, 0, 108);
+}
+
+/* item media links */
+.video-media {
+  position: relative;
+  overflow: hidden;
+}
+.video-media img {
+  max-width: 100%;
+  width: 100%;
 }

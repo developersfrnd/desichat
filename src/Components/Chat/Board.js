@@ -9,8 +9,9 @@ import PromptPopUp from './PromptPopUp';
 import PublicChat from './PublicChat';
 import VideoChat from './VideoChat';
 import io from "socket.io-client"
-const EndPoint = "https://chatserver.desisexichat.com"
-//const EndPoint = "http://localhost:8004"
+import Constants from '../../Config/Constants';
+//const EndPoint = "https://chatserver.desisexichat.com"
+const EndPoint = Constants.chatServer
 class Board extends BaseComponent {
     
     static contextType = AppContext;
