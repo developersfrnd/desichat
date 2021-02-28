@@ -12,13 +12,16 @@ function PageTopLine() {
 
 	useEffect(() => {
 		let authToken = usersModel.authToken();
+		let isMounted = true;
 		if (authToken) {
 			setisAuthenticated(true);
 
 			usersModel.getAuthUser()
 				.then(user => {
-					setauthUser(user.data.data);
-					// setloading(false);
+					if (isMounted) {
+						setauthUser(user.data.data);
+						setloading(false);
+					}	
 				})
 				.catch(error => {
 					console.log(error);
@@ -27,6 +30,9 @@ function PageTopLine() {
 			setloading(false);
 		}
 
+		return () => {
+			isMounted = false;
+		} 
 
 	}, [])
 

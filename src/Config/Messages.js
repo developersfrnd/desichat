@@ -2,6 +2,7 @@ const Messages = {
     'Loggedout' : 'You are successfully LoggedOut', 
     'fileSizeError': 'File size should not be greater then 2 MB',
     'imageFileTypeError': 'File type should be in jpeg, png',
+    'imageDimensionError': 'File should have min dimension 300X300',
     'videoFileTypeError': 'File type should be MP4',
     'minLength':'Value should be atleast 3 char long',
     'isRequired': 'Field is required',

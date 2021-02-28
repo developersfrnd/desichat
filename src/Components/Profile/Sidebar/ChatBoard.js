@@ -57,7 +57,7 @@ function ChatBoard(props) {
                             <span className="grey"></span>
                         </li>
                         <li>
-                            <Link to="/chat">Start Chat</Link>
+                            <Link to="/Profile">Leave Chat</Link>
                             <span className="grey"></span>
                         </li>
                     </ul>

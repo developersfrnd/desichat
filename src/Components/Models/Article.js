@@ -25,7 +25,7 @@ const Article = ({ props }) => {
     let rc
     const iceServers = {
         iceServers: [
-            { 
+            {
                 "urls": "stun:stun.l.google.com:19302",
             }
         ],
@@ -37,7 +37,7 @@ const Article = ({ props }) => {
 
         socket.on("offer", (id, description) => {
             console.log("Get offer from broadcaster")
-            rtcPeerConnections[id] = new RTCPeerConnection(iceServers)	
+            rtcPeerConnections[id] = new RTCPeerConnection(iceServers)
             rtcPeerConnections[id]
             .setRemoteDescription(description)
             .then(e => console.log('remote description'))
@@ -51,7 +51,7 @@ const Article = ({ props }) => {
                 document.querySelector("video").srcObject = e.streams[0]
             }
             rtcPeerConnections[id].onicecandidate = e => {
-                if (e.candidate){
+                if (e.candidate) {
                     socket.emit("candidate", id, e.candidate)
                 }
             }
@@ -59,8 +59,8 @@ const Article = ({ props }) => {
 
         socket.on('candidate', (id, candidate) => {
             rtcPeerConnections[id].addIceCandidate(new RTCIceCandidate(candidate))
-            .catch( e => console.error(e))
-        })       
+                .catch(e => console.error(e))
+        })
 
         socket.on("broadcaster", () => {
             socket.emit("watcher", room)
@@ -81,12 +81,12 @@ const Article = ({ props }) => {
         //     //delete peerConnections[id]
         // })
 
-    },[room])
+    }, [room])
 
     return (
         <article className="vertical-item post format-video with_background">
             <div className="entry-thumbnail">
-                <div className="entry-meta-corner">
+                {/* <div className="entry-meta-corner">
                     <span className="date">
                         <time dateTime="2016-08-01T15:05:23+00:00" className="entry-date">
                             <strong>{new Date().getDate()}</strong>
@@ -99,18 +99,18 @@ const Article = ({ props }) => {
                             <i className="rt-icon2-bubble highlight"></i> 425
                         </a>
                     </span>
-                </div>
+                </div> */}
                 <div className="embed-responsive embed-responsive-3by2">
                     {
                         (token) ? <Call token={token} channel={channel} /> : <img src={props.profilePicture} alt={props.name} />
-                    }                    
+                    }
                     <video id="viewer" autoPlay></video>
 
                 </div>
             </div>
 
-            <PromptPopUp isDirtystatus = {isDirty} socket={socket} room={room} />
-               
+            <PromptPopUp isDirtystatus={isDirty} socket={socket} room={room} />
+
         </article>
     )
 }

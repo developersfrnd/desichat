@@ -45,16 +45,16 @@ function Model() {
 
     return (
         (loading) ? <Loading /> :
-            <section className="ds section_padding_top_20 section_padding_bottom_50 columns_padding_25">
+            <section className="ds section_padding_top_20 section_padding_bottom_50">
                 <div className="container">
                     <Filters />
                     {isuser &&
-                        <div className="row">
-                            <div className="col-sm-7 col-md-8 col-lg-8 modelPictureContainer">
+                        <div className="topChatontainerrow">
+                            <div className="modelPictureContainer">
                                 <Article socket={socket} props={model} />
                             </div>
 
-                            <div class="col-sm-4 chatboxcontainer">
+                            <div class="chatboxcontainer">
                                 <ModelChat socket={socket} props={model} login_user={login_user} />
                             </div>
                         </div>
