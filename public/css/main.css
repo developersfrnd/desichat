@@ -624,7 +624,15 @@ p + .progress {
 .headingtag {
   font-size: 26px;
 }
-.headingtag.headingBg {background:#000; padding:15px; margin-bottom:15px}
+.headingtag.headingBg {
+  background: #000;
+  padding: 15px;
+  margin-bottom: 15px;
+  font-size: 26px;
+}
+.widget_popular_entries .profileContainer:last-child {
+  margin-bottom:0
+}
 .topChatontainerrow {
   display: flex;
   justify-content: space-between;
@@ -7304,7 +7312,7 @@ aside .widget_tag_cloud a:hover {
 }
 .contact-form input[type="text"] {
   width: 100%;
-  padding-left:15px
+  padding-left: 15px;
 }
 .chatboxcontainer section {
   height: 100%;
@@ -8350,7 +8358,6 @@ h2 .muellerhoff {
 .item-media {
   position: relative;
   overflow: hidden;
-   
 }
 .item-media img {
   max-width: 100%;
