@@ -18,8 +18,8 @@ function Login() {
     const history = useHistory()
     const authUserContext = useContext(AppContext)
 
-    useEffect( async () => {
-        let authToken = await usersModel.authToken()
+    useEffect(() => {
+        let authToken = usersModel.authToken();
         if(authToken){
             history.push('/profile');
         }
