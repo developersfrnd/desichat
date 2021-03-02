@@ -18,11 +18,16 @@ function Login() {
     const history = useHistory()
     const authUserContext = useContext(AppContext)
 
-    
+    useEffect( async () => {
+        let authToken = await usersModel.authToken()
+        if(authToken){
+            history.push('/profile');
+        }
+    }, [])
     
     const submitEventHandler = (data) => {
         setinProgress(true);
-        usersModel.loginUser(data)
+        usersModel.loginUser(data)/profile
             .then((res) => {
                 authModel.setAuthToken(res.data.data)
                 authUserContext.handleEvent({authUser:res.data.data})
@@ -35,7 +40,7 @@ function Login() {
     }
 
     return (
-        (authModel.getAuthToken()) ? <Redirect to="/profile" /> : 
+        (authModel.getAuthToken()) ? <Redirect to="" /> : 
         <section className="ds section_padding_70">
                 <div className="container">
 					<div className="row">
