@@ -24,9 +24,12 @@ const ModelChat = ({ socket, props, login_user }) => {
 
     useEffect(() => {
         socket.on('receivemessage', ({ name, message }) => {
-            setChat([...chat, { name, message }])
-            var elem = document.getElementById('chatmessage');
-            elem.scrollTop = elem.scrollHeight;
+            if (message){
+                console.log("=====>" + message)
+                setChat([...chat, { name, message }])
+                var elem = document.getElementById('chatmessage');
+                elem.scrollTop = elem.scrollHeight;
+            }
         })
     }, [chat])
 

@@ -20,7 +20,7 @@ const Article = ({ props }) => {
     const rtcPeerConnections = {}
 
     const EndPoint = Constants.chatServer
-    const socket = io.connect(EndPoint)
+    const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
 
     let rc
     const iceServers = {
@@ -32,27 +32,23 @@ const Article = ({ props }) => {
     }
 
     useEffect(() => {
-        console.log("================")
+        
         socket.emit("register as viewer", room);
 
         socket.on("offer", (id, description) => {
             console.log("Get offer from broadcaster")
             rtcPeerConnections[id] = new RTCPeerConnection(iceServers)
             rtcPeerConnections[id]
-                .setRemoteDescription(description)
-                .then(() => rtcPeerConnections[id].createAnswer())
-                .then(answer => rtcPeerConnections[id].setLocalDescription(answer))
-                .then(() => {
-                    socket.emit("answer", room, id, rtcPeerConnections[id].localDescription)
-                })
-            rtcPeerConnections[id].ontrack = e => {
+            .setRemoteDescription(description)
+            .then(e => console.log('remote description'))
+            .then(() => rtcPeerConnections[id].createAnswer()).catch(error => console.log(error))
+            .then(answer => rtcPeerConnections[id].setLocalDescription(answer)).catch(error => console.log(error))
+            .then(() => {
+                socket.emit("answer", room, id, rtcPeerConnections[id].localDescription)
+            }).catch(error => console.log(error))
+            rtcPeerConnections[id].ontrack = e => {          
                 console.log(e.streams[0])
                 document.querySelector("video").srcObject = e.streams[0]
-                // var video = document.querySelector('video');
-                // video.srcObject = e.streams[0];
-                // video.onloadedmetadata = function(e) {
-                //     video.play();
-                // };
             }
             rtcPeerConnections[id].onicecandidate = e => {
                 if (e.candidate) {
@@ -68,6 +64,14 @@ const Article = ({ props }) => {
 
         socket.on("broadcaster", () => {
             socket.emit("watcher", room)
+        })
+
+        socket.on("brodcasterleave", (brodcastersocketid) => {
+            if(rtcPeerConnections[brodcastersocketid]){
+                rtcPeerConnections[brodcastersocketid].close()
+                console.log(`${brodcastersocketid} model  has been left`)
+                delete rtcPeerConnections[brodcastersocketid]
+            }
         })
 
         // socket.on('disconnectPeer', (id) => {

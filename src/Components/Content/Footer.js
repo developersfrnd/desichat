@@ -22,7 +22,6 @@ function Footer() {
                                 <div class="footer-menu">
                                     <ul>
                                         <li><a href="#">Favorites</a></li>
-                                        <li><a href="#">Fanclubs</a></li>
                                         <li><a href="#">Videos</a></li>
                                         <li><a href="#">Support</a></li>
                                     </ul>

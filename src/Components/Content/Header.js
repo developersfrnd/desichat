@@ -24,9 +24,6 @@ const pageHeader = (props) => {
 										<Link to="/login">Favorites</Link>
 									</li>
 									<li>
-										<Link to="/login">Fanclubs</Link>
-									</li>
-									<li>
 										<Link to="/videos">Videos</Link>
 									</li>
 									<li>

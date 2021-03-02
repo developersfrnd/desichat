@@ -7,7 +7,7 @@ const VideoChat = ({modelname, modelroom}) => {
     const [room, setRoom] = useState(modelroom)
     const [name, setName] = useState(modelname)
     const [stream, setStream] = useState()
-    const peerConnections = {}
+    const lcpeerConnections = {}
     const iceServers = {
         iceServers: [
             { 
@@ -19,7 +19,7 @@ const VideoChat = ({modelname, modelroom}) => {
 
 
     const EndPoint = Constants.chatServer
-    const socket = io.connect(EndPoint)
+    const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
     
     useEffect(() => { 
         navigator.mediaDevices.getUserMedia({video:true, audio:true}).then(stream => {
@@ -35,8 +35,8 @@ const VideoChat = ({modelname, modelroom}) => {
 
         socket.on('watcher', (id) => {
             console.log("New watcher want to connect")
-            peerConnections[id] = new RTCPeerConnection(iceServers) 
-            lc = peerConnections[id]
+            lcpeerConnections[id] = new RTCPeerConnection(iceServers) 
+            lc = lcpeerConnections[id]
                 let stream = document.getElementById("sender").srcObject
                 stream.getTracks().forEach(track => lc.addTrack(track, stream));
                 lc.onicecandidate = e => {
@@ -57,21 +57,31 @@ const VideoChat = ({modelname, modelroom}) => {
         socket.on('answer', (id, description) => {
             console.log("Set answer")
             console.log(description)
-            peerConnections[id].setRemoteDescription(description)
+            lcpeerConnections[id].setRemoteDescription(description)
         })
         
         socket.on('candidate', (id, candidate) => {
-            peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate))
+            lcpeerConnections[id].addIceCandidate(new RTCIceCandidate(candidate))
                 .catch( e => console.error(e))
         })
 
         socket.on('watcherleave', (id) => { 
-            if(peerConnections[id])  {         
-                peerConnections[id].close()
-                delete peerConnections[id]                
+            if(lcpeerConnections[id])  {         
+                lcpeerConnections[id].close()
+                delete lcpeerConnections[id]                
                 console.log(`${id} is disconnect`)
             }
-        })         
+        })
+        
+        socket.on('brodcasterleave', () => { 
+            console.log("close.....")
+            if (Object.keys(lcpeerConnections).length){
+                Object.keys(lcpeerConnections).forEach(function(key) {
+                    lcpeerConnections[key].close()
+                });
+            }
+        })
+             
         
     },[modelroom])
       
@@ -85,7 +95,7 @@ const VideoChat = ({modelname, modelroom}) => {
                     <div className="col-md-12">
                         <div className="video-media">
                             <div className="item-content with_padding">
-                                <video id="sender" playsInline autoPlay></video>
+                                <video id="sender" playsInline autoPlay muted></video>
                             </div>
                         </div>
                     </div>

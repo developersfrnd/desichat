@@ -15,7 +15,7 @@ import AsideModels from '../../../Components/Models/AsideModels';
 import Constants from '../../../Config/Constants';
 
 const EndPoint = Constants.chatServer
-const socket = io.connect(EndPoint)
+const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
 
 function Model() {
 
