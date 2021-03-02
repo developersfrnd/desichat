@@ -631,7 +631,7 @@ p + .progress {
   font-size: 26px;
 }
 .widget_popular_entries .profileContainer:last-child {
-  margin-bottom:0
+  margin-bottom: 0;
 }
 .topChatontainerrow {
   display: flex;
@@ -7304,9 +7304,10 @@ aside .widget_tag_cloud a:hover {
 .contact-form {
   position: relative;
   z-index: 3;
+}
+.contact-form.messageChatBelow {
   display: flex;
 }
-
 .contact-form textarea {
   max-height: 140px;
 }
