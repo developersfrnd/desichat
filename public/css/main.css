@@ -11558,8 +11558,9 @@ isotope portfolio and gallery pos
   padding: 0;
 }
 .commentRow .messageRow {
-  padding: 0 0 15px;
-  border-bottom: 1px solid #666;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px 15px;
+  margin-bottom: 1px;
 }
 .commentRow .messageRow .headingRow {
   padding: 0;
