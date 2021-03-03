@@ -7308,18 +7308,27 @@ aside .widget_tag_cloud a:hover {
 .contact-form.messageChatBelow {
   display: flex;
 }
+.commentsContainer .comments-add {
+  max-width: 400px;
+}
+.commentsContainer .commentPadding {
+  padding-left: 15px;
+}
+.contact-form.messageChatBelow input[type="text"] {
+  padding-left: 15px;
+}
 .contact-form textarea {
   max-height: 140px;
 }
 .contact-form input[type="text"] {
   width: 100%;
-  padding-left: 15px;
 }
 .chatboxcontainer section {
   height: 100%;
 }
 .chatboxcontainer section .item-media {
   height: calc(100% - 41px);
+  max-height: unset;
 }
 .contact-form.parallax {
   padding: 50px 50px 35px;
@@ -8359,7 +8368,15 @@ h2 .muellerhoff {
 .item-media {
   position: relative;
   overflow: hidden;
+  max-height: 280px;
 }
+.loadingContainer {
+  padding: 50px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
 .item-media img {
   max-width: 100%;
   width: 100%;
@@ -11526,11 +11543,41 @@ isotope portfolio and gallery pos
   font-weight: 400;
   font-size: 15px;
   min-width: 230px;
-  box-shadow: 2px 2px 4px 0px #575757;
+  border: 1px solid #333;
   z-index: 999999;
-  color: #e0006c;
+  color: #fff;
   padding: 0;
   margin-top: 0;
+  background: rgb(26, 26, 26);
+}
+.commentRow {
+  padding: 0 0 25px;
+}
+.commentsContainer .headingtag {
+  margin: 0 0 15px;
+  padding: 0;
+}
+.commentRow .messageRow {
+  padding: 0 0 15px;
+  border-bottom: 1px solid #666;
+}
+.commentRow .messageRow .headingRow {
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+}
+.commentRow .messageRow .message {
+  padding: 0;
+  margin: 0;
+}
+.commentRow .messageRow .name {
+  color: #e0006c;
+  font-size: 20px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+.commentRow .messageRow .vote {
+  padding-left: 10px;
 }
 .login-dropdown .dropdown-menu.topSignupNav ul {
   list-style: none;
@@ -11538,7 +11585,7 @@ isotope portfolio and gallery pos
   margin: 0;
 }
 .login-dropdown .dropdown-menu.topSignupNav ul li {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #333;
 }
 .login-dropdown .dropdown-menu.topSignupNav ul li a {
   padding: 10px 15px;
@@ -11547,7 +11594,7 @@ isotope portfolio and gallery pos
 
 .login-dropdown .dropdown-menu a,
 .cart-dropdown .dropdown-menu a {
-  color: rgb(224, 0, 108);
+  color: #fff;
 }
 
 /* item media links */
