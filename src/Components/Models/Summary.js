@@ -2,6 +2,7 @@ import React from 'react';
 import Profile from './TabsContent/Profile'
 import Photos from '../../Containers/Lists/Models/TabContents/Photos'
 import Videos from '../../Containers/Lists/Models/TabContents/Videos'
+import Comments from '../../Containers/Lists/Models/TabContents/Comments'
 
 const summary = (props) => {
     return (
@@ -38,6 +39,12 @@ const summary = (props) => {
 
                             <div className="tab-pane fade in" id="tab3">
                                 <Videos />
+                            </div>
+                            <div className="tab-pane fade in" id="tab4">
+                                Shows Tab
+                            </div>
+                            <div className="tab-pane fade in" id="tab5">
+                                <Comments />
                             </div>
                         </div>
                     </div>

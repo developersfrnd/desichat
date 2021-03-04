@@ -63,7 +63,7 @@ const ModelChat = ({ socket, props, login_user }) => {
                     </ul>
                 </div>
             </div>
-            <form className="contact-form" method="post" onSubmit={onMessageSubmit}>
+            <form className="contact-form messageChatBelow" method="post" onSubmit={onMessageSubmit}>
                 <input type="hidden" name="_method" value="PUT" />
                 <input
                     type="text"
