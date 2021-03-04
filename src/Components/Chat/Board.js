@@ -44,7 +44,7 @@ class Board extends BaseComponent {
     }
 
     render() {
-        const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
+        const socket = io.connect(EndPoint, {transports: [ 'websocket' ], verify:true})
         return (
             (this.state.loading) ? <Loading /> :
             <section className="ds section_padding_70 section_padding_bottom_60 columns_padding_25">

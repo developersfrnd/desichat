@@ -7,18 +7,18 @@ import { useRef } from 'react/cjs/react.development';
 import Peer from 'simple-peer'
 import io from "socket.io-client";
 import PromptPopUp from './PromptPopUp';
+import { constant } from 'lodash';
 
 const Article = ({ props }) => {
 
     const [token, settoken] = useState(null);
     const [channel, setchannel] = useState(null)
-    const [stream, setStream] = useState()
     const [isDirty, setDirty] = useState(true)
     const [room, setRoom] = useState(props.id)
     const [callerSignal, setCallerSignal] = useState();
     const partnerVideo = React.useRef()
     const rtcPeerConnections = {}
-
+    let directpeer
     const EndPoint = Constants.chatServer
     const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
 
@@ -48,7 +48,7 @@ const Article = ({ props }) => {
             }).catch(error => console.log(error))
             rtcPeerConnections[id].ontrack = e => {          
                 console.log(e.streams[0])
-                document.querySelector("video").srcObject = e.streams[0]
+                document.getElementById("viewer").srcObject = e.streams[0]
             }
             rtcPeerConnections[id].onicecandidate = e => {
                 if (e.candidate) {
@@ -70,18 +70,66 @@ const Article = ({ props }) => {
             if(rtcPeerConnections[brodcastersocketid]){
                 rtcPeerConnections[brodcastersocketid].close()
                 console.log(`${brodcastersocketid} model  has been left`)
+                directpeer.close()
                 delete rtcPeerConnections[brodcastersocketid]
+                document.getElementById("viewer").srcObject = null
             }
         })
+        
+        socket.on('iniatevideo', (id) => {
+            document.getElementById("livevideochat").style.display = 'none'
+            document.getElementById("livevideochatmessage").style.display = 'none'
+            var constraints = {
+                audio: false,
+                video: true
+            };
+            navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+                directpeer = new RTCPeerConnection()
+                document.getElementById("localvideo").srcObject = stream
+                stream.getTracks().forEach(track => directpeer.addTrack(track, stream));
+                directpeer.onicecandidate = e => {
+                    if (e.candidate) {
+                        socket.emit("directcandidate", id, e.candidate)
+                    }
+                }
+                directpeer.onnegotiationneeded = () => {
+                    directpeer.createOffer()
+                    .then(offer => directpeer.setLocalDescription(offer)).catch( error => console.log(error))
+                    .then( () => {
+                        console.log("Direct offer genrate "+directpeer.localDescription)
+                        socket.emit("videochatinitate", room, directpeer.localDescription)
+                    })
+                }                
+            })
+        })
 
-        // socket.on('disconnectPeer', (id) => {
-        //     console.log("peer connection close")
-        //     socket.close();
-        //     rc.close()
-        //     //delete peerConnections[id]
+        socket.on('directanswer', (id, description) => {
+            console.log("Set direct remote description" + description)
+            directpeer.setRemoteDescription(description)
+        })
+        
+        socket.on('directcandidate', (id, candidate) => {
+            directpeer.addIceCandidate(new RTCIceCandidate(candidate))
+                .catch( e => console.error(e))
+        })
+
+        socket.on('deniedchat', (id) => {
+            document.getElementById("livevideochat").style.display = 'block'
+            document.getElementById("livevideochatmessage").style.display = 'none'
+        })
+        
+        // socket.on('pausevideo', (viewer, room) => {
+        //     document.getElementById("livevideochat").style.display = 'block'
+        //     document.getElementById("livevideochatmessage").style.display = 'none'
         // })
 
     }, [room])
+
+    function onLiveVideoChat() {
+        document.getElementById("livevideochat").style.display = 'none'
+        document.getElementById("livevideochatmessage").style.display = 'block'
+        socket.emit("privatevideo", room)        
+    }
 
     return (
         <article className="vertical-item post format-video with_background">
@@ -105,7 +153,13 @@ const Article = ({ props }) => {
                         (token) ? <Call token={token} channel={channel} /> : <img src={props.profilePicture} alt={props.name} />
                     }
                     <video id="viewer" autoPlay></video>
-
+                    <video id="localvideo" className="directvideo" autoPlay></video>
+                </div>
+                <div className="localuser" id="livevideochat">
+                    <button class="theme_button color1" onClick={onLiveVideoChat}>Live Video Chat</button>
+                </div>
+                <div className="localuser" id="livevideochatmessage" style={{display: 'none' }}>
+                    Waiting for response .....
                 </div>
             </div>
 

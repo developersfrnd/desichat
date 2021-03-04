@@ -11558,3 +11558,15 @@ isotope portfolio and gallery pos
   max-width: 100%;
   width: 100%;
 }
+
+.localuser{
+  width: 100%;
+  text-align: center;
+}
+
+.directvideo{
+  position: absolute !important;
+  width: 30% !important;
+  height: 40% !important;  
+} 
+
