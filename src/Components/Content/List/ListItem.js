@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom'
 
 const listItem = (props) => {
     const profilePicture = (props.profilePicture) ? props.profilePicture : "img/no-image.jpg"
+    const heartPicture = (props.profilePicture) ? "images/heart.svg" : "images/heart-filled.svg";
     const countryFlag = (props.country) ? `<img src="images/flag/${props.country}.png" style={{width:"10%"}} />` : null
 
     return (
         <div className="isotope-item col-lg-3 col-md-4 col-sm-4 fashion">
             <div className="vertical-item content-absolute">
+                <Link className="addTofavourites"><img src={heartPicture} alt="" /></Link>
                 <div className="item-media">
                     <img src={profilePicture} alt="" />
                     <div className="media-links"></div>

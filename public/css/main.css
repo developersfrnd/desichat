@@ -11607,3 +11607,10 @@ isotope portfolio and gallery pos
   max-width: 100%;
   width: 100%;
 }
+.addTofavourites {
+  width: 25px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 9;
+}
