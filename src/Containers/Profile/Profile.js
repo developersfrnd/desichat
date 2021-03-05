@@ -7,6 +7,7 @@ import Constants from '../../Config/Constants';
 import Loading from '../../Components/Loaders/Loading';
 import Aux from '../../hoc/Aux';
 import { toast } from 'react-toastify';
+import Sidebar from '../../Components/Profile/Sidebar';
 
 
 function Profile() {

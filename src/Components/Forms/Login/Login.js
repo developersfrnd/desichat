@@ -27,7 +27,7 @@ function Login() {
     
     const submitEventHandler = (data) => {
         setinProgress(true);
-        usersModel.loginUser(data)/profile
+        usersModel.loginUser(data)
             .then((res) => {
                 authModel.setAuthToken(res.data.data)
                 authUserContext.handleEvent({authUser:res.data.data})
