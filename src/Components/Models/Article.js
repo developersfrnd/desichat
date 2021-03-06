@@ -15,6 +15,7 @@ const Article = ({ props }) => {
     const [channel, setchannel] = useState(null)
     const [isDirty, setDirty] = useState(true)
     const [room, setRoom] = useState(props.id)
+    const [liveVideo, setliveVideo] = useState(false)
     const [callerSignal, setCallerSignal] = useState();
     const partnerVideo = React.useRef()
     const rtcPeerConnections = {}
@@ -25,11 +26,20 @@ const Article = ({ props }) => {
     let rc
     const iceServers = {
         iceServers: [
-            {
-                "urls": "stun:stun.l.google.com:19302",
+            { 
+                "urls": [
+                        "stun:stun.l.google.com:19302",
+                        "stun:stun1.l.google.com:19302",
+                        "stun:stun2.l.google.com:19302",
+                        "stun:stun3.l.google.com:19302",
+                        "stun:stun4.l.google.com:19302"
+                ]
             }
         ],
     }
+    const viewer = React.useRef()
+    const livestream = React.useRef()
+    
 
     useEffect(() => {
         
@@ -48,7 +58,7 @@ const Article = ({ props }) => {
             }).catch(error => console.log(error))
             rtcPeerConnections[id].ontrack = e => {          
                 console.log(e.streams[0])
-                document.getElementById("viewer").srcObject = e.streams[0]
+                viewer.current.srcObject = e.streams[0]
             }
             rtcPeerConnections[id].onicecandidate = e => {
                 if (e.candidate) {
@@ -76,31 +86,38 @@ const Article = ({ props }) => {
             }
         })
         
+    }, [room])
+
+
+    useEffect(() => {  
+        
         socket.on('iniatevideo', (id) => {
             document.getElementById("livevideochat").style.display = 'none'
             document.getElementById("livevideochatmessage").style.display = 'none'
             var constraints = {
-                audio: false,
+                audio: true,
                 video: true
             };
-            navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-                directpeer = new RTCPeerConnection()
-                document.getElementById("localvideo").srcObject = stream
+            directpeer = new RTCPeerConnection()
+            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio:true}).then(stream => {
+                livestream.current.srcObject = stream           
+                //const stream = livestream.current.captureStream();
+                console.log(stream)
                 stream.getTracks().forEach(track => directpeer.addTrack(track, stream));
-                directpeer.onicecandidate = e => {
-                    if (e.candidate) {
-                        socket.emit("directcandidate", id, e.candidate)
-                    }
-                }
-                directpeer.onnegotiationneeded = () => {
-                    directpeer.createOffer()
-                    .then(offer => directpeer.setLocalDescription(offer)).catch( error => console.log(error))
-                    .then( () => {
-                        console.log("Direct offer genrate "+directpeer.localDescription)
-                        socket.emit("videochatinitate", room, directpeer.localDescription)
-                    })
-                }                
             })
+            directpeer.onicecandidate = e => {
+                if (e.candidate) {
+                    socket.emit("directcandidate", id, e.candidate)
+                }
+            }
+            directpeer.onnegotiationneeded = () => {
+                directpeer.createOffer()
+                .then(offer => directpeer.setLocalDescription(offer)).catch( error => console.log(error))
+                .then( () => {
+                    console.log("Direct offer genrate "+directpeer.localDescription)
+                    socket.emit("videochatinitate", room, directpeer.localDescription)
+                })
+            }            
         })
 
         socket.on('directanswer', (id, description) => {
@@ -116,18 +133,15 @@ const Article = ({ props }) => {
         socket.on('deniedchat', (id) => {
             document.getElementById("livevideochat").style.display = 'block'
             document.getElementById("livevideochatmessage").style.display = 'none'
+            setliveVideo(false)
         })
         
-        // socket.on('pausevideo', (viewer, room) => {
-        //     document.getElementById("livevideochat").style.display = 'block'
-        //     document.getElementById("livevideochatmessage").style.display = 'none'
-        // })
-
-    }, [room])
+    }, [liveVideo])
 
     function onLiveVideoChat() {
         document.getElementById("livevideochat").style.display = 'none'
         document.getElementById("livevideochatmessage").style.display = 'block'
+        setliveVideo(true)
         socket.emit("privatevideo", room)        
     }
 
@@ -152,8 +166,10 @@ const Article = ({ props }) => {
                     {
                         (token) ? <Call token={token} channel={channel} /> : <img src={props.profilePicture} alt={props.name} />
                     }
-                    <video id="viewer" autoPlay></video>
-                    <video id="localvideo" className="directvideo" autoPlay></video>
+                    <video ref={viewer} autoPlay></video>
+                    <video ref={livestream} className="directvideo" autoPlay muted>                        
+                        <p>This browser does not support the video element.</p>
+                    </video>
                 </div>
                 <div className="localuser" id="livevideochat">
                     <button class="theme_button color1" onClick={onLiveVideoChat}>Live Video Chat</button>

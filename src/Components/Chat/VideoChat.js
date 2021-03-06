@@ -6,31 +6,40 @@ import Constants from '../../Config/Constants';
 const VideoChat = ({modelname, modelroom}) => {
     const [room, setRoom] = useState(modelroom)
     const [name, setName] = useState(modelname)
-    const [stream, setStream] = useState()
     const [currentviewer, setcurrentviewer] = useState('')
     const [broadcasterroom, setbroadcasterroom] = useState('')
     const [livevideostatus, setlivevideostatus] = useState(false)
+    const sendervideo = React.useRef()
+    const livestream = React.useRef()
     const iceServers = {
         iceServers: [
             { 
-            "urls": "stun:stun.l.google.com:19302",
+                "urls": [
+                        "stun:stun.l.google.com:19302",
+                        "stun:stun1.l.google.com:19302",
+                        "stun:stun2.l.google.com:19302",
+                        "stun:stun3.l.google.com:19302",
+                        "stun:stun4.l.google.com:19302"
+                ]
             }
         ],
     }
+    
     const EndPoint = Constants.chatServer
     const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
     const lcpeerConnections = {}
     let lc
     let directpeer
+
     useEffect(() => { 
-        navigator.mediaDevices.getUserMedia({video:true, audio:true}).then(stream => {
+        navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio:true}).then(stream => {
             if (window.stream) {
                 window.stream.getTracks().forEach(track => {
                 track.stop();
                 });
             }
-            setStream(stream)
-            document.getElementById("sender").srcObject = stream
+            console.log(stream)
+            sendervideo.current.srcObject = stream
             socket.emit("start", room)
         })
 
@@ -38,8 +47,8 @@ const VideoChat = ({modelname, modelroom}) => {
             console.log("New watcher want to connect")
             lc = new RTCPeerConnection(iceServers) 
             lcpeerConnections[id] = lc
-                let stream = document.getElementById("sender").srcObject
-                stream.getTracks().forEach(track => lc.addTrack(track, stream));
+                const localstream = sendervideo.current.srcObject
+                localstream.getTracks().forEach(track => lc.addTrack(track, localstream));
                 lc.onicecandidate = e => {
                     if (e.candidate) {                        
                         socket.emit("candidate", id, e.candidate)
@@ -108,21 +117,22 @@ const VideoChat = ({modelname, modelroom}) => {
             }
             document.getElementById("videochatpermission").style.display = 'none'
             console.log("Get direct offer from viewer("+id+") and offer is " + description)
-            lcpeerConnections[id] = new RTCPeerConnection(iceServers)
-            lcpeerConnections[id]
+            directpeer = new RTCPeerConnection(iceServers)
+            directpeer
             .setRemoteDescription(description)
             .then(e => console.log('Set direct remote description'))
-            .then(() => lcpeerConnections[id].createAnswer()).catch(error => console.log(error))
-            .then(answer => lcpeerConnections[id].setLocalDescription(answer)).catch(error => console.log(error))
+            .then(() => directpeer.createAnswer()).catch(error => console.log(error))
+            .then(answer => directpeer.setLocalDescription(answer)).catch(error => console.log(error))
             .then(() => {
-                console.log("Direct answer genrate from broadcaster" + lcpeerConnections[id].localDescription)
-                socket.emit("directanswer", room, id, lcpeerConnections[id].localDescription)
+                console.log("Direct answer genrate from broadcaster" + directpeer.localDescription)
+                socket.emit("directanswer", room, id, directpeer.localDescription)
             }).catch(error => console.log(error))
-            lcpeerConnections[id].ontrack = e => {          
+            directpeer.ontrack = e => {   
+                console.log("Sender geting stream from viewer")       
                 console.log(e.streams[0])
-                document.getElementById("localvideo").srcObject = e.streams[0]
+                livestream.current.srcObject = e.streams[0]
             }
-            lcpeerConnections[id].onicecandidate = e => {
+            directpeer.onicecandidate = e => {
                 if (e.candidate) {
                     socket.emit("directcandidate", id, e.candidate)
                 }
@@ -130,7 +140,7 @@ const VideoChat = ({modelname, modelroom}) => {
         })
 
         socket.on('directcandidate', (id, candidate) => {
-            lcpeerConnections[id].addIceCandidate(new RTCIceCandidate(candidate))
+            directpeer.addIceCandidate(new RTCIceCandidate(candidate))
                 .catch( e => console.error(e))
         })            
         
@@ -142,6 +152,7 @@ const VideoChat = ({modelname, modelroom}) => {
             socket.emit("acceptchat", currentviewer)
         }else{
             socket.emit("deniedchat", currentviewer)
+            document.getElementById("videochatpermission").style.display = 'none'
         }
     }   
 
@@ -152,8 +163,8 @@ const VideoChat = ({modelname, modelroom}) => {
                     <div className="col-md-12">
                         <div className="video-media">
                             <div className="item-content with_padding">
-                                <video className="directvideo" id="localvideo" playsInline autoPlay muted ></video>
-                                <video id="sender" playsInline autoPlay muted></video>                                
+                                <video className="directvideo" ref={livestream} playsInline autoPlay ></video>
+                                <video ref={sendervideo} playsInline autoPlay muted></video>                                
                             </div>
                             <div className="localuser" id="videochatpermission" style={{display: 'none' }}>
                                  <button class="theme_button color1" onClick={e => onStartVideoChat(e, "Yes")}>Yes</button>
