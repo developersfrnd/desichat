@@ -15,9 +15,9 @@ const Article = ({ props }) => {
     const [channel, setchannel] = useState(null)
     const [isDirty, setDirty] = useState(true)
     const [room, setRoom] = useState(props.id)
-    const [liveVideo, setliveVideo] = useState(false)
     const [callerSignal, setCallerSignal] = useState();
     const partnerVideo = React.useRef()
+    const liveVideo = React.useRef(false)
     const rtcPeerConnections = {}
     let directpeer
     const EndPoint = Constants.chatServer
@@ -40,13 +40,15 @@ const Article = ({ props }) => {
     const viewer = React.useRef()
     const livestream = React.useRef()
     
-
     useEffect(() => {
-        
+        console.log("register as viewer")
         socket.emit("register as viewer", room);
+    },[])
 
+    useEffect(() => { 
         socket.on("offer", (id, description) => {
             console.log("Get offer from broadcaster")
+            console.log(description)
             rtcPeerConnections[id] = new RTCPeerConnection(iceServers)
             rtcPeerConnections[id]
             .setRemoteDescription(description)
@@ -58,6 +60,7 @@ const Article = ({ props }) => {
             }).catch(error => console.log(error))
             rtcPeerConnections[id].ontrack = e => {          
                 console.log(e.streams[0])
+                document.getElementById("livevideochat").style.display = "block"
                 viewer.current.srcObject = e.streams[0]
             }
             rtcPeerConnections[id].onicecandidate = e => {
@@ -80,10 +83,16 @@ const Article = ({ props }) => {
             if(rtcPeerConnections[brodcastersocketid]){
                 rtcPeerConnections[brodcastersocketid].close()
                 console.log(`${brodcastersocketid} model  has been left`)
-                directpeer.close()
                 delete rtcPeerConnections[brodcastersocketid]
-                document.getElementById("viewer").srcObject = null
+                viewer.current.srcObject = null
             }
+            console.log(`Live vidoe status is ${liveVideo.current}`)
+            if(liveVideo.current){
+                directpeer.close()
+                livestream.current.srcObject = null
+                liveVideo.current = false
+            }
+            document.getElementById("livevideochat").style.display = 'none'
         })
         
     }, [room])
@@ -92,6 +101,7 @@ const Article = ({ props }) => {
     useEffect(() => {  
         
         socket.on('iniatevideo', (id) => {
+            liveVideo.current = true
             document.getElementById("livevideochat").style.display = 'none'
             document.getElementById("livevideochatmessage").style.display = 'none'
             var constraints = {
@@ -99,7 +109,7 @@ const Article = ({ props }) => {
                 video: true
             };
             directpeer = new RTCPeerConnection()
-            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio:true}).then(stream => {
+            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: {sampleSize: 8, echoCancellation: true}}).then(stream => {
                 livestream.current.srcObject = stream           
                 //const stream = livestream.current.captureStream();
                 console.log(stream)
@@ -130,18 +140,24 @@ const Article = ({ props }) => {
                 .catch( e => console.error(e))
         })
 
+        socket.on('livechat', () => {
+            if(!liveVideo.current){
+                viewer.current.srcObject = null
+                document.getElementById("livevideochat").style.display = 'none'
+            }
+        })
+
         socket.on('deniedchat', (id) => {
             document.getElementById("livevideochat").style.display = 'block'
             document.getElementById("livevideochatmessage").style.display = 'none'
-            setliveVideo(false)
-        })
+            liveVideo.current = false
+        })        
         
-    }, [liveVideo])
+    }, [liveVideo.current])
 
     function onLiveVideoChat() {
         document.getElementById("livevideochat").style.display = 'none'
         document.getElementById("livevideochatmessage").style.display = 'block'
-        setliveVideo(true)
         socket.emit("privatevideo", room)        
     }
 
@@ -171,7 +187,7 @@ const Article = ({ props }) => {
                         <p>This browser does not support the video element.</p>
                     </video>
                 </div>
-                <div className="localuser" id="livevideochat">
+                <div className="localuser" id="livevideochat" style={{display: 'none' }}>
                     <button class="theme_button color1" onClick={onLiveVideoChat}>Live Video Chat</button>
                 </div>
                 <div className="localuser" id="livevideochatmessage" style={{display: 'none' }}>
