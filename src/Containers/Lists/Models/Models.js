@@ -82,26 +82,30 @@ function Models() {
 
 
     return (
-        (loading) ? <Loading /> :
             <section className="ds page_models models_square gorizontal_padding section_padding_20 columns_padding_5">
                 <div className="container-fluid">
-                    <Filters
-                        setCategory={setcategory}
-                        setEthnicity={setethnicity}
-                        setLanguage={setlanguage}
-                        setSorting={setsort}
-                        clearFilters={clearFilters}
-                        setOrientation={setorientation}
-                    />
+                    {
+                        (loading) ? <Loading /> :
+                        <>
+                            <Filters
+                                setCategory={setcategory}
+                                setEthnicity={setethnicity}
+                                setLanguage={setlanguage}
+                                setSorting={setsort}
+                                clearFilters={clearFilters}
+                                setOrientation={setorientation}
+                            />
 
-                    <div className="isotope_container isotope row masonry-layout bottommargin_20" data-filters=".isotope_filters">
-                        {
-                            models.map(model => {
-                                return <ListItem key={model.id}  {...model} />
-                            })
-                        }
-                    </div>
-                    <PaginationLinks links={links} meta={meta} clickEvent={setPageNumber} />
+                            <div className="isotope_container isotope row masonry-layout bottommargin_20" data-filters=".isotope_filters">
+                                {
+                                    models.map(model => {
+                                        return <ListItem key={model.id}  {...model} />
+                                    })
+                                }
+                            </div>
+                            <PaginationLinks links={links} meta={meta} clickEvent={setPageNumber} />
+                        </>
+                    }
                 </div>
             </section>
     )

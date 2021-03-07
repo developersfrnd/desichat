@@ -6,7 +6,7 @@ import Messages from '../../../Config/Messages'
 import { AppContext } from '../../../Context'
 import usersModel from '../../../ApiManager/user'
 import { toast } from 'react-toastify'
-import { Redirect, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import authModel from '../../../ApiManager/auth'
 
 function Login() {
@@ -40,7 +40,6 @@ function Login() {
     }
 
     return (
-        (authModel.getAuthToken()) ? <Redirect to="" /> : 
         <section className="ds section_padding_70">
                 <div className="container">
 					<div className="row">
