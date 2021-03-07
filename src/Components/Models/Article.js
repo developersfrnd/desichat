@@ -17,6 +17,7 @@ const Article = ({ props }) => {
     const [room, setRoom] = useState(props.id)
     const [callerSignal, setCallerSignal] = useState();
     const partnerVideo = React.useRef()
+    const liveVideo = React.useRef(false)
     const rtcPeerConnections = {}
     let directpeer
     const EndPoint = Constants.chatServer
@@ -25,18 +26,29 @@ const Article = ({ props }) => {
     let rc
     const iceServers = {
         iceServers: [
-            {
-                "urls": "stun:stun.l.google.com:19302",
+            { 
+                "urls": [
+                        "stun:stun.l.google.com:19302",
+                        "stun:stun1.l.google.com:19302",
+                        "stun:stun2.l.google.com:19302",
+                        "stun:stun3.l.google.com:19302",
+                        "stun:stun4.l.google.com:19302"
+                ]
             }
         ],
     }
-
+    const viewer = React.useRef()
+    const livestream = React.useRef()
+    
     useEffect(() => {
-        
+        console.log("register as viewer")
         socket.emit("register as viewer", room);
+    },[])
 
+    useEffect(() => { 
         socket.on("offer", (id, description) => {
             console.log("Get offer from broadcaster")
+            console.log(description)
             rtcPeerConnections[id] = new RTCPeerConnection(iceServers)
             rtcPeerConnections[id]
             .setRemoteDescription(description)
@@ -48,7 +60,8 @@ const Article = ({ props }) => {
             }).catch(error => console.log(error))
             rtcPeerConnections[id].ontrack = e => {          
                 console.log(e.streams[0])
-                document.getElementById("viewer").srcObject = e.streams[0]
+                document.getElementById("livevideochat").style.display = "block"
+                viewer.current.srcObject = e.streams[0]
             }
             rtcPeerConnections[id].onicecandidate = e => {
                 if (e.candidate) {
@@ -70,37 +83,51 @@ const Article = ({ props }) => {
             if(rtcPeerConnections[brodcastersocketid]){
                 rtcPeerConnections[brodcastersocketid].close()
                 console.log(`${brodcastersocketid} model  has been left`)
-                directpeer.close()
                 delete rtcPeerConnections[brodcastersocketid]
-                document.getElementById("viewer").srcObject = null
+                viewer.current.srcObject = null
             }
+            console.log(`Live vidoe status is ${liveVideo.current}`)
+            if(liveVideo.current){
+                directpeer.close()
+                livestream.current.srcObject = null
+                liveVideo.current = false
+            }
+            document.getElementById("livevideochat").style.display = 'none'
         })
         
+    }, [room])
+
+
+    useEffect(() => {  
+        
         socket.on('iniatevideo', (id) => {
+            liveVideo.current = true
             document.getElementById("livevideochat").style.display = 'none'
             document.getElementById("livevideochatmessage").style.display = 'none'
             var constraints = {
-                audio: false,
+                audio: true,
                 video: true
             };
-            navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-                directpeer = new RTCPeerConnection()
-                document.getElementById("localvideo").srcObject = stream
+            directpeer = new RTCPeerConnection()
+            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: {sampleSize: 8, echoCancellation: true}}).then(stream => {
+                livestream.current.srcObject = stream           
+                //const stream = livestream.current.captureStream();
+                console.log(stream)
                 stream.getTracks().forEach(track => directpeer.addTrack(track, stream));
-                directpeer.onicecandidate = e => {
-                    if (e.candidate) {
-                        socket.emit("directcandidate", id, e.candidate)
-                    }
-                }
-                directpeer.onnegotiationneeded = () => {
-                    directpeer.createOffer()
-                    .then(offer => directpeer.setLocalDescription(offer)).catch( error => console.log(error))
-                    .then( () => {
-                        console.log("Direct offer genrate "+directpeer.localDescription)
-                        socket.emit("videochatinitate", room, directpeer.localDescription)
-                    })
-                }                
             })
+            directpeer.onicecandidate = e => {
+                if (e.candidate) {
+                    socket.emit("directcandidate", id, e.candidate)
+                }
+            }
+            directpeer.onnegotiationneeded = () => {
+                directpeer.createOffer()
+                .then(offer => directpeer.setLocalDescription(offer)).catch( error => console.log(error))
+                .then( () => {
+                    console.log("Direct offer genrate "+directpeer.localDescription)
+                    socket.emit("videochatinitate", room, directpeer.localDescription)
+                })
+            }            
         })
 
         socket.on('directanswer', (id, description) => {
@@ -113,17 +140,20 @@ const Article = ({ props }) => {
                 .catch( e => console.error(e))
         })
 
+        socket.on('livechat', () => {
+            if(!liveVideo.current){
+                viewer.current.srcObject = null
+                document.getElementById("livevideochat").style.display = 'none'
+            }
+        })
+
         socket.on('deniedchat', (id) => {
             document.getElementById("livevideochat").style.display = 'block'
             document.getElementById("livevideochatmessage").style.display = 'none'
-        })
+            liveVideo.current = false
+        })        
         
-        // socket.on('pausevideo', (viewer, room) => {
-        //     document.getElementById("livevideochat").style.display = 'block'
-        //     document.getElementById("livevideochatmessage").style.display = 'none'
-        // })
-
-    }, [room])
+    }, [liveVideo.current])
 
     function onLiveVideoChat() {
         document.getElementById("livevideochat").style.display = 'none'
@@ -152,10 +182,12 @@ const Article = ({ props }) => {
                     {
                         (token) ? <Call token={token} channel={channel} /> : <img src={props.profilePicture} alt={props.name} />
                     }
-                    <video id="viewer" autoPlay></video>
-                    <video id="localvideo" className="directvideo" autoPlay></video>
+                    <video ref={viewer} autoPlay></video>
+                    <video ref={livestream} className="directvideo" autoPlay muted>                        
+                        <p>This browser does not support the video element.</p>
+                    </video>
                 </div>
-                <div className="localuser" id="livevideochat">
+                <div className="localuser" id="livevideochat" style={{display: 'none' }}>
                     <button class="theme_button color1" onClick={onLiveVideoChat}>Live Video Chat</button>
                 </div>
                 <div className="localuser" id="livevideochatmessage" style={{display: 'none' }}>
