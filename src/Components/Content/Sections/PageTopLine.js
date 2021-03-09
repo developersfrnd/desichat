@@ -28,6 +28,7 @@ function PageTopLine() {
 				})
 		} else {
 			setloading(false);
+			setisAuthenticated(false);
 		}
 
 		return () => {
@@ -37,7 +38,6 @@ function PageTopLine() {
 	}, [])
 
 	return (
-		(loading) ? 'Loading...' :
 			<section className="page_topline ds ms gorizontal_padding">
 				<div className="container-fluid with_border">
 					<div className="row">
@@ -49,24 +49,18 @@ function PageTopLine() {
 
 
 						<div className="col-md-8 col-sm-6 col-xs-6  header-contacts text-right hidden-xs  topmargin_0 bottommargin_0">
+						{(loading) ? 'Loading...' :
 							<div className="fontsize_14 grey">
-								<AppContext.Consumer>
-									{
-										(contextState) => {
-											return (
-												(contextState.stateData.authUser) ? `Welcome ${contextState.stateData.authUser.name}` :
-													(
-														<Aux>
-															<Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
-															<Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
-															<Link to="/login"> Login </Link>
-														</Aux>
-													)
-											)
-										}
-									}
-								</AppContext.Consumer>
+								{
+								(isAuthenticated) ? '' : 
+									<>
+										<Link to="/registration/user"> SignUp </Link>&nbsp;|&nbsp;
+										<Link to="/registration/model"> SignUp as Model </Link>&nbsp;|&nbsp;
+										<Link to="/login"> Login </Link>
+									</>	
+								}
 							</div>
+						}
 						</div>
 					</div>
 				</div>
