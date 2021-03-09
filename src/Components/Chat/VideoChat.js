@@ -46,8 +46,12 @@ const VideoChat = ({modelname, modelroom}) => {
         })
     },[])
 
-    useEffect(() => { 
-         socket.on('watcher', (id) => {
+    useEffect(() => {        
+         socket.on('watcher', (id) => {             
+            if (livevideostatus.current) {
+                socket.emit("in_private_chat", id)
+                return false
+            } 
             console.log("New watcher want to connect")
             lc = new RTCPeerConnection(iceServers) 
             lcpeerConnections[id] = lc
@@ -91,6 +95,7 @@ const VideoChat = ({modelname, modelroom}) => {
                 directpeer.close()
                 livevideostatus.current = false
                 livestream.current.srcObject = null
+                socket.emit("livechatremove", room)
             }
         })
         
@@ -101,7 +106,8 @@ const VideoChat = ({modelname, modelroom}) => {
                 Object.keys(lcpeerConnections).forEach(function(key) {
                     lcpeerConnections[key].close()
                 });
-                livevideostatus.current = false
+                livevideostatus.current = false             
+                
             }
         })             
 
@@ -152,8 +158,7 @@ const VideoChat = ({modelname, modelroom}) => {
                     socket.emit("directcandidate", id, e.candidate)
                 }
                 
-            }
-            socket.emit("livechat", room)
+            }            
         })
 
         socket.on('directcandidate', (id, candidate) => {

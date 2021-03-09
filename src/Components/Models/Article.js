@@ -95,11 +95,11 @@ const Article = ({ props }) => {
             document.getElementById("livevideochat").style.display = 'none'
         })
         
-    }, [room])
-
-
-    useEffect(() => {  
-        
+        socket.on("in_private_chat", (id) => {
+            document.getElementById("livevideochat").style.display = 'none'
+            document.getElementById("in-private-chat").style.display = 'block'
+        })
+       
         socket.on('iniatevideo', (id) => {
             liveVideo.current = true
             document.getElementById("livevideochat").style.display = 'none'
@@ -137,15 +137,34 @@ const Article = ({ props }) => {
         
         socket.on('directcandidate', (id, candidate) => {
             directpeer.addIceCandidate(new RTCIceCandidate(candidate))
-                .catch( e => console.error(e))
+            .then( e => socket.emit("livechat", room))
+            .catch( e => console.error(e))
         })
 
         socket.on('livechat', () => {
-            if(!liveVideo.current){
-                viewer.current.srcObject = null
-                document.getElementById("livevideochat").style.display = 'none'
-            }
+            viewer.current.srcObject = null
+            document.getElementById("livevideochat").style.display = 'none'
+            document.getElementById("in-private-chat").style.display = 'block'
         })
+
+        socket.on('livechatremove', () => {
+            console.log("live chat remove")
+            document.getElementById("livevideochat").style.display = 'block'
+            document.getElementById("in-private-chat").style.display = 'none'
+            socket.emit("register as viewer", room);
+        })
+
+        // socket.on('disconnect-peer', (bradcatser_socket_id) => { 
+        //     if(rtcPeerConnections[bradcatser_socket_id]){
+        //         rtcPeerConnections[bradcatser_socket_id].close()
+        //         delete rtcPeerConnections[bradcatser_socket_id]
+        //     }
+        //     console.log(`Live vidoe status is ${liveVideo.current}`)
+        //     if(liveVideo.current){
+        //         directpeer.close()
+        //         socket.on("livechatremove", room)
+        //     }
+        // })
 
         socket.on('deniedchat', (id) => {
             document.getElementById("livevideochat").style.display = 'block'
@@ -153,7 +172,7 @@ const Article = ({ props }) => {
             liveVideo.current = false
         })        
         
-    }, [liveVideo.current])
+    }, [room, liveVideo.current])
 
     function onLiveVideoChat() {
         document.getElementById("livevideochat").style.display = 'none'
@@ -186,7 +205,11 @@ const Article = ({ props }) => {
                     <video ref={livestream} className="directvideo" autoPlay muted>                        
                         <p>This browser does not support the video element.</p>
                     </video>
+                    <div class="no-video" id="in-private-chat" style={{display: 'none' }}>
+                        <div class="msg">I'm in Private Chat</div>
+                    </div>
                 </div>
+                
                 <div className="localuser" id="livevideochat" style={{display: 'none' }}>
                     <button class="theme_button color1" onClick={onLiveVideoChat}>Live Video Chat</button>
                 </div>
