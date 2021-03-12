@@ -5,6 +5,7 @@ import Videos from '../../Containers/Lists/Models/TabContents/Videos'
 import Comments from '../../Containers/Lists/Models/TabContents/Comments'
 
 const summary = (props) => {
+    console.log(props);
     return (
         <div className="item-content entry-content ">
             <div className="">
@@ -44,7 +45,7 @@ const summary = (props) => {
                                 Shows Tab
                             </div>
                             <div className="tab-pane fade in" id="tab5">
-                                <Comments />
+                                <Comments model_id={props.id} />
                             </div>
                         </div>
                     </div>
