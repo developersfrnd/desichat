@@ -2,7 +2,7 @@ import { uk } from "date-fns/locale";
 
 const Host = (window.location.hostname == 'localhost') ? 'https://api.desisexichat.com/public/' : 'https://api.desisexichat.com/public/';
 const Enviornment = (window.location.hostname == 'localhost') ? 'local' : 'production';
-const chatServer = (window.location.hostname == 'localhost') ? 'https://chatserver.desisexichat.com' : 'https://chatserver.desisexichat.com';
+const chatServer = (window.location.hostname == 'localhost') ? 'http://localhost:8004' : 'https://chatserver.desisexichat.com';
 const Constants = {
 
     appEnviornment: Enviornment,

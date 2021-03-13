@@ -9,7 +9,7 @@ import io from "socket.io-client";
 import PromptPopUp from './PromptPopUp';
 import { constant } from 'lodash';
 
-const Article = ({ props }) => {
+const Article = ({ socket, props }) => {
 
     const [token, settoken] = useState(null);
     const [channel, setchannel] = useState(null)
@@ -21,7 +21,9 @@ const Article = ({ props }) => {
     const rtcPeerConnections = {}
     let directpeer
     const EndPoint = Constants.chatServer
-    const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
+    //const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
+    const MINUTE_MS = 60000;
+    let private_chat_interval 
 
     let rc
     const iceServers = {
@@ -30,15 +32,38 @@ const Article = ({ props }) => {
                 "urls": [
                         "stun:stun.l.google.com:19302",
                         "stun:stun1.l.google.com:19302",
-                        "stun:stun2.l.google.com:19302",
-                        "stun:stun3.l.google.com:19302",
-                        "stun:stun4.l.google.com:19302"
+                        "stun:stun2.l.google.com:19302"
                 ]
+            },
+            {
+                urls: 'turn:numb.viagenie.ca',
+                credential: 'muazkh',
+                username: 'webrtc@live.com'
             }
         ],
     }
     const viewer = React.useRef()
     const livestream = React.useRef()
+
+    let audio_constraints = {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        googEchoCancellation: true,
+        googAutoGainControl: true,
+        googExperimentalAutoGainControl: false,
+        googNoiseSuppression: true,
+        googExperimentalNoiseSuppression: false,
+        googHighpassFilter: false,
+        googTypingNoiseDetection: false,
+        googBeamforming: false,
+        googArrayGeometry: false,
+        googAudioMirroring: false,
+        googAudioMirroring: false,
+        googNoiseReduction: false,
+        mozNoiseSuppression: true,
+        mozAutoGainControl: true
+    }
     
     useEffect(() => {
         console.log("register as viewer")
@@ -62,6 +87,7 @@ const Article = ({ props }) => {
                 console.log(e.streams[0])
                 document.getElementById("livevideochat").style.display = "block"
                 viewer.current.srcObject = e.streams[0]
+                document.getElementById("in-private-chat").style.display = 'none'
             }
             rtcPeerConnections[id].onicecandidate = e => {
                 if (e.candidate) {
@@ -75,7 +101,9 @@ const Article = ({ props }) => {
                 .catch(e => console.error(e))
         })
 
+
         socket.on("broadcaster", () => {
+            console.log("New broadcaster join")
             socket.emit("watcher", room)
         })
 
@@ -93,6 +121,7 @@ const Article = ({ props }) => {
                 liveVideo.current = false
             }
             document.getElementById("livevideochat").style.display = 'none'
+            document.getElementById("in-private-chat").style.display = 'none'
         })
         
         socket.on("in_private_chat", (id) => {
@@ -108,13 +137,13 @@ const Article = ({ props }) => {
                 audio: true,
                 video: true
             };
-            directpeer = new RTCPeerConnection()
-            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: {sampleSize: 8, echoCancellation: true}}).then(stream => {
+            directpeer = new RTCPeerConnection(iceServers)
+            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: audio_constraints}).then(stream => {
                 livestream.current.srcObject = stream           
                 //const stream = livestream.current.captureStream();
                 console.log(stream)
                 stream.getTracks().forEach(track => directpeer.addTrack(track, stream));
-            })
+            }).catch(error => console.log(error))
             directpeer.onicecandidate = e => {
                 if (e.candidate) {
                     socket.emit("directcandidate", id, e.candidate)
@@ -138,6 +167,12 @@ const Article = ({ props }) => {
         socket.on('directcandidate', (id, candidate) => {
             directpeer.addIceCandidate(new RTCIceCandidate(candidate))
             .then( e => socket.emit("livechat", room))
+            .then(() => {                
+                private_chat_interval = setInterval(() => {
+                    let time = new Date().toLocaleString();
+                    console.log(`Logs every minute ${time}`);
+                  }, MINUTE_MS );
+            })
             .catch( e => console.error(e))
         })
 
@@ -152,6 +187,7 @@ const Article = ({ props }) => {
             document.getElementById("livevideochat").style.display = 'block'
             document.getElementById("in-private-chat").style.display = 'none'
             socket.emit("register as viewer", room);
+            clearInterval(private_chat_interval)
         })
 
         // socket.on('disconnect-peer', (bradcatser_socket_id) => { 
@@ -170,7 +206,12 @@ const Article = ({ props }) => {
             document.getElementById("livevideochat").style.display = 'block'
             document.getElementById("livevideochatmessage").style.display = 'none'
             liveVideo.current = false
-        })        
+        })
+        
+        return () => {
+
+            clearInterval(private_chat_interval)
+        }
         
     }, [room, liveVideo.current])
 

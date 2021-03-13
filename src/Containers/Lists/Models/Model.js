@@ -15,7 +15,6 @@ import AsideModels from '../../../Components/Models/AsideModels';
 import Constants from '../../../Config/Constants';
 
 const EndPoint = Constants.chatServer
-const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
 
 function Model() {
 
@@ -38,11 +37,13 @@ function Model() {
 
             setisUser(false)
         }
+        console.log("Model loaded")
+        
         return () => {
             console.log("clean model")
         }
     }, [])
-
+    const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
     return (
         (loading) ? <Loading /> :
             <section className="ds section_padding_top_20 section_padding_bottom_50">

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import io from "socket.io-client"
 import Constants from '../../Config/Constants';
 
-const VideoChat = ({modelname, modelroom}) => {
+const VideoChat = ({socket, modelname, modelroom}) => {
     const [room, setRoom] = useState(modelroom)
     const [name, setName] = useState(modelname)
     // const [currentviewer, setcurrentviewer] = useState('')
@@ -19,22 +19,43 @@ const VideoChat = ({modelname, modelroom}) => {
                 "urls": [
                         "stun:stun.l.google.com:19302",
                         "stun:stun1.l.google.com:19302",
-                        "stun:stun2.l.google.com:19302",
-                        "stun:stun3.l.google.com:19302",
-                        "stun:stun4.l.google.com:19302"
+                        "stun:stun2.l.google.com:19302"
                 ]
+            },
+            {
+                urls: 'turn:numb.viagenie.ca',
+                credential: 'muazkh',
+                username: 'webrtc@live.com'
             }
         ],
     }
     
     const EndPoint = Constants.chatServer
-    const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
+    //const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
     const lcpeerConnections = {}
-    let lc
     let directpeer
+    let audio_constraints = {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            googEchoCancellation: true,
+            googAutoGainControl: true,
+            googExperimentalAutoGainControl: false,
+            googNoiseSuppression: true,
+            googExperimentalNoiseSuppression: false,
+            googHighpassFilter: false,
+            googTypingNoiseDetection: false,
+            googBeamforming: false,
+            googArrayGeometry: false,
+            googAudioMirroring: false,
+            googAudioMirroring: false,
+            googNoiseReduction: false,
+            mozNoiseSuppression: true,
+            mozAutoGainControl: true
+    }
 
     useEffect(() => { 
-        navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: {sampleSize: 8, echoCancellation: true}}).then(stream => {
+        navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: audio_constraints}).then(stream => {
             if (window.stream) {
                 window.stream.getTracks().forEach(track => {
                 track.stop();
@@ -47,13 +68,15 @@ const VideoChat = ({modelname, modelroom}) => {
     },[])
 
     useEffect(() => {        
-         socket.on('watcher', (id) => {             
+         socket.on('watcher', (id) => {   
+             console.log(`Live video status ${livevideostatus.current}`)          
             if (livevideostatus.current) {
+                console.log("I am in private chat")
                 socket.emit("in_private_chat", id)
                 return false
             } 
             console.log("New watcher want to connect")
-            lc = new RTCPeerConnection(iceServers) 
+            const lc = new RTCPeerConnection(iceServers) 
             lcpeerConnections[id] = lc
                 const localstream = sendervideo.current.srcObject
                 localstream.getTracks().forEach(track => lc.addTrack(track, localstream));
@@ -90,7 +113,7 @@ const VideoChat = ({modelname, modelroom}) => {
                 console.log(`${id} has been leaved`)
             }
             console.log(`Live video status is ${livevideostatus.current}`)
-            if (livevideostatus.current) {
+            if (livevideostatus.current && currentviewer.current == id) {
                 console.log('live video user has been leaved')
                 directpeer.close()
                 livevideostatus.current = false
