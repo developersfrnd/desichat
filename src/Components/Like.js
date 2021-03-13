@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import authModel from '../ApiManager/auth';
 import usersModel from '../ApiManager/user';
 
-function Like() {
+function Like(props) {
 
     const [isAuthenticated, setisAuthenticated] = useState(false)
-    const [isLiked, setisLiked] = useState(false)
+    const [inProgress, setinProgress] = useState(false)
+    const [isLiked, setisLiked] = useState(props.isLiked)
     const [isCustomerLogin, setisCustomerLogin] = useState(false);
 
     useEffect(() => {
@@ -18,14 +20,24 @@ function Like() {
             setisAuthenticated(false);
         }
 
-    }, [isAuthenticated])
+    }, [isAuthenticated, isLiked])
 
-    const likeEventHandler = () => {
-        alert()
+    const likeEventHandler = (model_id) => {
+        setinProgress(true);
+        usersModel.postLike({'model_id':model_id})
+            .then((res) => {
+                setisLiked(!isLiked);
+                toast.success(res.message);
+            })
+            .catch((error) => {
+                toast.error(error.message)
+            })
+
+            setinProgress(false);
     }
 
     return (
-        <Link onClick={likeEventHandler} className="addTofavourites">
+        <Link onClick={() => likeEventHandler(props.model_id)} className="addTofavourites">
             {
                 (!isAuthenticated || !isCustomerLogin) ? '' : 
                     (isLiked) ? <img src="images/heart-filled.svg" alt="" /> : <img src="images/heart.svg" alt="" />

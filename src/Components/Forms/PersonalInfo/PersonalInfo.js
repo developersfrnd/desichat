@@ -132,7 +132,7 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">Address
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="address" className="form-control" placeholder="Address" value={authUser.address} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="address" className="form-control" placeholder="Address" defaultValue={authUser.address} ref={register({required:{value:true,message:Messages.isRequired}})} />
                                 <i className="rt-icon2-pen2"></i>
                                 {errors.address && <ValidationError message={errors.address.message} />}
                             </div>
@@ -141,7 +141,7 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">City
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="city" className="form-control" placeholder="City" value={authUser.city} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="city" className="form-control" placeholder="City" defaultValue={authUser.city} ref={register({required:{value:true,message:Messages.isRequired}})} />
                                 <i className="rt-icon2-pen2"></i>
                                 {errors.city && <ValidationError message={errors.city.message} />}
                             </div>
@@ -150,7 +150,7 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">State
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="state" className="form-control" placeholder="State" value={authUser.State} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="state" className="form-control" placeholder="State" defaultValue={authUser.state} ref={register({required:{value:true,message:Messages.isRequired}})} />
                                 <i className="rt-icon2-pen2"></i>
                                 {errors.state && <ValidationError message={errors.state.message} />}
                             </div>
@@ -159,7 +159,7 @@ function PersonalInfo() {
                                 <label htmlFor="address" className="sr-only">Zip Code
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="zipcode" className="form-control" placeholder="Zip Code" value={authUser.zipcode} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="zipcode" className="form-control" placeholder="Zip Code" defaultValue={authUser.zipcode} ref={register({required:{value:true,message:Messages.isRequired}})} />
                                 <i className="rt-icon2-pen2"></i>
                                 {errors.zipcode && <ValidationError message={errors.zipcode.message} />}
                             </div>
@@ -168,7 +168,7 @@ function PersonalInfo() {
                                 <label htmlFor="phone" className="sr-only">Phone Number
                                     <span className="required">*</span>
                                 </label>
-                                <input type="text" name="phone" className="form-control" placeholder="Phone Number" value={authUser.phone} ref={register({required:{value:true,message:Messages.isRequired}})} />
+                                <input type="text" name="phone" className="form-control" placeholder="Phone Number" defaultValue={authUser.phone} ref={register({required:{value:true,message:Messages.isRequired}})} />
                                 <i className="rt-icon2-pen2"></i>
                                 {errors.phone && <ValidationError message={errors.phone.message} />}
                             </div>

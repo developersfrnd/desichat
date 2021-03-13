@@ -9,7 +9,7 @@ const listItem = (props) => {
     return (
         <div className="isotope-item col-lg-3 col-md-4 col-sm-4 fashion">
             <div className="vertical-item content-absolute">
-                <Like />
+                <Like model_id={props.id} isLiked={props.is_liked} />
                 <div className="item-media">
                     <img src={profilePicture} alt="" />
                     <div className="media-links"></div>

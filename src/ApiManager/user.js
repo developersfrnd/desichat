@@ -51,6 +51,9 @@ const usersModel = {
     offlineuser: () => {
         return ApiCall.get(`user/offline`, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
     },
+    postLike: (data) => {
+        return ApiCall.post(`likes`, data, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
+    }
 }
 
 export default usersModel;
