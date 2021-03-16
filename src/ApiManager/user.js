@@ -53,6 +53,12 @@ const usersModel = {
     },
     postLike: (data) => {
         return ApiCall.post(`likes`, data, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
+    },
+    checkUserCoin: (data) => {
+        return ApiCall.post(`checkusercoin`, data, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
+    },
+    reduceUserCoin: (data) => {
+        return ApiCall.post(`reduceusercoin`, data, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
     }
 }
 

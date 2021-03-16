@@ -37,8 +37,7 @@ function Model() {
 
             setisUser(false)
         }
-        console.log("Model loaded")
-        
+               
         return () => {
             console.log("clean model")
         }

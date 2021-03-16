@@ -188,6 +188,13 @@ const VideoChat = ({socket, modelname, modelroom}) => {
             directpeer.addIceCandidate(new RTCIceCandidate(candidate))
                 .catch( e => console.error(e))
         })
+
+        socket.on('livechatremove', () => {
+            console.log('live video user has been leaved')
+            directpeer.close()
+            livevideostatus.current = false
+            livestream.current.srcObject = null            
+        })
         
         return () => {
             console.log("Unmount all vidoe chat")

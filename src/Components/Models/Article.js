@@ -8,6 +8,8 @@ import Peer from 'simple-peer'
 import io from "socket.io-client";
 import PromptPopUp from './PromptPopUp';
 import { constant } from 'lodash';
+import usersModel from '../../ApiManager/user';
+import { toast } from 'react-toastify';
 
 const Article = ({ socket, props }) => {
 
@@ -15,14 +17,17 @@ const Article = ({ socket, props }) => {
     const [channel, setchannel] = useState(null)
     const [isDirty, setDirty] = useState(true)
     const [room, setRoom] = useState(props.id)
-    const [callerSignal, setCallerSignal] = useState();
+    //const [counter, setCounter] = useState(1);
     const partnerVideo = React.useRef()
     const liveVideo = React.useRef(false)
+    const startinterval = React.useRef(0)
+    const counter = React.useRef(1)
     const rtcPeerConnections = {}
     let directpeer
     const EndPoint = Constants.chatServer
     //const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
-    const MINUTE_MS = 60000;
+    let MINUTE_MS = 5000;
+    let NEXT_MINUTE_MS = 10000;
     let private_chat_interval 
 
     let rc
@@ -66,6 +71,7 @@ const Article = ({ socket, props }) => {
     }
     
     useEffect(() => {
+        stopReduce()
         console.log("register as viewer")
         socket.emit("register as viewer", room);
     },[])
@@ -116,9 +122,7 @@ const Article = ({ socket, props }) => {
             }
             console.log(`Live vidoe status is ${liveVideo.current}`)
             if(liveVideo.current){
-                directpeer.close()
-                livestream.current.srcObject = null
-                liveVideo.current = false
+                disConnectLiveChat()
             }
             document.getElementById("livevideochat").style.display = 'none'
             document.getElementById("in-private-chat").style.display = 'none'
@@ -162,17 +166,14 @@ const Article = ({ socket, props }) => {
         socket.on('directanswer', (id, description) => {
             console.log("Set direct remote description" + description)
             directpeer.setRemoteDescription(description)
+            .then( e => socket.emit("livechat", room))
+            .then( e => FirstReduce())
+            .catch( e => console.error(e))
         })
         
-        socket.on('directcandidate', (id, candidate) => {
+        socket.on('directcandidate', (id, candidate) => {            
             directpeer.addIceCandidate(new RTCIceCandidate(candidate))
-            .then( e => socket.emit("livechat", room))
-            .then(() => {                
-                private_chat_interval = setInterval(() => {
-                    let time = new Date().toLocaleString();
-                    console.log(`Logs every minute ${time}`);
-                  }, MINUTE_MS );
-            })
+            .then( e => console.log("Set direct candidate" + candidate))
             .catch( e => console.error(e))
         })
 
@@ -186,21 +187,8 @@ const Article = ({ socket, props }) => {
             console.log("live chat remove")
             document.getElementById("livevideochat").style.display = 'block'
             document.getElementById("in-private-chat").style.display = 'none'
-            socket.emit("register as viewer", room);
-            clearInterval(private_chat_interval)
+            socket.emit("register as viewer", room);            
         })
-
-        // socket.on('disconnect-peer', (bradcatser_socket_id) => { 
-        //     if(rtcPeerConnections[bradcatser_socket_id]){
-        //         rtcPeerConnections[bradcatser_socket_id].close()
-        //         delete rtcPeerConnections[bradcatser_socket_id]
-        //     }
-        //     console.log(`Live vidoe status is ${liveVideo.current}`)
-        //     if(liveVideo.current){
-        //         directpeer.close()
-        //         socket.on("livechatremove", room)
-        //     }
-        // })
 
         socket.on('deniedchat', (id) => {
             document.getElementById("livevideochat").style.display = 'block'
@@ -208,17 +196,55 @@ const Article = ({ socket, props }) => {
             liveVideo.current = false
         })
         
-        return () => {
-
-            clearInterval(private_chat_interval)
+        return () => {            
+            stopReduce()
         }
-        
-    }, [room, liveVideo.current])
+    }, [room])
+
+    const stopReduce = () => {
+        console.log("Stop reduce")
+        clearInterval(startinterval.current)
+    }
+
+    const FirstReduce = () => {
+        startinterval.current = setInterval(()=>{
+            reduceCoin({'room_id':room})
+            stopReduce()
+            NextReduce()
+         }, MINUTE_MS)
+    }
+
+    const NextReduce = () => {
+        startinterval.current = setInterval(()=>{
+            reduceCoin({'room_id':room})
+         }, NEXT_MINUTE_MS)
+    }
+
+    const disConnectLiveChat = () => {
+            directpeer.close()
+            livestream.current.srcObject = null
+            liveVideo.current = false
+            document.getElementById("livevideochat").style.display = 'block'
+            document.getElementById("in-private-chat").style.display = 'none'
+            stopReduce()
+    }
 
     function onLiveVideoChat() {
-        document.getElementById("livevideochat").style.display = 'none'
-        document.getElementById("livevideochatmessage").style.display = 'block'
-        socket.emit("privatevideo", room)        
+        usersModel.checkUserCoin({'room_id':room}).then( () => {
+            document.getElementById("livevideochat").style.display = 'none'
+            document.getElementById("livevideochatmessage").style.display = 'block'
+            socket.emit("privatevideo", room)
+        }).catch( (error) => {
+            document.getElementById("livevideochat").style.display = 'block'
+            document.getElementById("livevideochatmessage").style.display = 'none'
+            toast.error(error.response.data.message)
+        })                
+    }
+    const reduceCoin = (data) => {
+        usersModel.reduceUserCoin(data).then(e => console.log("Coin dedacted")).catch( (error) => {
+            disConnectLiveChat()
+            socket.emit("livechatremove", room)
+        }) 
     }
 
     return (
