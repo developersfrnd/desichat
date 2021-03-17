@@ -17,17 +17,17 @@ const Article = ({ socket, props }) => {
     const [channel, setchannel] = useState(null)
     const [isDirty, setDirty] = useState(true)
     const [room, setRoom] = useState(props.id)
-    //const [counter, setCounter] = useState(1);
     const partnerVideo = React.useRef()
     const liveVideo = React.useRef(false)
     const startinterval = React.useRef(0)
+    const streamid = React.useRef(0)
     const counter = React.useRef(1)
     const rtcPeerConnections = {}
     let directpeer
     const EndPoint = Constants.chatServer
     //const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
     let MINUTE_MS = 5000;
-    let NEXT_MINUTE_MS = 10000;
+    let NEXT_MINUTE_MS = 65000;
     let private_chat_interval 
 
     let rc
@@ -208,7 +208,8 @@ const Article = ({ socket, props }) => {
 
     const FirstReduce = () => {
         startinterval.current = setInterval(()=>{
-            reduceCoin({'room_id':room})
+            console.log("First reduce"+streamid.current)
+            reduceCoin({'room_id':room, 'history_id':streamid.current})
             stopReduce()
             NextReduce()
          }, MINUTE_MS)
@@ -216,7 +217,8 @@ const Article = ({ socket, props }) => {
 
     const NextReduce = () => {
         startinterval.current = setInterval(()=>{
-            reduceCoin({'room_id':room})
+            console.log("Next reduce"+streamid.current)
+            reduceCoin({'room_id':room, 'history_id':streamid.current})
          }, NEXT_MINUTE_MS)
     }
 
@@ -224,6 +226,7 @@ const Article = ({ socket, props }) => {
             directpeer.close()
             livestream.current.srcObject = null
             liveVideo.current = false
+            streamid.current = 0
             document.getElementById("livevideochat").style.display = 'block'
             document.getElementById("in-private-chat").style.display = 'none'
             stopReduce()
@@ -241,7 +244,9 @@ const Article = ({ socket, props }) => {
         })                
     }
     const reduceCoin = (data) => {
-        usersModel.reduceUserCoin(data).then(e => console.log("Coin dedacted")).catch( (error) => {
+        usersModel.reduceUserCoin(data).then(response => {
+            streamid.current = response.data.data.history_id
+        }).catch( (error) => {
             disConnectLiveChat()
             socket.emit("livechatremove", room)
         }) 
