@@ -36,7 +36,7 @@ function AccountCharges() {
         setinprogress(true);
         usersModel.addUpdateAccount(data)
             .then((res) => {
-                appContext.handleEvent({...appContext.stateData.authUser,'charge_per_minute':res.charge_per_minute})
+                appContext.handleEvent({authUser:{...appContext.stateData.authUser,'charge_per_minute':res.data.charge_per_minute}});
                 setinprogress(false);
                 toast.success(Messages.successMessage);
             })
