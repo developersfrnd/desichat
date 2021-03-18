@@ -59,6 +59,9 @@ const usersModel = {
     },
     reduceUserCoin: (data) => {
         return ApiCall.post(`reduceusercoin`, data, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
+    },
+    addUpdateAccount: (data) => {
+        return ApiCall.post(`account`, data, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
     }
 }
 

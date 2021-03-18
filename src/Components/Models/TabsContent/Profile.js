@@ -7,7 +7,7 @@ const profile = (props) => {
             <h2 className="headingtag topmargin_10 bottommargin_30">
                 About {props.name}
             </h2>
-            <p>Basic Profile</p>
+            <p>Charges : {props.charges} Coins / min</p>
             <div className="row">
                 <div className="col-sm-6">
                     <ul className="list1 no-bullets">

@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-import Constants from '../Config/Constants'
-import Aux from '../hoc/Aux'
 import {AppContext} from '../Context'
 import Loading from '../Components/Loaders/Loading'
 import { Redirect } from 'react-router'

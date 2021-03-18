@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom'
+import { AppContext } from '../../Context';
 import Aux from '../../hoc/Aux';
 import Usernav from './Sections/UserNav/UserNav';
 
-const pageHeader = (props) => {
+
+function pageHeader(){
+
+	const appContext = useContext(AppContext);
+
 	return (
 		<Aux>
 			<header className="page_header header_darkgrey columns_padding_0 table_section">

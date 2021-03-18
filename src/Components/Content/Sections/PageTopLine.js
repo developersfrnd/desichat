@@ -1,41 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom'
 import usersModel from '../../../ApiManager/user';
 import { AppContext } from '../../../Context';
-import Aux from '../../../hoc/Aux';
+import Loading from '../../Loaders/Loading';
+
 
 function PageTopLine() {
 
 	const [isAuthenticated, setisAuthenticated] = useState(false);
 	const [authUser, setauthUser] = useState(null)
 	const [loading, setloading] = useState(true);
+	const appContext = useContext(AppContext)
 
 	useEffect(() => {
-		let authToken = usersModel.authToken();
-		let isMounted = true;
-		if (authToken) {
-			setisAuthenticated(true);
-
-			usersModel.getAuthUser()
-				.then(user => {
-					if (isMounted) {
-						setauthUser(user.data.data);
-						setloading(false);
-					}	
-				})
-				.catch(error => {
-					console.log(error);
-				})
-		} else {
-			setloading(false);
-			setisAuthenticated(false);
-		}
-
-		return () => {
-			isMounted = false;
-		} 
-
-	}, [])
+		setisAuthenticated(appContext.stateData.isAuthenticated);
+		setauthUser(appContext.stateData.authUser);
+		setloading(false);
+		
+	}, [appContext])
 
 	return (
 			<section className="page_topline ds ms gorizontal_padding">
@@ -49,7 +31,7 @@ function PageTopLine() {
 
 
 						<div className="col-md-8 col-sm-6 col-xs-6  header-contacts text-right hidden-xs  topmargin_0 bottommargin_0">
-						{(loading) ? 'Loading...' :
+						{(loading) ? '<Loading />...' :
 							<div className="fontsize_14 grey">
 								{
 								(isAuthenticated) ? '' : 
