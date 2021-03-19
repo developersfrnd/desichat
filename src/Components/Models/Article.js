@@ -11,7 +11,7 @@ import { constant } from 'lodash';
 import usersModel from '../../ApiManager/user';
 import { toast } from 'react-toastify';
 
-const Article = ({ socket, props }) => {
+const Article = ({ updateCoin, socket, props }) => {
 
     const [token, settoken] = useState(null);
     const [channel, setchannel] = useState(null)
@@ -208,7 +208,6 @@ const Article = ({ socket, props }) => {
 
     const FirstReduce = () => {
         startinterval.current = setInterval(()=>{
-            console.log("First reduce"+streamid.current)
             reduceCoin({'room_id':room, 'history_id':streamid.current})
             stopReduce()
             NextReduce()
@@ -217,7 +216,6 @@ const Article = ({ socket, props }) => {
 
     const NextReduce = () => {
         startinterval.current = setInterval(()=>{
-            console.log("Next reduce"+streamid.current)
             reduceCoin({'room_id':room, 'history_id':streamid.current})
          }, NEXT_MINUTE_MS)
     }
@@ -246,6 +244,7 @@ const Article = ({ socket, props }) => {
     const reduceCoin = (data) => {
         usersModel.reduceUserCoin(data).then(response => {
             streamid.current = response.data.data.history_id
+            updateCoin(response.data.data.coin)
         }).catch( (error) => {
             disConnectLiveChat()
             socket.emit("livechatremove", room)

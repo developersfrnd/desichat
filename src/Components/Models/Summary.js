@@ -5,7 +5,6 @@ import Videos from '../../Containers/Lists/Models/TabContents/Videos'
 import Comments from '../../Containers/Lists/Models/TabContents/Comments'
 
 const summary = (props) => {
-    console.log(props);
     return (
         <div className="item-content entry-content ">
             <div className="">

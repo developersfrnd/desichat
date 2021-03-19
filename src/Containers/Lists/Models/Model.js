@@ -22,6 +22,7 @@ function Model() {
     const [loading, setloading] = useState(true)
     const { userId } = useParams()
     const [isuser, setisUser] = useState(true)
+    const [coin, setCoin] = useState(0)
     const login_user = authModel.getAuthUserObj();
 
     useEffect(() => {
@@ -37,11 +38,27 @@ function Model() {
 
             setisUser(false)
         }
-               
+        //setUserCoin()
         return () => {
             console.log("clean model")
         }
     }, [])
+
+
+    const setUserCoin = () => {
+        usersModel.getAuthUser()
+        .then((res) => {
+            setCoin(res.data.data.creditPoints)
+        })
+        .catch((error) => {
+            setCoin(0)
+        })
+    }
+
+    const updateCoin = (coin) => {
+        setCoin(coin)
+    }
+
     const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
     return (
         (loading) ? <Loading /> :
@@ -51,11 +68,11 @@ function Model() {
                     {isuser &&
                         <div className="topChatontainerrow">
                             <div className="modelPictureContainer">
-                                <Article socket={socket} props={model} />
+                                <Article updateCoin={updateCoin} socket={socket} props={model} />
                             </div>
 
                             <div class="chatboxcontainer">
-                                <ModelChat socket={socket} props={model} login_user={login_user} />
+                                <ModelChat coin={coin} socket={socket} props={model} login_user={login_user} />
                             </div>
                         </div>
                     }

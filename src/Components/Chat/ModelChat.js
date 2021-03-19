@@ -4,7 +4,7 @@ import usersModel from '../../ApiManager/user';
 import Constants from '../../Config/Constants';
 const EndPoint = Constants.chatServer
 let socket
-const ModelChat = ({ socket, props, login_user }) => {
+const ModelChat = ({ coin, socket, props, login_user }) => {
     let guestuser = 'guest-' + generate(6)
     if (login_user) {
         guestuser = login_user.name
@@ -14,7 +14,6 @@ const ModelChat = ({ socket, props, login_user }) => {
     const [model, setModel] = useState(props.name)
     const [room, setRoom] = useState(props.id)
     const [name, setName] = useState(guestuser)
-    const [coin, setCoin] = useState(0)
 
     useEffect(() => {
         socket.emit('join', { name, room, model }) // Join user 
