@@ -18,6 +18,7 @@ class App extends BaseComponent {
     this.state = {
       authUser: null,
       redirect:null,
+      isAuthenticated:false,
       flashMessage:null
     }
 
@@ -25,6 +26,7 @@ class App extends BaseComponent {
   }
 
   handleEvent = (newState = this.state) => {
+    newState.isAuthenticated = (newState.authUser) ? true : false;
     this.setState(newState)
   }
 

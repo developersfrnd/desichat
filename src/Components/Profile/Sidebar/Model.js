@@ -24,6 +24,10 @@ function Model(props) {
                 <div className="widget widget_categories">
                     <ul>
                         <li>
+                            <Link to="/charges">Account & Charges</Link>
+                            <span className="grey"></span>
+                        </li>
+                        <li>
                             <Link to="/profile-edit">Edit Basic Info</Link>
                             <span className="grey"></span>
                         </li>

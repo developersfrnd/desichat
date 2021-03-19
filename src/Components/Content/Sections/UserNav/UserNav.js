@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom'
-import Aux from '../../../../hoc/Aux';
-import authModel from '../../../../ApiManager/auth';
+import Constants from '../../../../Config/Constants';
 import { AppContext } from '../../../../Context';
 
 function UserNav() {
 
+    const appContext = useContext(AppContext)
     const [isAuthenticated, setisAuthenticated] = useState(false);
     const [isCustomerLogin, setisCustomerLogin] = useState(false);
     
     useEffect(() => {
-        let authToken = authModel.getAuthToken();
-        if (authToken) {
-            setisCustomerLogin(authModel.isCustomerLogin());
-            setisAuthenticated(true);
-        }else{
-            setisAuthenticated(false);
-        }
+        setisAuthenticated(appContext.stateData.isAuthenticated);
+		let isCustomerLogin = (appContext.stateData.isAuthenticated && appContext.stateData.authUser.role == Constants.roles.user) ? true : false;
+        setisCustomerLogin(isCustomerLogin);
 
-    }, [isAuthenticated])
+    }, [appContext])
 
 
     return (
