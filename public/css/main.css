@@ -11486,7 +11486,9 @@ isotope portfolio and gallery pos
   border-radius: 3px;
 }
 .chat-body {
-  height: 95%;
+  max-height: 95%;
+  height: 200px;
+  min-height: 95%;
   overflow: auto;
   background-color: #0d0d0d;
   padding: 10px;
@@ -11656,6 +11658,7 @@ isotope portfolio and gallery pos
     align-items: center;
     text-align: center;
     vertical-align: middle;
+    padding-left: 200px;
 }
 
 .balance-coin {

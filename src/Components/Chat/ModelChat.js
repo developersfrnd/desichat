@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
-import usersModel from '../../ApiManager/user';
-import Constants from '../../Config/Constants';
-const EndPoint = Constants.chatServer
-let socket
+import parse from 'html-react-parser'
+
 const ModelChat = ({ coin, socket, props, login_user }) => {
     let guestuser = 'guest-' + generate(6)
     if (login_user) {
@@ -17,21 +14,24 @@ const ModelChat = ({ coin, socket, props, login_user }) => {
 
     useEffect(() => {
         socket.emit('join', { name, room, model }) // Join user 
-        socket.on('message', ({ name, message }) => {
-            setChat([...chat, { name, message }])
+        socket.on('welcome', ({ name, message }) => {
+            setChat([...chat, { name, message }]);
         })
-    }, [props])
+        socket.on('message', ({ name, message }) => {
+            setChat(chat => [...chat, { name, message }]);
+        })
+    }, [])
+    
 
     useEffect(() => {
         socket.on('receivemessage', ({ name, message }) => {
             if (message){
-                console.log("=====>" + message)
-                setChat([...chat, { name, message }])
+                setChat(chat => [...chat, { name, message }]);
                 var elem = document.getElementById('chatmessage');
                 elem.scrollTop = elem.scrollHeight;
             }
         })
-    }, [chat])
+    }, [])
 
     const TextChange = e => {
         setState({ ...state, [e.target.name]: e.target.value })
@@ -40,14 +40,14 @@ const ModelChat = ({ coin, socket, props, login_user }) => {
         e.preventDefault()
         const { message } = state
         if (message) {
-            socket.emit('sendmessage', { name, message })
+            socket.emit('sendmessage', { room, name, message })
             setState({ message: '' });
         }
     }
     const renderChat = () => {
         return (
             chat.map(({ name, message }, index) => (
-                <li class="media" key={index}><div class="media-body"><span class="bold fontsize_12 text-uppercase grey  with_padding">{name}:</span><span>{message}</span></div></li>
+                <li class="media" key={index}><div class="media-body"><span class="bold fontsize_12 text-uppercase grey">{`${name ? `${name} :   `: ''}`}</span><span class="bold fontsize_12">{parse(message)}</span></div></li>
             ))
         )
     }
@@ -72,6 +72,7 @@ const ModelChat = ({ coin, socket, props, login_user }) => {
                 <input
                     type="text"
                     name="message"
+                    autocomplete="off"
                     onChange={e => TextChange(e)}
                     value={state.message}
                     className="form-control"

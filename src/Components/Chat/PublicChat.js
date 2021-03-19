@@ -2,6 +2,7 @@ import { remove } from 'lodash';
 import React, {useState, useEffect} from 'react';
 import authModel from '../../ApiManager/auth';
 import usersModel from '../../ApiManager/user';
+import parse from 'html-react-parser'
 
 const PublicChat = ({modelname, modelroom, socket}) => {
     const [state, setState] = useState({message:''});
@@ -11,25 +12,29 @@ const PublicChat = ({modelname, modelroom, socket}) => {
 
     useEffect(() => { 
         socket.emit('modeljoin',{name, room}) // Join user 
-        socket.on('message', ({name, message}) => {
+
+        socket.on('welcome', ({name, message}) => {
             setChat([...chat, {name, message}])            
+        })
+        socket.on('message', ({name, message}) => {
+            setChat(chat => [...chat, { name, message }]);            
         })
         return () => {
             console.log("umounting")
                    
         } 
-    },[modelname, modelroom])
+    },[])
 
     useEffect(() => {  
         socket.on('receivemessage', ({name, message}) => {
-            setChat([...chat, {name, message}])
+            setChat(chat => [...chat, { name, message }]);
             var elem = document.getElementById('chatmessage');
             elem.scrollTop = elem.scrollHeight;
         })
         return () => {
             console.log("umounting")                  
         }        
-    }, [chat, name])
+    }, [])
 
     const TextChange = e => {
         setState({... state, [e.target.name]: e.target.value})
@@ -38,7 +43,7 @@ const PublicChat = ({modelname, modelroom, socket}) => {
         e.preventDefault()
         const {message} = state
         if (message) {
-            socket.emit('sendmessage', {name, message})
+            socket.emit('sendmessage', {room, name, message})
             setState({message:''});
         }
     }
@@ -46,7 +51,7 @@ const PublicChat = ({modelname, modelroom, socket}) => {
     const renderChat = () => {
         return (
             chat.map(({name, message}, index)=>(
-                <li class="media" key={index}><div class="media-body"><span class="bold fontsize_12 text-uppercase grey  with_padding">{name}:</span><span>{message}</span></div></li>
+                <li class="media" key={index}><div class="media-body"><span class="bold fontsize_12 text-uppercase grey">{`${name ? `${name} :   `: ''}`}</span><span class="bold fontsize_12">{parse(message)}</span></div></li>
             ))
         )
     }
@@ -74,6 +79,7 @@ const PublicChat = ({modelname, modelroom, socket}) => {
                                     <input 
                                         type="text" 
                                         name="message"
+                                        autocomplete="off"
                                         onChange={e=>TextChange(e)}
                                         value={state.message}
                                         className="form-control"/>

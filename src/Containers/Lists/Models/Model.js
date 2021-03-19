@@ -49,7 +49,7 @@ function Model() {
         setCoin(coin)
     }
 
-    const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
+    const socket = io.connect(EndPoint, {transports: [ 'websocket' ], verify:true})
     return (
         (loading) ? <Loading /> :
             <section className="ds section_padding_top_20 section_padding_bottom_50">

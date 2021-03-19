@@ -11,6 +11,7 @@
     "axios": "^0.19.2",
     "date-fns": "^2.15.0",
     "express": "^4.17.1",
+    "html-react-parser": "^1.2.4",
     "lodash": "^4.17.20",
     "random-number": "^0.0.9",
     "react": "^16.14.0",

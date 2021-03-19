@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'
-import io from "socket.io-client"
-import Constants from '../../Config/Constants';
 
 const VideoChat = ({socket, modelname, modelroom}) => {
     const [room, setRoom] = useState(modelroom)
@@ -30,8 +27,6 @@ const VideoChat = ({socket, modelname, modelroom}) => {
         ],
     }
     
-    const EndPoint = Constants.chatServer
-    //const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
     const lcpeerConnections = {}
     let directpeer
     let audio_constraints = {
