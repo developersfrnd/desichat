@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Article from '../../../Components/Models/Article'
 import Aside from '../../../Components/Models/Aside'
 import Filters from '../../../Components/Search/Filters/FIlters'
@@ -13,11 +13,12 @@ import io from "socket.io-client";
 import Summary from '../../../Components/Models/Summary';
 import AsideModels from '../../../Components/Models/AsideModels';
 import Constants from '../../../Config/Constants';
+import {AppContext} from '../../../Context'
 
 const EndPoint = Constants.chatServer
 
 function Model() {
-
+    const addcontext = useContext(AppContext) 
     const [model, setmodel] = useState({})
     const [loading, setloading] = useState(true)
     const { userId } = useParams()
@@ -38,22 +39,11 @@ function Model() {
 
             setisUser(false)
         }
-        //setUserCoin()
+        setCoin((addcontext.stateData.authUser ? addcontext.stateData.authUser.creditPoints : 0))
         return () => {
             console.log("clean model")
         }
     }, [])
-
-
-    const setUserCoin = () => {
-        usersModel.getAuthUser()
-        .then((res) => {
-            setCoin(res.data.data.creditPoints)
-        })
-        .catch((error) => {
-            setCoin(0)
-        })
-    }
 
     const updateCoin = (coin) => {
         setCoin(coin)
