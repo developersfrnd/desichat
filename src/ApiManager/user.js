@@ -62,6 +62,9 @@ const usersModel = {
     },
     addUpdateAccount: (data) => {
         return ApiCall.post(`account`, data, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
+    },
+    getAccountInfo: (data) => {
+        return ApiCall.get(`account`, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
     }
 }
 

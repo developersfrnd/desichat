@@ -1,9 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import Aux from '../../../hoc/Aux'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify';
+import { AppContext } from '../../../Context';
+import { useHistory } from "react-router-dom";
 
 function Model(props) {
 
+    const appContext = useContext(AppContext);
+    console.log(appContext);
+    const checkCharges = () => {
+        if(appContext.stateData.authUser.charge_per_minute !== undefined){
+            history.push('/chatboard')
+        }else{
+            toast.error('Please add your bank account and charge / min to start chat.');
+        }
+    }
+    
     return (
         <Aux>
             <div className="with_background with_padding">
@@ -60,7 +73,7 @@ function Model(props) {
                             <span className="grey"></span>
                         </li>
                         <li>
-                            <Link to="/chatboard">Start Chat</Link>
+                            <Link onClick={() => checkCharges()}>Start Chat</Link>
                             <span className="grey"></span>
                         </li>
                     </ul>
