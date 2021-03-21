@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom'
 import Like from '../../Like';
 
 const listItem = (props) => {
-    const profilePicture = (props.profilePicture) ? props.profilePicture : "img/no-image.jpg"
+    const profilePicture = (props.profilePicture) ? props.profilePicture : "/img/no-image.jpg"
     const countryFlag = (props.country) ? `<img src="images/flag/${props.country}.png" style={{width:"10%"}} />` : null
 
     return (
-        <div className="isotope-item col-lg-3 col-md-4 col-sm-4 fashion">
             <div className="vertical-item content-absolute">
                 <Like model_id={props.id} isLiked={props.is_liked} />
                 <div className="item-media">
@@ -59,7 +58,7 @@ const listItem = (props) => {
                             <div>
                                 <span className="bold">Group</span>
                                 <br />
-                                <span>30 Credit/min.</span>
+                                <span>{props.cherges} Credit/min.</span>
                             </div>
                         </div>
                         <div>
@@ -95,7 +94,6 @@ const listItem = (props) => {
                         : null
                 }
             </div>
-        </div>
     );
 }
 
