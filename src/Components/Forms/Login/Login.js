@@ -21,7 +21,15 @@ function Login() {
     useEffect(() => {
         let authToken = usersModel.authToken();
         if(authToken){
-            history.push('/profile');
+            if(!authUserContext.authUser){
+                usersModel.getAuthUser()
+                .then(user => {
+                    authUserContext.handleEvent({authUser:user.data.data})
+                    history.push('/profile');
+                })
+            }else{
+                history.push('/profile');
+            }
         }
     }, [])
     
@@ -34,7 +42,9 @@ function Login() {
                 history.push("/profile")
             })
             .catch((error) => {
-                toast.error(error.message)
+                if(error.response){
+                    toast.error(error.response.data.errors);
+                }
                 setinProgress(false);
             })
     }

@@ -71,7 +71,7 @@ function Model() {
                             <Summary {...model} />
                         </div>
                         <div class="similarModelContainer">
-                            <AsideModels />
+                            <AsideModels id={model.id} categories={model.categories} languages={model.languages} />
                         </div>
 
                     </div>

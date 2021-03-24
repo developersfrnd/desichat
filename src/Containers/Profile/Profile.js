@@ -13,14 +13,23 @@ import Sidebar from '../../Components/Profile/Sidebar';
 function Profile() {
 
     const [authUser, setauthUser] = useState({});
+    const [accountInfo, setaccountInfo] = useState({})
+    const [loading, setloading] = useState(false)
 
     useEffect(() => {
+        setloading(true);
         usersModel.getAuthUser()
         .then(user => {
             setauthUser(user.data.data);
+            usersModel.getAccountInfo()
+        })
+        .then((account) => {
+            setaccountInfo(account)
+            setloading(false);
         })
         .catch(error => {
             toast.error(error);
+            setloading(false);
         })
         
     }, [])
@@ -37,6 +46,8 @@ function Profile() {
                                     email={authUser.email} 
                                     gender={authUser.gender}
                                     DateOfBirth={authUser.dob}
+                                    chargePerMinute={authUser.cherges}
+                                    accountInfo={accountInfo}
                                 />
                             { (authUser.role == Constants.roles.model) ? 
                                 

@@ -16,13 +16,14 @@ function AccountCharges() {
     const [loading, setloading] = useState(true);
     const [inprogress, setinprogress] = useState(false)
     const [authUser, setauthUser] = useState('')
+    const [accountInfo, setaccountInfo] = useState({});
     const appContext = useContext(AppContext)
 
     useEffect(() => {
         setloading(true);
-        usersModel.getAuthUser()
+        usersModel.getAccountInfo()
         .then(user => {
-            setauthUser(user.data.data); 
+            setaccountInfo(user.data.data); 
         })
         .catch(error => {
             toast.error(error.message);
@@ -61,7 +62,7 @@ function AccountCharges() {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={authUser.charge_per_minute}
+                                        defaultValue={accountInfo.charge_per_minute}
                                         name="charge_per_minute"
                                         className="form-control"
                                         placeholder="Charge / Min"
@@ -76,7 +77,7 @@ function AccountCharges() {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={authUser.charge_per_minute}
+                                        defaultValue={accountInfo.account_name}
                                         name="account_name"
                                         className="form-control"
                                         placeholder="Account Holder Name"
@@ -91,7 +92,7 @@ function AccountCharges() {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={authUser.charge_per_minute}
+                                        defaultValue={accountInfo.bank_name}
                                         name="bank_name"
                                         className="form-control"
                                         placeholder="Bank Name"
@@ -106,7 +107,7 @@ function AccountCharges() {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={authUser.charge_per_minute}
+                                        defaultValue={accountInfo.account_number}
                                         name="account_number"
                                         className="form-control"
                                         placeholder="Account Number"
@@ -121,7 +122,7 @@ function AccountCharges() {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={authUser.charge_per_minute}
+                                        defaultValue={accountInfo.ifsc_code}
                                         name="ifsc_code"
                                         className="form-control"
                                         placeholder="IFSC Code"

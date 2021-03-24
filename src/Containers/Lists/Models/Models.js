@@ -99,7 +99,9 @@ function Models() {
                             <div className="isotope_container isotope row masonry-layout bottommargin_20" data-filters=".isotope_filters">
                                 {
                                     models.map(model => {
-                                        return <ListItem key={model.id}  {...model} />
+                                        return <div className="isotope-item col-lg-3 col-md-4 col-sm-4 fashion">
+                                                    <ListItem key={model.id}  {...model} />
+                                                </div>    
                                     })
                                 }
                             </div>
