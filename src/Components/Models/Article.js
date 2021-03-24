@@ -10,12 +10,17 @@ import PromptPopUp from './PromptPopUp';
 import { constant } from 'lodash';
 import usersModel from '../../ApiManager/user';
 import { toast } from 'react-toastify';
+import VolumeControl from '../Loaders/VolumeControl'
+import { ArrowsFullscreen } from 'react-bootstrap-icons';
+
 
 const Article = ({ updateCoin, socket, props }) => {
 
     const [token, settoken] = useState(null);
     const [channel, setchannel] = useState(null)
     const [isDirty, setDirty] = useState(true)
+    const [showvolume, setShowVolume] = useState(false)
+    const [volumerange, setVolumeRange] = useState(0.5)
     const [room, setRoom] = useState(props.id)
     const partnerVideo = React.useRef()
     const liveVideo = React.useRef(false)
@@ -89,11 +94,11 @@ const Article = ({ updateCoin, socket, props }) => {
             .then(() => {
                 socket.emit("answer", room, id, rtcPeerConnections[id].localDescription)
             }).catch(error => console.log(error))
-            rtcPeerConnections[id].ontrack = e => {          
-                console.log(e.streams[0])
+            rtcPeerConnections[id].ontrack = e => {      
                 document.getElementById("livevideochat").style.display = "block"
                 viewer.current.srcObject = e.streams[0]
                 document.getElementById("in-private-chat").style.display = 'none'
+                setShowVolume(true)
             }
             rtcPeerConnections[id].onicecandidate = e => {
                 if (e.candidate) {
@@ -126,6 +131,7 @@ const Article = ({ updateCoin, socket, props }) => {
             }
             document.getElementById("livevideochat").style.display = 'none'
             document.getElementById("in-private-chat").style.display = 'none'
+            setShowVolume(false)
         })
         
         socket.on("in_private_chat", (id) => {
@@ -142,11 +148,14 @@ const Article = ({ updateCoin, socket, props }) => {
                 video: true
             };
             directpeer = new RTCPeerConnection(iceServers)
-            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: audio_constraints}).then(stream => {
+            navigator.mediaDevices.getUserMedia({video:{facingMode: "user", frameRate:{ideal: 60,min: 10},width: { min: 640, ideal: 1920 },height: { min: 400, ideal: 1080 },aspectRatio: { ideal: 1.7777777778 }}, audio: audio_constraints}).then(stream => {
                 livestream.current.srcObject = stream           
                 //const stream = livestream.current.captureStream();
                 console.log(stream)
-                stream.getTracks().forEach(track => directpeer.addTrack(track, stream));
+                stream.getTracks().forEach((track) => {
+                    directpeer.addTrack(track, stream)
+                    console.log(track.getSettings());
+                });
             }).catch(error => console.log(error))
             directpeer.onicecandidate = e => {
                 if (e.candidate) {
@@ -251,6 +260,28 @@ const Article = ({ updateCoin, socket, props }) => {
         }) 
     }
 
+    const handelVolume = (value) => {
+        if (viewer.current.srcObject){
+           setVolumeRange(value)
+           viewer.current.volume = value
+        }
+    }
+
+    const onFullScreen = () => {
+        if (viewer.current.srcObject){
+            const remote_video = viewer.current;
+            if (remote_video.requestFullscreen) {
+                remote_video.requestFullscreen();
+            } else if (remote_video.msRequestFullscreen) {
+                remote_video.msRequestFullscreen();
+            } else if (remote_video.mozRequestFullScreen) {
+                remote_video.mozRequestFullScreen();
+            } else if (remote_video.webkitRequestFullscreen) {
+                remote_video.webkitRequestFullscreen();
+            }
+        }
+    }
+
     return (
         <article className="vertical-item post format-video with_background">
             <div className="entry-thumbnail">
@@ -272,13 +303,17 @@ const Article = ({ updateCoin, socket, props }) => {
                     {
                         (token) ? <Call token={token} channel={channel} /> : <img src={props.profilePicture} alt={props.name} />
                     }
-                    <video ref={viewer} autoPlay></video>
-                    <video ref={livestream} className="directvideo" autoPlay muted>                        
+                    <video ref={viewer} playsInline autoPlay></video>
+                    <video ref={livestream} className="directvideo" playsInline autoPlay muted>                        
                         <p>This browser does not support the video element.</p>
                     </video>
                     <div class="no-video" id="in-private-chat" style={{display: 'none' }}>
                         <div class="msg">I'm in Private Chat</div>
                     </div>
+                    { showvolume && <div className="volume"><VolumeControl
+                        onChange={handelVolume}
+                        value={volumerange}
+                    /> <ArrowsFullscreen onClick={onFullScreen} color="#e0006c" size={25} /></div>}
                 </div>
                 
                 <div className="localuser" id="livevideochat" style={{display: 'none' }}>

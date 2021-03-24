@@ -11672,3 +11672,8 @@ isotope portfolio and gallery pos
     border: 1px solid #d1d1d1;
     white-space: nowrap;
 }
+.volume {
+    position: absolute;
+    bottom: 5px;
+    cursor: pointer;
+}
