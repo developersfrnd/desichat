@@ -21,6 +21,7 @@ const Article = ({ updateCoin, socket, props }) => {
     const [isDirty, setDirty] = useState(true)
     const [showvolume, setShowVolume] = useState(false)
     const [volumerange, setVolumeRange] = useState(0.5)
+    const [privatechat, setPrivateChat] = useState(false)
     const [room, setRoom] = useState(props.id)
     const partnerVideo = React.useRef()
     const liveVideo = React.useRef(false)
@@ -97,7 +98,7 @@ const Article = ({ updateCoin, socket, props }) => {
             rtcPeerConnections[id].ontrack = e => {      
                 document.getElementById("livevideochat").style.display = "block"
                 viewer.current.srcObject = e.streams[0]
-                document.getElementById("in-private-chat").style.display = 'none'
+                setPrivateChat(false)
                 setShowVolume(true)
             }
             rtcPeerConnections[id].onicecandidate = e => {
@@ -130,13 +131,13 @@ const Article = ({ updateCoin, socket, props }) => {
                 disConnectLiveChat()
             }
             document.getElementById("livevideochat").style.display = 'none'
-            document.getElementById("in-private-chat").style.display = 'none'
+            setPrivateChat(false)
             setShowVolume(false)
         })
         
         socket.on("in_private_chat", (id) => {
             document.getElementById("livevideochat").style.display = 'none'
-            document.getElementById("in-private-chat").style.display = 'block'
+            setPrivateChat(true)
         })
        
         socket.on('iniatevideo', (id) => {
@@ -189,14 +190,16 @@ const Article = ({ updateCoin, socket, props }) => {
         socket.on('livechat', () => {
             viewer.current.srcObject = null
             document.getElementById("livevideochat").style.display = 'none'
-            document.getElementById("in-private-chat").style.display = 'block'
+            setPrivateChat(true)
+            setShowVolume(false)
         })
 
         socket.on('livechatremove', () => {
             console.log("live chat remove")
             document.getElementById("livevideochat").style.display = 'block'
-            document.getElementById("in-private-chat").style.display = 'none'
-            socket.emit("register as viewer", room);            
+            setPrivateChat(false)
+            socket.emit("register as viewer", room);  
+            setShowVolume(true)          
         })
 
         socket.on('deniedchat', (id) => {
@@ -235,14 +238,14 @@ const Article = ({ updateCoin, socket, props }) => {
             liveVideo.current = false
             streamid.current = 0
             document.getElementById("livevideochat").style.display = 'block'
-            document.getElementById("in-private-chat").style.display = 'none'
+            setPrivateChat(false)
             stopReduce()
     }
 
     function onLiveVideoChat() {
-        usersModel.checkUserCoin({'room_id':room}).then( () => {
-            document.getElementById("livevideochat").style.display = 'none'
-            document.getElementById("livevideochatmessage").style.display = 'block'
+        document.getElementById("livevideochat").style.display = 'none'
+        document.getElementById("livevideochatmessage").style.display = 'block'
+        usersModel.checkUserCoin({'room_id':room}).then( () => {            
             socket.emit("privatevideo", room)
         }).catch( (error) => {
             document.getElementById("livevideochat").style.display = 'block'
@@ -307,9 +310,9 @@ const Article = ({ updateCoin, socket, props }) => {
                     <video ref={livestream} className="directvideo" playsInline autoPlay muted>                        
                         <p>This browser does not support the video element.</p>
                     </video>
-                    <div class="no-video" id="in-private-chat" style={{display: 'none' }}>
+                    { privatechat && <div class="no-video" id="in-private-chat">
                         <div class="msg">I'm in Private Chat</div>
-                    </div>
+                    </div>}
                     { showvolume && <div className="volume"><VolumeControl
                         onChange={handelVolume}
                         value={volumerange}

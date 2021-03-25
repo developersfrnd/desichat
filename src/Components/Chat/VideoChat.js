@@ -201,6 +201,7 @@ const VideoChat = ({socket, modelname, modelroom}) => {
         e.preventDefault()
         if(permission == "Yes"){
             socket.emit("acceptchat", currentviewer.current)
+            document.getElementById("videochatpermission").style.display = 'none'
         }else{
             socket.emit("deniedchat", currentviewer.current)
             document.getElementById("videochatpermission").style.display = 'none'

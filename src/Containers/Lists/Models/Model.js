@@ -47,6 +47,7 @@ function Model() {
 
     const updateCoin = (coin) => {
         setCoin(coin)
+        addcontext.stateData.authUser.creditPoints = coin
     }
 
     const socket = io.connect(EndPoint, {transports: [ 'websocket' ], verify:true})
