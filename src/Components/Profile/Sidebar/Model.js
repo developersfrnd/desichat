@@ -8,9 +8,11 @@ import { useHistory } from "react-router-dom";
 function Model(props) {
 
     const appContext = useContext(AppContext);
+    const history = useHistory()
+    
     console.log(appContext);
     const checkCharges = () => {
-        if(appContext.stateData.authUser.charge_per_minute !== undefined){
+        if(appContext.stateData.authUser.charges !== undefined){
             history.push('/chatboard')
         }else{
             toast.error('Please add your bank account and charge / min to start chat.');
