@@ -21,15 +21,9 @@ const PromptPopUp = ({isDirtystatus, modelroom, socket}) => {
         e.returnValue = ''
     }
     const handleEndConcert = (e) => {
-       (isDirty &&
-            usersModel.offlineuser()
-            .then( response => {
-                socket.emit("leaveroom", room)
-            })
-            .catch((error) => { 
-                this.showMessage(error);
-            })
-       )
+        if(isDirty){
+            socket.emit("leaveroom", room)
+        }
     }
     return (
             <Prompt

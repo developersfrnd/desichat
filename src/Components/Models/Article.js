@@ -75,6 +75,10 @@ const Article = ({ updateCoin, socket, props }) => {
         mozNoiseSuppression: true,
         mozAutoGainControl: true
     }
+
+    socket.on("connect", () => {
+        console.log('Connected with', socket.id); // x8WIv7-mJelg7on_ALbx
+    });
     
     useEffect(() => {
         stopReduce()

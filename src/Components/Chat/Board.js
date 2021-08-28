@@ -28,9 +28,9 @@ class Board extends BaseComponent {
     componentDidMount(){
         usersModel.getAuthUser()
             .then( response => {
-                    if(!response.data.data.is_online){
-                        usersModel.onlineuser()
-                    }
+                    // if(!response.data.data.is_online){
+                    //     usersModel.onlineuser()
+                    // }
                     this.setState({
                     ...this.state,
                     user: response.data.data,
