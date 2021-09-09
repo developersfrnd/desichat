@@ -1,16 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
+import SubmitBtn from '../SubmitBtn'
 import Aux from '../../../hoc/Aux'
 import {useForm } from 'react-hook-form'
 import Messages from '../../../Config/Messages';
 import ValidationError from '../ValidationError'
+import { toast } from 'react-toastify'
+import { useHistory } from "react-router-dom";
+import usersModel from '../../../ApiManager/user'
 
 function Contact() {
 
     const { register, handleSubmit, errors } = useForm();
 
-    const onSubmit = (data) => {
-        alert(data);
-        console.log(data);
+	const [inProgress, setinProgress] = useState(false)
+    const history = useHistory()
+
+	const onSubmit = (data) => {
+        setinProgress(true);
+        usersModel.contactus(data)
+            .then((res) => {
+				toast.success(res.data.message);
+				setinProgress(false);
+				document.getElementById("contactForm").reset();
+            })
+            .catch((error) => {
+                if(error.response){
+                    toast.error(error.response.data.errors);
+                }
+                setinProgress(false);
+            })
     }
 
     return (
@@ -21,28 +39,19 @@ function Contact() {
 						<div className="col-sm-4">
 							<div className="teaser text-center">
 								<h4 className="bottommargin_20">Reception</h4>
-								Helena
-								<br />
-								<span className="highlight">helena@reception.com</span>
-								<br /> 8 (800) 456-2698
+								<span className="highlight">support@desisexichat.com</span>
 							</div>
 						</div>
 						<div className="col-sm-4 with_border">
 							<div className="teaser text-center">
 								<h4 className="bottommargin_20">Booking</h4>
-								James
-								<br />
-								<span className="highlight">james@booking.com</span>
-								<br /> 8 (800) 456-2643
+								<span className="highlight">info@desisexichat.com</span>
 							</div>
 						</div>
 						<div className="col-sm-4">
 							<div className="teaser text-center">
 								<h4 className="bottommargin_20">President</h4>
-								Robert
-								<br />
-								<span className="highlight">robert@president.com</span>
-								<br /> 8 (800) 456-5848
+								<span className="highlight">admin@desisexichat.com</span>
 							</div>
 						</div>
 					</div>
@@ -56,7 +65,7 @@ function Contact() {
 							<h2 className="big margin_0">Contact Us</h2>
 							<h2 className="muellerhoff topmargin_5 bottommargin_50 highlight">Contact Form</h2>
 
-							<form className="contact-form" onSubmit={handleSubmit(onSubmit)}>
+							<form className="contact-form" id="contactForm" onSubmit={handleSubmit(onSubmit)}>
 								<div className="form-group">
 									<label htmlFor="name" className="sr-only">Full Name
 										<span className="required">*</span>
@@ -97,7 +106,7 @@ function Contact() {
                                     {errors.message &&  <ValidationError message={errors.description.message} />}
 								</div>
 
-								<button type="submit" id="contact_form_submit" name="contact_submit" className="theme_button color1">Send</button>
+								<SubmitBtn inprogress={inProgress} value="Send" />
 								<button type="reset" id="contact_form_clear" name="contact_clear" className="theme_button inverse bottommargin_0">Clear</button>
 							</form>
 						</div>

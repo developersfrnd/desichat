@@ -30,6 +30,9 @@ const usersModel = {
     postUser: (data) => {
         return ApiCall.post('signup',data)
     },
+    contactus:(data) => {
+        return ApiCall.post(`contactus`, data)
+    },
 
     updateUser: (data) => {
         let user_id = data.id;
@@ -65,7 +68,7 @@ const usersModel = {
     },
     getAccountInfo: (data) => {
         return ApiCall.get(`account`, {headers:{Authorization: `Bearer ${authModel.getAuthToken()}`}})
-    }
+    },
 }
 
 export default usersModel;

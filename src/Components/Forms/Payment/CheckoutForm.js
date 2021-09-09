@@ -134,12 +134,14 @@ const SplitForm = (props) => {
         seterrorObject(error);
       }else{
         let pm = await createPaymentMethod();
-        console.log(pm.paymentMethod.id)
-        
-        if(pm.paymentMethod.id){
-          setloading(true);
-          confirmPayment();
-        }
+        if(pm.error){
+          toast.error(pm.error.message);
+        }else{
+          if(pm.paymentMethod.id){
+            setloading(true);
+            confirmPayment();
+          }
+        }  
       }
     };
 

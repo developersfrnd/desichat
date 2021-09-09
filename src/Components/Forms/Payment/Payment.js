@@ -6,7 +6,7 @@ import Sidebar from '../../Profile/Sidebar'
 import userModel from '../../../ApiManager/user'
 
 
-const stripePromise = loadStripe("pk_test_51HNjZOIX1zbhIrFLSzy1OUP4WBdWJ3LQCUQJR4NbV5RM4P60lDsgmieKOrSPqPxTIPU9aYNCFMwnwOPz2jvvvqSb00QH4NMMe4");
+const stripePromise = loadStripe("pk_live_51JViN3SIdXw5Deq1VhjDlpUOgubnt1LKteSM4f5NOG1sbq9nbGTEZycIBK6Gm2gU7Lnvg6QgI3591wimrF1umh3C00DwiRiElS");
 
 function Payment() {
 
