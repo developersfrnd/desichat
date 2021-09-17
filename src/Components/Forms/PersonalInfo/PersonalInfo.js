@@ -165,15 +165,6 @@ function PersonalInfo() {
                             </div>
 
                             <div className="form-group col-md-12">
-                                <label htmlFor="phone" className="sr-only">Phone Number
-                                    <span className="required">*</span>
-                                </label>
-                                <input type="text" name="phone" className="form-control" placeholder="Phone Number" defaultValue={authUser.phone} ref={register({required:{value:true,message:Messages.isRequired}})} />
-                                <i className="rt-icon2-pen2"></i>
-                                {errors.phone && <ValidationError message={errors.phone.message} />}
-                            </div>
-
-                            <div className="form-group col-md-12">
                                 <label htmlFor="profile_picture" className="sr-only">Profile Picture
                                     <span className="required">*</span>
                                 </label>
