@@ -39,19 +39,19 @@ function Contact() {
 						<div className="col-sm-4">
 							<div className="teaser text-center">
 								<h4 className="bottommargin_20">Reception</h4>
-								<span className="highlight">support@desisexichat.com</span>
+								<span className="highlight">support@dsc.com</span>
 							</div>
 						</div>
 						<div className="col-sm-4 with_border">
 							<div className="teaser text-center">
 								<h4 className="bottommargin_20">Booking</h4>
-								<span className="highlight">info@desisexichat.com</span>
+								<span className="highlight">info@dsc.com</span>
 							</div>
 						</div>
 						<div className="col-sm-4">
 							<div className="teaser text-center">
 								<h4 className="bottommargin_20">President</h4>
-								<span className="highlight">admin@desisexichat.com</span>
+								<span className="highlight">admin@dsc.com</span>
 							</div>
 						</div>
 					</div>

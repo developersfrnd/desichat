@@ -30,6 +30,10 @@ export default function Video(props) {
         }        
     }
 
+    const deletVideo = () => {
+        props.removeVideo(props.video.id)
+    }
+
     const buynowEventHandler = () => {
         if(!usersModel.authToken()){
             history.push("/login")
@@ -78,6 +82,7 @@ export default function Video(props) {
                 <h4><a href="gallery-single.html">{props.video.title}</a></h4>
                 <span className="categories-links">
                     <Link className="theme_button small_button color1">Credit Points : {props.video.creditPoints}</Link>
+                    <Link className="theme_button small_button color2" onClick={deletVideo}>Delete Video</Link>
                     {
                         (props.video.name) ? 
                         <Link className="theme_button small_button color2" onClick={clickEventHandler}>View Video</Link>

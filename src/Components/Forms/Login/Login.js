@@ -8,6 +8,8 @@ import usersModel from '../../../ApiManager/user'
 import { toast } from 'react-toastify'
 import { useHistory } from "react-router-dom";
 import authModel from '../../../ApiManager/auth'
+import Verify from '../Registration/Verify'
+import { Link } from 'react-router-dom'
 
 function Login() {
 
@@ -37,9 +39,13 @@ function Login() {
         setinProgress(true);
         usersModel.loginUser(data)
             .then((res) => {
-                authModel.setAuthToken(res.data.data)
-                authUserContext.handleEvent({authUser:res.data.data})
-                history.push("/profile")
+                if (res.data.data.emailVerified){
+                    authModel.setAuthToken(res.data.data)
+                    authUserContext.handleEvent({authUser:res.data.data})
+                    history.push("/profile")
+                }else{
+                    history.push('/verify-email');
+                }
             })
             .catch((error) => {
                 if(error.response){
@@ -54,26 +60,23 @@ function Login() {
                 <div className="container">
 					<div className="row">
 						<div className="col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6 text-center">
-							<h2 className="big margin_0">Login</h2>
-							<h2 className="muellerhoff topmargin_5 bottommargin_50 highlight">Login Form</h2>
-
-							<form className="contact-form" method="post" onSubmit={ handleSubmit(submitEventHandler) }>
-
+                            <form className="contact-form" method="post" onSubmit={ handleSubmit(submitEventHandler) }>
+                                <h2 className="big margin_0">Login</h2>
+							    <h2 className="muellerhoff topmargin_5 bottommargin_50 highlight">Login Form</h2>
                                 <div className="form-group col-md-12">
-                                    <label htmlFor="email" className="sr-only">Email
+                                    <label htmlFor="username" className="sr-only">Username
                                         <span className="required">*</span>
                                     </label>
                                     <input 
-                                        type="email" 
-                                        name="email" 
+                                        type="username" 
+                                        name="username" 
                                         className="form-control" 
-                                        placeholder="email" 
+                                        placeholder="Username*" 
                                         ref={register({
-                                            required:{value:true,message:Messages.isRequired},
-                                            pattern: {value: emailRejx, message:Messages.isEmail}
+                                            required:{value:true,message:Messages.isRequired}
                                         })}
                                     />
-                                    {errors.email && <ValidationError message={errors.email.message} />}
+                                    {errors.username && <ValidationError message={errors.username.message} />}
                                 </div>
                                 
 
@@ -85,15 +88,16 @@ function Login() {
                                         type="password" 
                                         name="password" 
                                         className="form-control" 
-                                        placeholder="Password" 
+                                        placeholder="Password*" 
                                         ref={register({required:{value:true,message:Messages.isRequired}})}
                                     />
                                     {errors.password && <ValidationError message={errors.password.message} />}
                                 </div>    
 
                                 <SubmitBtn inprogress={inProgress} value="Login" />
-							</form><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-						</div>
+                                <Link to="/forgotpassword" className="theme_button bottommargin_0"> Forgot Password </Link>
+							</form>
+                        </div>
 					</div>
 				</div>
 			</section>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useContext } from "react";
+import React, { useMemo, useState, useContext, useEffect } from "react";
 import { useStripe, useElements, CardNumberElement, CardCvcElement, CardExpiryElement } from "@stripe/react-stripe-js";
 import useResponsiveFontSize from "./useResponsiveFontSize";
 import ValidationError from "../ValidationError";
@@ -44,6 +44,7 @@ const SplitForm = (props) => {
     const [loading, setloading] = useState(false);
     const [creditPoints, setcreditPoints] = useState('')
     const [errorObject, seterrorObject] = useState('')
+    const [mincreditpoint, setMinCreditPoint] = useState(0)
 
     const authUserContext = useContext(AppContext)
         
@@ -55,6 +56,12 @@ const SplitForm = (props) => {
         setcreditPoints(cp)
       }
     }
+
+    useEffect(() => {
+      orderModel.getSettingData().then((res)=>{
+        setMinCreditPoint(res.data.data.minCreditPurchase)
+      })
+    }, []);
 
     const createPaymentMethod = async () => {
         const payload = await stripe.createPaymentMethod({
@@ -128,20 +135,27 @@ const SplitForm = (props) => {
         // Make sure to disable form submission until Stripe.js has loaded.
         return;
       }
+
+      let min_points = 100
       
       if(creditPoints == '' || creditPoints == undefined){
         let error = {'type':'validation_error', 'code':'incomplete_creditPoints', 'message':Messages.isRequired};
         seterrorObject(error);
       }else{
-        let pm = await createPaymentMethod();
-        if(pm.error){
-          toast.error(pm.error.message);
+        if(creditPoints < mincreditpoint){
+          let error = {'type':'validation_error', 'code':'incomplete_creditPoints', 'message':'Min credit point should be '+mincreditpoint+' or more than '+mincreditpoint};
+          seterrorObject(error);
         }else{
-          if(pm.paymentMethod.id){
-            setloading(true);
-            confirmPayment();
-          }
-        }  
+          let pm = await createPaymentMethod();
+          if(pm.error){
+            toast.error(pm.error.message);
+          }else{
+            if(pm.paymentMethod.id){
+              setloading(true);
+              confirmPayment();
+            }
+          }  
+        }
       }
     };
 

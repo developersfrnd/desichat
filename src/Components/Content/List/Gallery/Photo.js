@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import FsLightbox from 'fslightbox-react';
+import { Link } from 'react-router-dom';
 
 function Photo(props) {
 
@@ -9,6 +10,9 @@ function Photo(props) {
     const clickEventHandler = () => {
         setfslightSource(`${props.photo.name}`);
         settoggler(!toggler)
+    }
+    const removePhoto = () => {
+        props.deletePhoto(props.photo.id)
     }
 
     return (
@@ -33,6 +37,7 @@ function Photo(props) {
             <div className="item-title text-center">
                 <h4>{props.photo.title}</h4>
                 <span className="categories-links">
+                <Link className="theme_button small_button color2" onClick={removePhoto}>Delete Photo</Link>
                     <a rel="category" href="javascript:;" onClick={clickEventHandler} className="theme_button small_button color1">
                         {props.photo.tag}
                     </a>

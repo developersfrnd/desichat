@@ -10,18 +10,28 @@ import usersModel from '../../../ApiManager/user';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import authModel from '../../../ApiManager/auth';
 import { AppContext } from '../../../Context';
+import Verify from './Verify';
 
 function Registration() {
 
     const { register, handleSubmit, errors, watch } = useForm();
     const [dob, setdob] = useState(Constants.adultAgeDate());
     const [inprogress, setinprogress] = useState(false)
+    const [verify, setVerify] = useState(false)
+    const [email, setEmail] = useState('')
     const passwordVal = watch('password')
     const { userType } = useParams()
     const registrationType = (userType == 'model') ? 'Model' : 'Customer'
     const emailRejx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const history = useHistory();
     const AppContextValue = useContext(AppContext)
+
+    const onSucess = (res) => {
+        authModel.setAuthToken(res.data.data)
+        AppContextValue.handleEvent({ authUser: res.data.data })
+        let pushUrl = (userType === 'model') ? '/personal' : '/profile';
+        history.push(pushUrl)
+    }
 
     const onSubmit = (data) => {
         setinprogress(true);
@@ -33,20 +43,24 @@ function Registration() {
                     setinprogress(false);
                 } else {
                     data['dob'] = dob;
-                    data['role'] = Constants.roles[userType];
+                    data['role'] = Constants.roles[userType];                   
                     return usersModel.postUser(data)
                 }
             })
             .then(res => {
                 if (res !== undefined) {
                     setinprogress(false);
-                    authModel.setAuthToken(res.data.data)
-                    AppContextValue.handleEvent({ authUser: res.data.data })
-                    let pushUrl = (userType === 'model') ? '/personal' : '/profile';
-                    history.push(pushUrl)
+                    setVerify(true)
+                    setEmail(res.data.data.email)
+                    
                 }
             })
-            .catch(error => console.log(error))
+            .catch((error) => {
+                if (error.response) {
+                    toast.error(error.response.data.message)
+                } 
+                setinprogress(false);
+            })
     };
 
     return (
@@ -54,17 +68,34 @@ function Registration() {
             <div className="container">
                 <div className="row">
                     <div className="col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6 text-center">
-                        <h2 className="big margin_0">Free Registration</h2>
-                        <h2 className="muellerhoff topmargin_5 bottommargin_50 highlight">Register as a {registrationType}</h2>
-                        <form className="contact-form" method="post" onSubmit={handleSubmit(onSubmit)}>
+                        
+                        {
+                            
+                            !verify ?
+                        (<form className="contact-form" method="post" onSubmit={handleSubmit(onSubmit)}>
+                            <h2 className="big margin_0">Free Registration</h2>
+                            <h2 className="muellerhoff topmargin_5 bottommargin_50 highlight">Register as a {registrationType}</h2>
                             <div className="form-group col-md-12">
-                                <label htmlFor="name" className="sr-only">Full Name
+                                <label htmlFor="name" className="sr-only">Username
+                                    <span className="required">*</span>
+                                </label>
+                                <input type="text"
+                                    name="username"
+                                    className="form-control"
+                                    placeholder="Username*"
+                                    ref={register({ required: { value: true, message: Messages.isRequired } })}
+                                />
+                                <i className="rt-icon2-pen2"></i>
+                                {errors.username && <ValidationError message={errors.username.message} />}
+                            </div>
+                            <div className="form-group col-md-12">
+                                <label htmlFor="name" className="sr-only">Screen Name
                                     <span className="required">*</span>
                                 </label>
                                 <input type="text"
                                     name="name"
                                     className="form-control"
-                                    placeholder="Full Name"
+                                    placeholder="Screen Name*"
                                     ref={register({ required: { value: true, message: Messages.isRequired } })}
                                 />
                                 <i className="rt-icon2-pen2"></i>
@@ -78,7 +109,7 @@ function Registration() {
                                 <input type="text"
                                     name="email"
                                     className="form-control"
-                                    placeholder="Email Address"
+                                    placeholder="Email Address*"
                                     ref={register({
                                         required: { value: true, message: Messages.isRequired },
                                         pattern: { value: emailRejx, message: Messages.isEmail },
@@ -96,7 +127,7 @@ function Registration() {
                                 <input type="password"
                                     name="password"
                                     className="form-control"
-                                    placeholder="Password"
+                                    placeholder="Password*"
                                     ref={register({ required: { value: true, message: Messages.isRequired }, minLength: { value: Constants.minPasswordLength, message: Messages.minLength } })}
                                 />
                                 <i className="rt-icon2-lock-closed-outline"></i>
@@ -110,7 +141,7 @@ function Registration() {
                                 <input type="password"
                                     name="password_confirmation"
                                     className="form-control"
-                                    placeholder="Confirm Password"
+                                    placeholder="Confirm Password*"
                                     ref={register({
                                         validate: value => value == passwordVal,
                                     })}
@@ -137,11 +168,11 @@ function Registration() {
 
                                     <div className="form-group col-sm-6 radioOuter">
                                         <div className="col-xs-6">
-                                            <label className="radioContainer"> Male
+                                            <label className="radioContainer"> Female
                                         <input
                                                     type="radio"
                                                     name="gender"
-                                                    value={Constants.gender.male}
+                                                    value={Constants.gender.female}
                                                     className="form-control"
                                                     defaultChecked={true}
                                                     ref={register}
@@ -149,11 +180,11 @@ function Registration() {
                                             </label>
                                         </div>
                                         <div className="col-xs-6">
-                                            <label className="radioContainer"> FeMale
+                                            <label className="radioContainer"> Male
                                         <input
                                                     type="radio"
                                                     name="gender"
-                                                    value={Constants.gender.female}
+                                                    value={Constants.gender.male}
                                                     className="form-control"
                                                     ref={register}
                                                 />
@@ -178,7 +209,10 @@ function Registration() {
 
                             <SubmitBtn inprogress={inprogress} value="Submit" />
                             <button type="reset" id="contact_form_clear" name="contact_clear" className="theme_button inverse bottommargin_0">Clear</button>
-                        </form>
+                        </form>)
+                        
+                            : <Verify email={email} onSucess={onSucess} />
+                        }
                     </div>
                 </div>
             </div>

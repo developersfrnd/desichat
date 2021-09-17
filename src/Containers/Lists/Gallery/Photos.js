@@ -12,7 +12,8 @@ function Photos() {
     const [photos, setPotos] = useState([]);
     const [loading, setloading] = useState(true)
 	const [page, setpage] = useState(1)
-	
+	const [listchange, setListChange] = useState(false)
+
     useEffect(() => {
         PhotoModel.getPhotos({params:{page:page}})
             .then((res) => {
@@ -23,7 +24,19 @@ function Photos() {
                 toast(error.message)
                 setloading(false)
             })    
-    }, [page])
+    }, [page, listchange])
+
+    const deletePhoto = (id) => {
+        PhotoModel.deletePhoto(id)
+            .then((res)=>{
+                setloading(false)
+                setListChange(!listchange)
+            })
+            .catch(error => {
+                toast(error.message)
+                setloading(false)
+            })
+    }
 
 	const clickPageNumberHandler = (pageNumber) => {
         setpage(pageNumber);
@@ -44,7 +57,8 @@ function Photos() {
 									return <Photo
 										key={photo.id}  
 										photo={photo}
-										imageIndex={Index+1} 
+										imageIndex={Index+1}
+                                        deletePhoto={deletePhoto}
 									/>
 								})
 							}

@@ -24,11 +24,28 @@ const usersModel = {
         return ApiCall.post(`isEmailAvalaible`,data);
     },
 
+    forgotpasswordtoken: (data) => {
+        return ApiCall.post(`forgotpasswordtoken`,data);
+    },
+
+    setPassword: (data) => {
+        return ApiCall.post(`setpassword`,data);
+    },
+
     loginUser: (data) => {
         return ApiCall.post('login',data)
     }, 
     postUser: (data) => {
         return ApiCall.post('signup',data)
+    },
+    verifyUser: (data) => {
+        return ApiCall.post('verify',data)
+    },
+    resend: (data) => {
+        return ApiCall.post('user/resend',data)
+    },
+    getVerificationCode: (data) => {
+        return ApiCall.post('user/resend',data)
     },
     contactus:(data) => {
         return ApiCall.post(`contactus`, data)

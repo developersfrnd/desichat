@@ -13,6 +13,7 @@ function MyVideos() {
     const [videos, setVideos] = useState([]);
     const [loading, setloading] = useState(true)
     const [page, setpage] = useState(1)
+    const [listchange, setListChange] = useState(false)
     
     useEffect(() => {
         VideoModel.getMyVideos({params:{page:page}})
@@ -24,8 +25,20 @@ function MyVideos() {
                 toast(error.message)
                 setloading(false)
             })    
-    }, [page])
+    }, [page, listchange])
 
+
+    const deleteVideo = (id) => {
+        VideoModel.deleteVideo(id)
+            .then((res)=>{
+                setloading(false)
+                setListChange(!listchange)
+            })
+            .catch(error => {
+                toast(error.message)
+                setloading(false)
+            })
+    }
     
     const clickPageNumberHandler = (pageNumber) => {
         setpage(pageNumber);
@@ -47,6 +60,7 @@ function MyVideos() {
 										key={video.id}  
 										video={video}
                                         videoIndex={Index}
+                                        removeVideo={deleteVideo}
                                     />
 								})
 							}

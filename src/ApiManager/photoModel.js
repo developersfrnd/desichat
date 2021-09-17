@@ -12,7 +12,10 @@ const photoModel = {
     },
     postPhotos: (data) => {
         return ApiCall.post('galleries',data,{headers:{Authorization: `Bearer ${userModel.authToken()}`}})
-    }
+    },
+    deletePhoto: (id,paramObj={}) => {
+        return ApiCall.delete(`galleries/${id}`, {...paramObj,headers:{Authorization: `Bearer ${userModel.authToken()}`}});
+    },
 }
 
 export default photoModel;

@@ -27,6 +27,8 @@ import AddEditSchedule from '../Components/Forms/Schedules/AddEditSchedule';
 import Bookings from '../Components/Bookings/Bookings';
 import Board from "../Components/Chat/Board";
 import AccountCharges from "../Components/Forms/Account-charges/AccountCharges"
+import ForgotPassword from '../Components/Forms/ForgotPassword/ForgotPassword';
+import EmailVerification from '../Components/Forms/EmailVerification/EmailVerification';
 
 
 class PageRoutes extends BaseComponent {
@@ -49,6 +51,8 @@ class PageRoutes extends BaseComponent {
                 <Route path="/content/:slug" exact component={Content} />
                 <Route path="/faq" exact component={Faq} />
                 <Route path="/contact" exact component={Contact} />
+                <Route path="/forgotpassword" exact component={ForgotPassword} />
+                <Route path="/verify-email" exact component={EmailVerification} />
                 
                 <Authenticated>
                     <Route path="/personal" exact component={PersonalInfo} />

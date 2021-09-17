@@ -9,6 +9,9 @@ const orderModel = {
     postOrder: (data) => {
         return ApiCall.post('orders',data,{headers:{Authorization: `Bearer ${userModel.authToken()}`}})
     },
+    getSettingData: (paramObj={}) => {
+        return ApiCall.get('setting',{...paramObj,headers:{Authorization: `Bearer ${userModel.authToken()}`}})
+    },
     getOrders: (paramObj={}) => {
         return ApiCall.get('orders',{...paramObj,headers:{Authorization: `Bearer ${userModel.authToken()}`}})
     },

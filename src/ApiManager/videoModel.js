@@ -16,7 +16,10 @@ const videoModel = {
 
     postVideos: (data) => {
         return ApiCall.post('videos',data,{headers:{Authorization: `Bearer ${userModel.authToken()}`}})
-    }
+    },
+    deleteVideo: (videoId) => {
+        return ApiCall.delete(`videos/${videoId}`, {headers:{Authorization: `Bearer ${userModel.authToken()}`}});
+    },
 }
 
 export default videoModel;
