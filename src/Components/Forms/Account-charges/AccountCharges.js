@@ -7,7 +7,7 @@ import Sidebar from '../../Profile/Sidebar';
 import { toast } from 'react-toastify';
 import ValidationError from '../ValidationError';
 import SubmitBtn from '../SubmitBtn';
-import { AppContext } from '../../../Context';
+import authModel from '../../../ApiManager/auth';
 
 function AccountCharges() {
 
@@ -17,7 +17,7 @@ function AccountCharges() {
     const [inprogress, setinprogress] = useState(false)
     const [authUser, setauthUser] = useState('')
     const [accountInfo, setaccountInfo] = useState({});
-    const appContext = useContext(AppContext)
+    
 
     useEffect(() => {
         setloading(true);
@@ -37,7 +37,8 @@ function AccountCharges() {
         setinprogress(true);
         usersModel.addUpdateAccount(data)
             .then((res) => {
-                appContext.handleEvent({authUser:{...appContext.stateData.authUser,'charge_per_minute':res.data.charge_per_minute}});
+                let userObj = authModel.getAuthUserObj();
+                authModel.setAuthToken({...userObj,charges:res.data.data.charge_per_minute});
                 setinprogress(false);
                 toast.success(Messages.successMessage);
             })

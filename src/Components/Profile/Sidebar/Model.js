@@ -2,17 +2,16 @@ import React, { useEffect, useContext } from 'react'
 import Aux from '../../../hoc/Aux'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { AppContext } from '../../../Context';
 import { useHistory } from "react-router-dom";
+import authModel from '../../../ApiManager/auth';
 
 function Model(props) {
 
-    const appContext = useContext(AppContext);
     const history = useHistory()
-    
-    console.log(appContext);
+    const userObj = authModel.getAuthUserObj();
+
     const checkCharges = () => {
-        if(appContext.stateData.authUser.charges !== undefined){
+        if(userObj.charges && userObj.charges !== undefined){
             history.push('/chatboard')
         }else{
             toast.error('Please add your bank account and charge / min to start chat.');

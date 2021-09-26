@@ -1,24 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom'
-import usersModel from '../../../ApiManager/user';
-import { AppContext } from '../../../Context';
-import Loading from '../../Loaders/Loading';
+import authModel from '../../../ApiManager/auth';
 
 
 function PageTopLine() {
 
-	const [isAuthenticated, setisAuthenticated] = useState(false);
-	const [authUser, setauthUser] = useState(null)
-	const [loading, setloading] = useState(true);
-	const appContext = useContext(AppContext)
-
-	useEffect(() => {
-		setisAuthenticated(appContext.stateData.isAuthenticated);
-		setauthUser(appContext.stateData.authUser);
-		setloading(false);
-		
-	}, [appContext])
-
+	//const [isAuthenticated, setisAuthenticated] = useState(false);
+	const [loading, setloading] = useState(false);
+	
+	const isAuthenticated = (authModel.getAuthToken()) ? true : false;
+	
 	return (
 			<section className="page_topline ds ms gorizontal_padding">
 				<div className="container-fluid with_border">

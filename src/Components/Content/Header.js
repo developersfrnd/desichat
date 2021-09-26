@@ -1,13 +1,10 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom'
-import { AppContext } from '../../Context';
 import Aux from '../../hoc/Aux';
 import Usernav from './Sections/UserNav/UserNav';
 
 
 function pageHeader(){
-
-	const appContext = useContext(AppContext);
 
 	return (
 		<Aux>

@@ -22,6 +22,10 @@ const authModel = {
     setAuthToken: (authUser) => {
 
         let obj = {'token':authUser.token,'id':authUser.id,'role':authUser.role,'name':authUser.name}
+        if(authUser.role == Constants.roles.model){
+            obj.charges = authUser.charges
+        }
+
         return sessionStorage.setItem('dsc-auth',JSON.stringify(obj));
     },
 

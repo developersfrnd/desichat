@@ -11,7 +11,6 @@ import AddPhotos from '../Components/Forms/Gallery/AddPhotos';
 import Logout from '../Containers/Logout';
 import PageNotFound from '../Components/PageNotFound';
 import Profile from '../Containers/Profile/Profile';
-import { AppContext } from '../Context';
 import BaseComponent from './BaseComponent';
 import AddVideos from '../Components/Forms/Gallery/AddVideos';
 import Videos from './Videos/Videos';
@@ -32,8 +31,7 @@ import EmailVerification from '../Components/Forms/EmailVerification/EmailVerifi
 
 
 class PageRoutes extends BaseComponent {
-    static contextType = AppContext;
-
+    
     constructor(){
         super();
     }

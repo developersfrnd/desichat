@@ -1,21 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
+import authModel from '../../../../ApiManager/auth';
 import Constants from '../../../../Config/Constants';
-import { AppContext } from '../../../../Context';
 
 function UserNav() {
 
-    const appContext = useContext(AppContext)
-    const [isAuthenticated, setisAuthenticated] = useState(false);
-    const [isCustomerLogin, setisCustomerLogin] = useState(false);
-    
-    useEffect(() => {
-        setisAuthenticated(appContext.stateData.isAuthenticated);
-		let isCustomerLogin = (appContext.stateData.isAuthenticated && appContext.stateData.authUser.role == Constants.roles.user) ? true : false;
-        setisCustomerLogin(isCustomerLogin);
-
-    }, [appContext])
-
+    const userObj = authModel.getAuthUserObj();
+    const isAuthenticated = (authModel.getAuthToken()) ? true : false;
+    const isCustomerLogin = (userObj && userObj.role == Constants.roles.user) ? true : false;
 
     return (
         <div className="dropdown-menu topSignupNav" aria-labelledby="tab" id="tab">
