@@ -20,9 +20,8 @@ const PromptPopUp = ({isDirtystatus, socket, room}) => {
         e.returnValue = ''
     }
     const handleEndConcert = (e) => {
-        console.log(isDirty)
-        if(isDirty){
-            socket.emit("watcherleave", room)           
+        if(isDirty){            
+            socket.close()         
         }
     }
     return (
