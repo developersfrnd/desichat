@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import VideoChatSessionModel from '../../ApiManager/VideoChatSessionModel'
 import Constants from '../../Config/Constants'
 import Summary from './Summary'
@@ -12,38 +12,42 @@ import usersModel from '../../ApiManager/user';
 import { toast } from 'react-toastify';
 import VolumeControl from '../Loaders/VolumeControl'
 import { ArrowsFullscreen } from 'react-bootstrap-icons';
+import ModelChat from '../Chat/ModelChat';
+import { AppContext } from '../../Context';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 
-const Article = ({ updateCoin, socket, props }) => {
-
-    const [token, settoken] = useState(null);
+const Article = ({ coin, socket, props }) => {
+    const [token, settoken] = useState(null);     
     const [channel, setchannel] = useState(null)
     const [isDirty, setDirty] = useState(true)
     const [showvolume, setShowVolume] = useState(false)
     const [volumerange, setVolumeRange] = useState(0.5)
     const [privatechat, setPrivateChat] = useState(false)
+    const [livechat, setLiveChat] = useState(false)
+    const [remotestream, setRemoteStream] = useState(false)
     const [room, setRoom] = useState(props.id)
+    const [updatedcoin, setUpdatedCoin] =  useState(coin)
+    const [buttonhtml, setButtonHtml] = useState("Start Private Chat")
+    const [disabledchatbutton, setDisabledChatButton] = useState(false)
+    const addcontext = useContext(AppContext)
     const partnerVideo = React.useRef()
     const liveVideo = React.useRef(false)
     const startinterval = React.useRef(0)
     const streamid = React.useRef(0)
     const counter = React.useRef(1)
-    const rtcPeerConnections = {}
-    let directpeer
-    const EndPoint = Constants.chatServer
-    //const socket = io.connect(EndPoint, {transports: [ 'websocket' ]})
+    let connectedModelSocketId = React.useRef(null);
+    let isPrivate = false
     let MINUTE_MS = 5000;
     let NEXT_MINUTE_MS = 65000;
-    let private_chat_interval 
-
+    let private_chat_interval
     let rc
     const iceServers = {
         iceServers: [
             { 
                 "urls": [
-                        "stun:stun.l.google.com:19302",
-                        "stun:stun1.l.google.com:19302",
-                        "stun:stun2.l.google.com:19302"
+                        "stun:stun.l.google.com:19302"
                 ]
             },
             {
@@ -53,8 +57,9 @@ const Article = ({ updateCoin, socket, props }) => {
             }
         ],
     }
-    const viewer = React.useRef()
-    const livestream = React.useRef()
+    let remotePeerConnection = React.useRef(null);
+    let viewer = React.useRef()
+    let livestream = React.useRef()
 
     let audio_constraints = {
         echoCancellation: true,
@@ -75,37 +80,46 @@ const Article = ({ updateCoin, socket, props }) => {
         mozNoiseSuppression: true,
         mozAutoGainControl: true
     }
-
-    socket.on("connect", () => {
-        console.log('Connected with', socket.id); // x8WIv7-mJelg7on_ALbx
-    });
     
     useEffect(() => {
         stopReduce()
-        console.log("register as viewer")
-        socket.emit("register as viewer", room);
+        socket.on("connect", () => {
+            console.log('Connected with', socket.id); 
+            socket.emit("watcher", room);
+        });
+        //socket.emit("register as viewer", room);
     },[])
 
     useEffect(() => { 
-        socket.on("offer", (id, description) => {
+        console.log("connectedModelSocketId", connectedModelSocketId.current)
+        socket.on("offer", (id, description, brodcasterInPrivateChat) => {
             console.log("Get offer from broadcaster")
             console.log(description)
-            rtcPeerConnections[id] = new RTCPeerConnection(iceServers)
-            rtcPeerConnections[id]
+            connectedModelSocketId.current = id
+            remotePeerConnection.current = new RTCPeerConnection(iceServers)
+            let rtcPeerConnection = remotePeerConnection.current
+            rtcPeerConnection
             .setRemoteDescription(description)
             .then(e => console.log('remote description'))
-            .then(() => rtcPeerConnections[id].createAnswer()).catch(error => console.log(error))
-            .then(answer => rtcPeerConnections[id].setLocalDescription(answer)).catch(error => console.log(error))
+            .then(() => rtcPeerConnection.createAnswer()).catch(error => console.log(error))
+            .then(answer => rtcPeerConnection.setLocalDescription(answer)).catch(error => console.log(error))
             .then(() => {
-                socket.emit("answer", room, id, rtcPeerConnections[id].localDescription)
+                setRemoteStream(true)
+                socket.emit("answer", id, rtcPeerConnection.localDescription)
             }).catch(error => console.log(error))
-            rtcPeerConnections[id].ontrack = e => {      
-                document.getElementById("livevideochat").style.display = "block"
-                viewer.current.srcObject = e.streams[0]
-                setPrivateChat(false)
-                setShowVolume(true)
+            rtcPeerConnection.ontrack = e => {
+                if(brodcasterInPrivateChat){
+                    e.track.enabled = false
+                    setRemoteStream(false)
+                }
+                viewer.current.srcObject = e.streams[0]                
             }
-            rtcPeerConnections[id].onicecandidate = e => {
+            if(brodcasterInPrivateChat){
+                setPrivateChat(true)
+                setLiveChat(false)
+                setRemoteStream(false)
+            }
+            rtcPeerConnection.onicecandidate = e => {
                 if (e.candidate) {
                     socket.emit("candidate", id, e.candidate)
                 }
@@ -113,7 +127,7 @@ const Article = ({ updateCoin, socket, props }) => {
         })
 
         socket.on('candidate', (id, candidate) => {
-            rtcPeerConnections[id].addIceCandidate(new RTCIceCandidate(candidate))
+            remotePeerConnection.current.addIceCandidate(new RTCIceCandidate(candidate))
                 .catch(e => console.error(e))
         })
 
@@ -123,99 +137,190 @@ const Article = ({ updateCoin, socket, props }) => {
             socket.emit("watcher", room)
         })
 
-        socket.on("brodcasterleave", (brodcastersocketid) => {
-            if(rtcPeerConnections[brodcastersocketid]){
-                rtcPeerConnections[brodcastersocketid].close()
-                console.log(`${brodcastersocketid} model  has been left`)
-                delete rtcPeerConnections[brodcastersocketid]
+
+        socket.on("disconnectPeer", id => {
+            console.log(`${id} model has about to left`)
+            if(id == connectedModelSocketId.current){
+                console.log(`${connectedModelSocketId.current} model has been left`)
+                remotePeerConnection.current.close()
                 viewer.current.srcObject = null
+                livestream.current.srcObject = null
+                setPrivateChat(false)
+                setLiveChat(false)
+                setRemoteStream(false)
+                isPrivate = false
+                setButtonHtml("Start Private Chat")
+                setDisabledChatButton(false)
+                stopReduce()
             }
-            console.log(`Live vidoe status is ${liveVideo.current}`)
-            if(liveVideo.current){
-                disConnectLiveChat()
-            }
-            document.getElementById("livevideochat").style.display = 'none'
-            setPrivateChat(false)
-            setShowVolume(false)
-        })
-        
-        socket.on("in_private_chat", (id) => {
-            document.getElementById("livevideochat").style.display = 'none'
-            setPrivateChat(true)
-        })
-       
-        socket.on('iniatevideo', (id) => {
-            liveVideo.current = true
-            document.getElementById("livevideochat").style.display = 'none'
-            document.getElementById("livevideochatmessage").style.display = 'none'
-            var constraints = {
-                audio: true,
-                video: true
-            };
-            directpeer = new RTCPeerConnection(iceServers)
-            navigator.mediaDevices.getUserMedia({video:{facingMode: "user", frameRate:{ideal: 60,min: 10},width: { min: 640, ideal: 1920 },height: { min: 400, ideal: 1080 },aspectRatio: { ideal: 1.7777777778 }}, audio: audio_constraints}).then(stream => {
-                livestream.current.srcObject = stream           
-                //const stream = livestream.current.captureStream();
-                console.log(stream)
-                stream.getTracks().forEach((track) => {
-                    directpeer.addTrack(track, stream)
-                    console.log(track.getSettings());
-                });
-            }).catch(error => console.log(error))
-            directpeer.onicecandidate = e => {
-                if (e.candidate) {
-                    socket.emit("directcandidate", id, e.candidate)
-                }
-            }
-            directpeer.onnegotiationneeded = () => {
-                directpeer.createOffer()
-                .then(offer => directpeer.setLocalDescription(offer)).catch( error => console.log(error))
-                .then( () => {
-                    console.log("Direct offer genrate "+directpeer.localDescription)
-                    socket.emit("videochatinitate", room, directpeer.localDescription)
-                })
-            }            
         })
 
-        socket.on('directanswer', (id, description) => {
-            console.log("Set direct remote description" + description)
-            directpeer.setRemoteDescription(description)
-            .then( e => socket.emit("livechat", room))
+        // socket.on("brodcasterleave", (brodcastersocketid) => {
+        //     if(rtcPeerConnections[brodcastersocketid]){
+        //         rtcPeerConnections[brodcastersocketid].close()
+        //         console.log(`${brodcastersocketid} model  has been left`)
+        //         delete rtcPeerConnections[brodcastersocketid]
+        //         viewer.current.srcObject = null
+        //     }
+        //     console.log(`Live vidoe status is ${liveVideo.current}`)
+        //     if(liveVideo.current){
+        //         disConnectLiveChat()
+        //     }
+        //     document.getElementById("livevideochat").style.display = 'none'
+        //     setPrivateChat(false)
+        //     setShowVolume(false)
+        // })
+        
+        // socket.on("in_private_chat", (id) => {
+        //     document.getElementById("livevideochat").style.display = 'none'
+        //     setPrivateChat(true)
+        // })
+       
+        // socket.on('iniatevideo', (id) => {
+        //     liveVideo.current = true
+        //     document.getElementById("livevideochat").style.display = 'none'
+        //     document.getElementById("livevideochatmessage").style.display = 'none'
+        //     var constraints = {
+        //         audio: true,
+        //         video: true
+        //     };
+        //     directpeer = new RTCPeerConnection(iceServers)
+        //     navigator.mediaDevices.getUserMedia({video:{facingMode: "user", frameRate:{ideal: 60,min: 10},width: { min: 640, ideal: 1920 },height: { min: 400, ideal: 1080 },aspectRatio: { ideal: 1.7777777778 }}, audio: audio_constraints}).then(stream => {
+        //         livestream.current.srcObject = stream           
+        //         //const stream = livestream.current.captureStream();
+        //         console.log(stream)
+        //         stream.getTracks().forEach((track) => {
+        //             directpeer.addTrack(track, stream)
+        //             console.log(track.getSettings());
+        //         });
+        //     }).catch(error => console.log(error))
+        //     directpeer.onicecandidate = e => {
+        //         if (e.candidate) {
+        //             socket.emit("directcandidate", id, e.candidate)
+        //         }
+        //     }
+        //     directpeer.onnegotiationneeded = () => {
+        //         directpeer.createOffer()
+        //         .then(offer => directpeer.setLocalDescription(offer)).catch( error => console.log(error))
+        //         .then( () => {
+        //             console.log("Direct offer genrate "+directpeer.localDescription)
+        //             socket.emit("videochatinitate", room, directpeer.localDescription)
+        //         })
+        //     }            
+        // })
+
+        // socket.on('directanswer', (id, description) => {
+        //     console.log("Set direct remote description" + description)
+        //     directpeer.setRemoteDescription(description)
+        //     .then( e => socket.emit("livechat", room))
+        //     .then( e => FirstReduce())
+        //     .catch( e => console.error(e))
+        // })
+
+        socket.on("answer", (id, description) => {
+            isPrivate = true     
+            setLiveChat(true)
+            document.getElementById("livevideochatmessage").style.display = 'none'       
+            remotePeerConnection.current.setRemoteDescription(description)
             .then( e => FirstReduce())
             .catch( e => console.error(e))
-        })
-        
-        socket.on('directcandidate', (id, candidate) => {            
-            directpeer.addIceCandidate(new RTCIceCandidate(candidate))
-            .then( e => console.log("Set direct candidate" + candidate))
-            .catch( e => console.error(e))
-        })
+        });
 
-        socket.on('livechat', () => {
-            viewer.current.srcObject = null
-            document.getElementById("livevideochat").style.display = 'none'
-            setPrivateChat(true)
-            setShowVolume(false)
-        })
+        socket.on("privatechat", () => {
+            if(!isPrivate){     
+                let stream = viewer.current.srcObject;      
+                if(stream){
+                    stream.getTracks().forEach(track => {
+                        track.enabled = !track.enabled;
+                    })
+                    setPrivateChat(true)
+                    setLiveChat(false)
+                    setRemoteStream(false)
+                }
+            }
+        });
 
-        socket.on('livechatremove', () => {
-            console.log("live chat remove")
-            document.getElementById("livevideochat").style.display = 'block'
+        socket.on("removeprivatechat", () => {
+            console.log("Remove Live Private Chat", socket.id)
+            isPrivate = false
             setPrivateChat(false)
-            socket.emit("register as viewer", room);  
-            setShowVolume(true)          
+            setLiveChat(false)
+            setRemoteStream(true)
+            setButtonHtml("Start Private Chat")
+            setDisabledChatButton(false)
+            console.log(socket.id)
+            let stream = viewer.current.srcObject;
+            stream.getTracks().forEach(track => {
+                track.enabled = true
+            });
+            stopReduce()             
+        });
+        
+        // socket.on('directcandidate', (id, candidate) => {            
+        //     directpeer.addIceCandidate(new RTCIceCandidate(candidate))
+        //     .then( e => console.log("Set direct candidate" + candidate))
+        //     .catch( e => console.error(e))
+        // })
+
+        // socket.on('livechat', () => {
+        //     viewer.current.srcObject = null
+        //     document.getElementById("livevideochat").style.display = 'none'
+        //     setPrivateChat(true)
+        //     setShowVolume(false)
+        // })
+
+        // socket.on('livechatremove', () => {
+        //     console.log("live chat remove")
+        //     document.getElementById("livevideochat").style.display = 'block'
+        //     setPrivateChat(false)
+        //     socket.emit("register as viewer", room);  
+        //     setShowVolume(true)          
+        // })
+
+        socket.on('acceptchat', (id) => {
+            console.log(remotePeerConnection.current,id)
+            navigator.mediaDevices.getUserMedia({video:{facingMode: "user", frameRate:{ideal: 60,min: 10},width: { min: 640, ideal: 1920 },height: { min: 400, ideal: 1080 },aspectRatio: { ideal: 1.7777777778 }}, audio: audio_constraints})
+            .then(stream => {   
+                    stream.getTracks().forEach((track) => {
+                        remotePeerConnection.current.addTrack(track, stream)
+                    });
+                    livestream.current.srcObject = stream
+                    remotePeerConnection.current
+                    .createOffer()
+                    .then(sdp => remotePeerConnection.current.setLocalDescription(sdp))
+                    .then(() => {
+                        console.log(socket.id)
+                        socket.emit("offer", id, remotePeerConnection.current.localDescription, isPrivate);
+                    });
+                })
         })
 
         socket.on('deniedchat', (id) => {
-            document.getElementById("livevideochat").style.display = 'block'
-            document.getElementById("livevideochatmessage").style.display = 'none'
-            liveVideo.current = false
+            setLiveChat(false)
+            setPrivateChat(false)
+            isPrivate = false
+            setButtonHtml("Start Private Chat")
+            setDisabledChatButton(false)
+            stopReduce()
         })
+
+        // socket.on('deniedchat', (id) => {
+        //     document.getElementById("livevideochat").style.display = 'block'
+        //     document.getElementById("livevideochatmessage").style.display = 'none'
+        //     liveVideo.current = false
+        // })
         
         return () => {            
             stopReduce()
         }
-    }, [room])
+    }, [socket])
+
+    // useEffect(() => {
+    //     effect
+    //     return () => {
+    //         cleanup
+    //     }
+    // }, [privatechat])
 
     const stopReduce = () => {
         console.log("Stop reduce")
@@ -224,9 +329,11 @@ const Article = ({ updateCoin, socket, props }) => {
 
     const FirstReduce = () => {
         startinterval.current = setInterval(()=>{
-            reduceCoin({'room_id':room, 'history_id':streamid.current})
-            stopReduce()
-            NextReduce()
+            reduceCoin({'room_id':room, 'history_id':streamid.current}).then(()=>{
+                stopReduce()
+            }).then(()=>{
+                NextReduce()
+            })
          }, MINUTE_MS)
     }
 
@@ -236,34 +343,61 @@ const Article = ({ updateCoin, socket, props }) => {
          }, NEXT_MINUTE_MS)
     }
 
+    // const disConnectLiveChat = () => {
+    //         directpeer.close()
+    //         livestream.current.srcObject = null
+    //         liveVideo.current = false
+    //         streamid.current = 0
+    //         document.getElementById("livevideochat").style.display = 'block'
+    //         setPrivateChat(false)
+    //         stopReduce()
+    // }
+
     const disConnectLiveChat = () => {
-            directpeer.close()
-            livestream.current.srcObject = null
-            liveVideo.current = false
-            streamid.current = 0
-            document.getElementById("livevideochat").style.display = 'block'
-            setPrivateChat(false)
+        let stream = livestream.current.srcObject
+        if (stream){
+            stream.getTracks().forEach(track => track.stop());
+            isPrivate = false
+            socket.emit("removeprivatechat", room);
             stopReduce()
+            livestream.current.srcObject = null
+        }        
     }
 
-    function onLiveVideoChat() {
-        document.getElementById("livevideochat").style.display = 'none'
-        document.getElementById("livevideochatmessage").style.display = 'block'
-        usersModel.checkUserCoin({'room_id':room}).then( () => {            
-            socket.emit("privatevideo", room)
-        }).catch( (error) => {
-            document.getElementById("livevideochat").style.display = 'block'
-            document.getElementById("livevideochatmessage").style.display = 'none'
-            toast.error(error.response.data.message)
-        })                
+    const onLiveVideoChat = () => {
+        confirmAlert({
+            title: 'Start Private Chat',
+            message: 'Are you sure to start private chat.',
+            buttons: [
+              {
+                label: 'Yes',
+                onClick: () =>{
+                    console.log("Live Private Chat", socket.id)
+                    setButtonHtml("Waiting for response .....")
+                    setDisabledChatButton(true)
+                    usersModel.checkUserCoin({'room_id':room}).then( () => {            
+                        socket.emit("startprivatevideochat", connectedModelSocketId.current)
+                    }).catch( (error) => {
+                        setButtonHtml("Start Private Chat")
+                        setDisabledChatButton(false)
+                        toast.error(error.response.data.message)
+                    })
+                }
+              },
+              {
+                label: 'No',
+                onClick: () => console.log("No")
+              }
+            ]
+          });
+                        
     }
-    const reduceCoin = (data) => {
-        usersModel.reduceUserCoin(data).then(response => {
+    const reduceCoin = async(data) => {
+        await usersModel.reduceUserCoin(data).then(response => {
             streamid.current = response.data.data.history_id
             updateCoin(response.data.data.coin)
         }).catch( (error) => {
             disConnectLiveChat()
-            socket.emit("livechatremove", room)
         }) 
     }
 
@@ -289,7 +423,14 @@ const Article = ({ updateCoin, socket, props }) => {
         }
     }
 
+    const updateCoin = (coin) => {
+        setUpdatedCoin(coin)
+        addcontext.stateData.authUser.creditPoints = coin
+    }
+
     return (
+        <>
+        <div className="modelPictureContainer">
         <article className="vertical-item post format-video with_background">
             <div className="entry-thumbnail">
                 {/* <div className="entry-meta-corner">
@@ -317,15 +458,17 @@ const Article = ({ updateCoin, socket, props }) => {
                     { privatechat && <div class="no-video" id="in-private-chat">
                         <div class="msg">I'm in Private Chat</div>
                     </div>}
-                    { showvolume && <div className="volume"><VolumeControl
+                    { remotestream && <div className="volume"><VolumeControl
                         onChange={handelVolume}
                         value={volumerange}
                     /> <ArrowsFullscreen onClick={onFullScreen} color="#e0006c" size={25} /></div>}
-                </div>
-                
-                <div className="localuser" id="livevideochat" style={{display: 'none' }}>
-                    <button class="theme_button color1" onClick={onLiveVideoChat}>Live Video Chat</button>
-                </div>
+                </div>                
+                { (remotestream && !livechat) && <div className="localuser" id="livevideochat">
+                    <button class="theme_button color1" disabled={disabledchatbutton} onClick={onLiveVideoChat}>{buttonhtml}</button>
+                </div>}
+                { livechat && <div class="localuser">
+                        <button class="theme_button color1" onClick={disConnectLiveChat}>Leave Private Chat</button>
+                    </div>}
                 <div className="localuser" id="livevideochatmessage" style={{display: 'none' }}>
                     Waiting for response .....
                 </div>
@@ -334,6 +477,11 @@ const Article = ({ updateCoin, socket, props }) => {
             <PromptPopUp isDirtystatus={isDirty} socket={socket} room={room} />
 
         </article>
+        </div>
+         <div class="chatboxcontainer">
+            <ModelChat coin={updatedcoin} socket={socket} props={props} />
+         </div>
+        </>
     )
 }
 

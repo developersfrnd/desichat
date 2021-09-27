@@ -7,7 +7,7 @@ import usersModel from '../../../ApiManager/user';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import Loading from '../../../Components/Loaders/Loading';
-import ModelChat from "../../../Components/Chat/ModelChat";
+//import ModelChat from "../../../Components/Chat/ModelChat";
 import authModel from '../../../ApiManager/auth'
 import io from "socket.io-client";
 import Summary from '../../../Components/Models/Summary';
@@ -24,7 +24,6 @@ function Model() {
     const { userId } = useParams()
     const [isuser, setisUser] = useState(true)
     const [coin, setCoin] = useState(0)
-    const login_user = authModel.getAuthUserObj();
 
     useEffect(() => {
         usersModel.getUser(userId)
@@ -35,22 +34,18 @@ function Model() {
             .catch((error) => {
                 toast.error(error.message)
             });
-        if (login_user && login_user.role == 1) {
-
-            setisUser(false)
-        }
         setCoin((addcontext.stateData.authUser ? addcontext.stateData.authUser.creditPoints : 0))
         return () => {
             console.log("clean model")
         }
     }, [])
 
-    const updateCoin = (coin) => {
-        setCoin(coin)
-        addcontext.stateData.authUser.creditPoints = coin
-    }
+    // const updateCoin = (coin) => {
+    //     setCoin(coin)
+    //     addcontext.stateData.authUser.creditPoints = coin
+    // }
 
-    const socket = io.connect(EndPoint, {transports: [ 'websocket' ], verify:true})
+    const socket = io.connect(EndPoint)
     return (
         (loading) ? <Loading /> :
             <section className="ds section_padding_top_20 section_padding_bottom_50">
@@ -58,13 +53,13 @@ function Model() {
                     <Filters />
                     {isuser &&
                         <div className="topChatontainerrow">
-                            <div className="modelPictureContainer">
-                                <Article updateCoin={updateCoin} socket={socket} props={model} />
-                            </div>
+                            {/* <div className="modelPictureContainer"> */}
+                                <Article coin={coin} socket={socket} props={model} />
+                            {/* </div> */}
 
-                            <div class="chatboxcontainer">
+                            {/* <div class="chatboxcontainer">
                                 <ModelChat coin={coin} socket={socket} props={model} login_user={login_user} />
-                            </div>
+                            </div> */}
                         </div>
                     }
                     <div className="bottomSummaryContainer">

@@ -28,9 +28,9 @@ class Board extends BaseComponent {
     componentDidMount(){
         usersModel.getAuthUser()
             .then( response => {
-                    // if(!response.data.data.is_online){
-                    //     usersModel.onlineuser()
-                    // }
+                    if(!response.data.data.is_online){
+                        usersModel.onlineuser()
+                    }
                     this.setState({
                     ...this.state,
                     user: response.data.data,
@@ -51,12 +51,7 @@ class Board extends BaseComponent {
                 <div className="container">
 					<div className="row">
                         <div className="col-sm-7 col-md-8 col-lg-8 col-sm-push-5 col-md-push-4 col-lg-push-4">
-                            <div className="row">
-                                <PublicChat 
-                                    socket={socket}
-                                    modelname={this.state.user.name} 
-                                    modelroom={this.state.user.id}  
-                                />
+                            <div className="row">                                
                                 <VideoChat
                                     socket={socket}
                                     modelname={this.state.user.name} 

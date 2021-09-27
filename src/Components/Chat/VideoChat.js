@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PublicChat from './PublicChat';
 
 const VideoChat = ({socket, modelname, modelroom}) => {
     const [room, setRoom] = useState(modelroom)
@@ -7,16 +8,15 @@ const VideoChat = ({socket, modelname, modelroom}) => {
     // const [broadcasterroom, setbroadcasterroom] = useState('')
     const sendervideo = React.useRef()
     const livestream = React.useRef()
-    const livevideostatus = React.useRef(false)
+    const livevideoid = React.useRef('')
     const broadcasterroom = React.useRef('')
     const currentviewer = React.useRef('')
+    let isPrivate = false
     const iceServers = {
         iceServers: [
             { 
                 "urls": [
-                        "stun:stun.l.google.com:19302",
-                        "stun:stun1.l.google.com:19302",
-                        "stun:stun2.l.google.com:19302"
+                        "stun:stun.l.google.com:19302"
                 ]
             },
             {
@@ -51,43 +51,37 @@ const VideoChat = ({socket, modelname, modelroom}) => {
 
     useEffect(() => { 
         navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: audio_constraints}).then(stream => {
-            if (window.stream) {
-                window.stream.getTracks().forEach(track => {
-                track.stop();
-                });
-            }
-            console.log(stream)
+            // if (window.stream) {
+            //     window.stream.getTracks().forEach(track => {
+            //     track.stop();
+            //     });
+            // }
+            //console.log(stream)
             sendervideo.current.srcObject = stream
-            socket.emit("start", room)
+            socket.emit("broadcaster", room)
         })
     },[])
 
     useEffect(() => {        
-         socket.on('watcher', (id) => {   
-             console.log(`Live video status ${livevideostatus.current}`)          
-            if (livevideostatus.current) {
-                console.log("I am in private chat")
-                socket.emit("in_private_chat", id)
-                return false
-            } 
-            console.log("New watcher want to connect")
+         socket.on('watcher', (id) => {  
+            console.log("New watcher want to connect ", id)
             const lc = new RTCPeerConnection(iceServers) 
             lcpeerConnections[id] = lc
-                const localstream = sendervideo.current.srcObject
+                let localstream = sendervideo.current.srcObject
                 localstream.getTracks().forEach(track => lc.addTrack(track, localstream));
                 lc.onicecandidate = e => {
                     if (e.candidate) {                        
                         socket.emit("candidate", id, e.candidate)
                     } 
                 }
-                lc.onnegotiationneeded = () => {
-                    lc.createOffer()
+                //lc.onnegotiationneeded = () => {
+                lc.createOffer()
                     .then(offer => lc.setLocalDescription(offer)).catch( error => console.log(error))
                     .then( () => {
                         console.log(lc.localDescription)
-                        socket.emit("offer", id, lc.localDescription)
+                        socket.emit("offer", id, lc.localDescription, isPrivate)
                     })
-                }
+                //}
         })
         
         socket.on('answer', (id, description) => {
@@ -100,102 +94,141 @@ const VideoChat = ({socket, modelname, modelroom}) => {
                 .catch( e => console.error(e))
         })
 
-        socket.on('watcherleave', (id) => { 
-            console.log(`${id} is about to leave`)
-            if(lcpeerConnections[id])  {         
-                lcpeerConnections[id].close()
-                delete lcpeerConnections[id]
-                console.log(`${id} has been leaved`)
-            }
-            console.log(`Live video status is ${livevideostatus.current}`)
-            if (livevideostatus.current && currentviewer.current == id) {
-                console.log('live video user has been leaved')
-                directpeer.close()
-                livevideostatus.current = false
-                livestream.current.srcObject = null
-                socket.emit("livechatremove", room)
-            }
-        })
-        
-        socket.on('brodcasterleave', () => { 
-            console.log(lcpeerConnections)
-            console.log("close.....")
-            if (Object.keys(lcpeerConnections).length){
-                Object.keys(lcpeerConnections).forEach(function(key) {
-                    lcpeerConnections[key].close()
-                });
-                livevideostatus.current = false             
-                
-            }
-        })             
-
-        socket.on('privatevideo', (id, room) => {
-            if(!livevideostatus.current){
-                console.log(lcpeerConnections)
-                currentviewer.current = id
-                broadcasterroom.current = room      
-                console.log(`current viewer is ${currentviewer.current}`)       
-                document.getElementById("videochatpermission").style.display = 'block'
-            }else{
-                socket.emit("deniedchat", id)
-            }
-        })
-
-        socket.on('videochatinitate', (id, description) => {
-            if (Object.keys(lcpeerConnections).length){
-                Object.keys(lcpeerConnections).forEach(function(key) {
-                    console.log(`${key} is equal ${id}`)
-                    if (key != id){
-                        lcpeerConnections[key].close()
-                        // let stream = document.getElementById("sender").srcObject
-                        // stream.getTracks().forEach(t => t.enabled = !t.enabled);
-                    }
-                });
-            }
-            document.getElementById("videochatpermission").style.display = 'none'
-            console.log("Get direct offer from viewer("+id+") and offer is " + description)
-            livevideostatus.current = true
-            console.log(`Live video status is ${livevideostatus.current}`)
-            directpeer = new RTCPeerConnection(iceServers)
-            directpeer
-            .setRemoteDescription(description)
-            .then(e => console.log('Set direct remote description'))
-            .then(() => directpeer.createAnswer()).catch(error => console.log(error))
-            .then(answer => directpeer.setLocalDescription(answer)).catch(error => console.log(error))
-            .then(() => {
-                console.log("Direct answer genrate from broadcaster" + directpeer.localDescription)
-                socket.emit("directanswer", room, id, directpeer.localDescription)
-            }).catch(error => console.log(error))
-            directpeer.ontrack = e => {   
-                console.log("Sender geting stream from viewer")       
-                console.log(e.streams[0])
-                livestream.current.srcObject = e.streams[0]
-            }
-            directpeer.onicecandidate = e => {
-                if (e.candidate) {
-                    socket.emit("directcandidate", id, e.candidate)
+        socket.on("disconnectPeer", id => {
+            if(lcpeerConnections[id])  {
+                console.log(`${id} watcher has been leaved`)
+                lcpeerConnections[id].close();
+                delete lcpeerConnections[id];
+                if(livevideoid.current == id){
+                    socket.emit("removeprivatechat", room);
                 }
-                
-            }            
+            }
         })
 
-        socket.on('directcandidate', (id, candidate) => {
-            directpeer.addIceCandidate(new RTCIceCandidate(candidate))
-                .catch( e => console.error(e))
+        socket.on("removeprivatechat", ()=>{
+            isPrivate = false
+            livestream.current.srcObject = null
         })
 
-        socket.on('livechatremove', () => {
-            console.log('live video user has been leaved')
-            directpeer.close()
-            livevideostatus.current = false
-            livestream.current.srcObject = null            
-        })
+        socket.on("offer", (id, description, isChatPrivate) => {
+            console.log("private socket id", id)
+            lcpeerConnections[id]
+              .setRemoteDescription(description)
+              .then(() => lcpeerConnections[id].createAnswer())
+              .then(sdp => lcpeerConnections[id].setLocalDescription(sdp))
+              .then(() => {
+                isPrivate = true
+                socket.emit("answer", id, lcpeerConnections[id].localDescription);
+                socket.emit("privatechat", id, room)
+                livevideoid.current = id
+              });
+            lcpeerConnections[id].ontrack = event => {
+                livestream.current.srcObject = event.streams[0];
+            };
+        });
+
+        // socket.on('watcherleave', (id) => { 
+        //     console.log(`${id} is about to leave`)
+        //     if(lcpeerConnections[id])  {         
+        //         lcpeerConnections[id].close()
+        //         delete lcpeerConnections[id]
+        //         console.log(`${id} has been leaved`)
+        //     }
+        //     console.log(`Live video status is ${livevideostatus.current}`)
+        //     if (livevideostatus.current && currentviewer.current == id) {
+        //         console.log('live video user has been leaved')
+        //         directpeer.close()
+        //         livevideostatus.current = false
+        //         livestream.current.srcObject = null
+        //         socket.emit("livechatremove", room)
+        //     }
+        // })
         
+        // socket.on('brodcasterleave', () => { 
+        //     console.log(lcpeerConnections)
+        //     console.log("close.....")
+        //     if (Object.keys(lcpeerConnections).length){
+        //         Object.keys(lcpeerConnections).forEach(function(key) {
+        //             lcpeerConnections[key].close()
+        //         });
+        //         livevideostatus.current = false             
+                
+        //     }
+        // })             
+
+        // socket.on('privatevideo', (id, room) => {
+        //     if(!livevideostatus.current){
+        //         console.log(lcpeerConnections)
+        //         currentviewer.current = id
+        //         broadcasterroom.current = room      
+        //         console.log(`current viewer is ${currentviewer.current}`)       
+        //         document.getElementById("videochatpermission").style.display = 'block'
+        //     }else{
+        //         socket.emit("deniedchat", id)
+        //     }
+        // })
+
+        // socket.on('videochatinitate', (id, description) => {
+        //     if (Object.keys(lcpeerConnections).length){
+        //         Object.keys(lcpeerConnections).forEach(function(key) {
+        //             console.log(`${key} is equal ${id}`)
+        //             if (key != id){
+        //                 lcpeerConnections[key].close()
+        //                 // let stream = document.getElementById("sender").srcObject
+        //                 // stream.getTracks().forEach(t => t.enabled = !t.enabled);
+        //             }
+        //         });
+        //     }
+        //     document.getElementById("videochatpermission").style.display = 'none'
+        //     console.log("Get direct offer from viewer("+id+") and offer is " + description)
+        //     livevideostatus.current = true
+        //     console.log(`Live video status is ${livevideostatus.current}`)
+        //     directpeer = new RTCPeerConnection(iceServers)
+        //     directpeer
+        //     .setRemoteDescription(description)
+        //     .then(e => console.log('Set direct remote description'))
+        //     .then(() => directpeer.createAnswer()).catch(error => console.log(error))
+        //     .then(answer => directpeer.setLocalDescription(answer)).catch(error => console.log(error))
+        //     .then(() => {
+        //         console.log("Direct answer genrate from broadcaster" + directpeer.localDescription)
+        //         socket.emit("directanswer", room, id, directpeer.localDescription)
+        //     }).catch(error => console.log(error))
+        //     directpeer.ontrack = e => {   
+        //         console.log("Sender geting stream from viewer")       
+        //         console.log(e.streams[0])
+        //         livestream.current.srcObject = e.streams[0]
+        //     }
+        //     directpeer.onicecandidate = e => {
+        //         if (e.candidate) {
+        //             socket.emit("directcandidate", id, e.candidate)
+        //         }
+                
+        //     }            
+        // })
+
+        // socket.on('directcandidate', (id, candidate) => {
+        //     directpeer.addIceCandidate(new RTCIceCandidate(candidate))
+        //         .catch( e => console.error(e))
+        // })
+
+        // socket.on('livechatremove', () => {
+        //     console.log('live video user has been leaved')
+        //     directpeer.close()
+        //     livevideostatus.current = false
+        //     livestream.current.srcObject = null            
+        // })
+        
+        socket.on('startprivatevideochat', (id)=>{
+            currentviewer.current = id
+            document.getElementById("videochatpermission").style.display = 'block'
+        })
+
+
         return () => {
             console.log("Unmount all vidoe chat")
         }
         
-    },[modelroom, livevideostatus])
+    },[socket])
 
     const onStartVideoChat = (e, permission) => {
         e.preventDefault()
@@ -210,6 +243,11 @@ const VideoChat = ({socket, modelname, modelroom}) => {
 
     return (
         <div className="col-sm-12 bottommargin_40">
+            <PublicChat 
+                socket={socket}
+                modelname={name} 
+                modelroom={room}  
+            />
             <div className="side-item event-item content-padding with_background">
                 <div className="row">
                     <div className="col-md-12">

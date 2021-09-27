@@ -4,37 +4,31 @@ import authModel from '../../ApiManager/auth';
 import usersModel from '../../ApiManager/user';
 import parse from 'html-react-parser'
 
-const PublicChat = ({modelname, modelroom, socket}) => {
+const PublicChat = ({socket, modelname, modelroom}) => {
     const [state, setState] = useState({message:''});
     const [chat, setChat] = useState([]);
     const [room, setRoom] = useState(modelroom)
     const [name, setName] = useState(modelname)
 
-    useEffect(() => { 
-        socket.emit('modeljoin',{name, room}) // Join user 
-
-        socket.on('welcome', ({name, message}) => {
-            setChat([...chat, {name, message}])            
-        })
-        socket.on('message', ({name, message}) => {
-            setChat(chat => [...chat, { name, message }]);            
-        })
-        return () => {
-            console.log("umounting")
-                   
-        } 
-    },[])
-
-    useEffect(() => {  
-        socket.on('receivemessage', ({name, message}) => {
-            setChat(chat => [...chat, { name, message }]);
-            var elem = document.getElementById('chatmessage');
-            elem.scrollTop = elem.scrollHeight;
-        })
-        return () => {
-            console.log("umounting")                  
-        }        
+    useEffect(() => {
+        socket.emit('join', name, room, 'Desi Chat')            
     }, [])
+
+    useEffect(() => {
+        socket.on('welcome', ({ name, message }) => {
+            setChat([...chat, { name, message }]);
+        })
+        socket.on('message', ({ name, message }) => {
+            setChat(chat => [...chat, { name, message }]);
+        })
+        socket.on('receivemessage', (name, message) => {
+            if (message){
+                setChat(chat => [...chat, { name, message }]);
+                var elem = document.getElementById('chatmessage');
+                elem.scrollTop = elem.scrollHeight;
+            }
+        })
+    }, [socket])
 
     const TextChange = e => {
         setState({... state, [e.target.name]: e.target.value})
@@ -43,7 +37,7 @@ const PublicChat = ({modelname, modelroom, socket}) => {
         e.preventDefault()
         const {message} = state
         if (message) {
-            socket.emit('sendmessage', {room, name, message})
+            socket.emit('sendmessage', room, name, message)
             setState({message:''});
         }
     }
@@ -57,7 +51,7 @@ const PublicChat = ({modelname, modelroom, socket}) => {
     }
 
     return (
-        <div className="col-sm-12 bottommargin_40">
+        <div className="bottommargin_40">
                 <div className="row">
                     <div className="col-md-12">
                         <div className="item-media">
