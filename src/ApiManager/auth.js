@@ -25,6 +25,9 @@ const authModel = {
         if(authUser.role == Constants.roles.model){
             obj.charges = authUser.charges
         }
+        if(authUser.role == Constants.roles.user){
+            obj.creditPoints = authUser.creditPoints
+        }
 
         return sessionStorage.setItem('dsc-auth',JSON.stringify(obj));
     },

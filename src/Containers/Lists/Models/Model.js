@@ -13,12 +13,11 @@ import io from "socket.io-client";
 import Summary from '../../../Components/Models/Summary';
 import AsideModels from '../../../Components/Models/AsideModels';
 import Constants from '../../../Config/Constants';
-import {AppContext} from '../../../Context'
 
 const EndPoint = Constants.chatServer
 
 function Model() {
-    const addcontext = useContext(AppContext) 
+    
     const [model, setmodel] = useState({})
     const [loading, setloading] = useState(true)
     const { userId } = useParams()
@@ -34,17 +33,15 @@ function Model() {
             .catch((error) => {
                 toast.error(error.message)
             });
-        setCoin((addcontext.stateData.authUser ? addcontext.stateData.authUser.creditPoints : 0))
+        
+        let userObj = authModel.getAuthUserObj();    
+        setCoin((userObj ? userObj.creditPoints : 0))
         return () => {
             console.log("clean model")
         }
     }, [])
 
-    // const updateCoin = (coin) => {
-    //     setCoin(coin)
-    //     addcontext.stateData.authUser.creditPoints = coin
-    // }
-
+    
     const socket = io.connect(EndPoint)
     return (
         (loading) ? <Loading /> :
