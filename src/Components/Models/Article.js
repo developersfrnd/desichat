@@ -16,6 +16,7 @@ import ModelChat from '../Chat/ModelChat';
 import { AppContext } from '../../Context';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import VideoLoader from '../Loaders/VideoLoader';
 
 
 const Article = ({ coin, socket, props }) => {
@@ -31,6 +32,7 @@ const Article = ({ coin, socket, props }) => {
     const [updatedcoin, setUpdatedCoin] =  useState(coin)
     const [buttonhtml, setButtonHtml] = useState("Start Private Chat")
     const [disabledchatbutton, setDisabledChatButton] = useState(false)
+    const [showLoader, setShowLoader] = useState(false)
     const addcontext = useContext(AppContext)
     const partnerVideo = React.useRef()
     const liveVideo = React.useRef(false)
@@ -85,19 +87,21 @@ const Article = ({ coin, socket, props }) => {
         stopReduce()
         socket.on("connect", () => {
             console.log('Connected with', socket.id); 
-            socket.emit("watcher", room);
+            setTimeout(()=>{
+                socket.emit("watcher", room);
+             }, 5000)
         });
-        //socket.emit("register as viewer", room);
     },[])
 
     useEffect(() => { 
         console.log("connectedModelSocketId", connectedModelSocketId.current)
         socket.on("offer", (id, description, brodcasterInPrivateChat) => {
+            setShowLoader(true)
             console.log("Get offer from broadcaster")
             console.log(description)
             connectedModelSocketId.current = id
             remotePeerConnection.current = new RTCPeerConnection(iceServers)
-            let rtcPeerConnection = remotePeerConnection.current
+            let rtcPeerConnection = remotePeerConnection.current            
             rtcPeerConnection
             .setRemoteDescription(description)
             .then(e => console.log('remote description'))
@@ -112,7 +116,8 @@ const Article = ({ coin, socket, props }) => {
                     e.track.enabled = false
                     setRemoteStream(false)
                 }
-                viewer.current.srcObject = e.streams[0]                
+                setShowLoader(false)
+                viewer.current.srcObject = e.streams[0]
             }
             if(brodcasterInPrivateChat){
                 setPrivateChat(true)
@@ -304,6 +309,20 @@ const Article = ({ coin, socket, props }) => {
             stopReduce()
         })
 
+        socket.on("disconnect", () => {
+            console.log("User is disconnected")
+            if(remotePeerConnection.current){
+                remotePeerConnection.current.close()
+            }
+            setPrivateChat(false)
+            setLiveChat(false)
+            setRemoteStream(false)
+            isPrivate = false
+            setButtonHtml("Start Private Chat")
+            setDisabledChatButton(false)
+            stopReduce()
+        })
+
         // socket.on('deniedchat', (id) => {
         //     document.getElementById("livevideochat").style.display = 'block'
         //     document.getElementById("livevideochatmessage").style.display = 'none'
@@ -312,6 +331,7 @@ const Article = ({ coin, socket, props }) => {
         
         return () => {            
             stopReduce()
+            socket.close()
         }
     }, [socket])
 
@@ -395,8 +415,10 @@ const Article = ({ coin, socket, props }) => {
     const reduceCoin = async(data) => {
         await usersModel.reduceUserCoin(data).then(response => {
             streamid.current = response.data.data.history_id
+            console.log(response.data.data)
             updateCoin(response.data.data.coin)
         }).catch( (error) => {
+            console.log(error)
             disConnectLiveChat()
         }) 
     }
@@ -425,8 +447,11 @@ const Article = ({ coin, socket, props }) => {
 
     const updateCoin = (coin) => {
         setUpdatedCoin(coin)
-        addcontext.stateData.authUser.creditPoints = coin
     }
+
+    
+
+    
 
     return (
         <>
@@ -447,7 +472,7 @@ const Article = ({ coin, socket, props }) => {
                         </a>
                     </span>
                 </div> */}
-                <div className="embed-responsive embed-responsive-3by2">
+                <div className=" embed-responsive embed-responsive-3by2">
                     {
                         (token) ? <Call token={token} channel={channel} /> : <img src={props.profilePicture} alt={props.name} />
                     }
@@ -455,6 +480,9 @@ const Article = ({ coin, socket, props }) => {
                     <video ref={livestream} className="directvideo" playsInline autoPlay muted>                        
                         <p>This browser does not support the video element.</p>
                     </video>
+                    { showLoader &&<div class="no-video" id="Loader">
+                        <div class="msg"><VideoLoader/></div>
+                    </div>}
                     { privatechat && <div class="no-video" id="in-private-chat">
                         <div class="msg">I'm in Private Chat</div>
                     </div>}

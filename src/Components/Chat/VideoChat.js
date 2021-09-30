@@ -50,16 +50,13 @@ const VideoChat = ({socket, modelname, modelroom}) => {
     }
 
     useEffect(() => { 
-        navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: audio_constraints}).then(stream => {
-            // if (window.stream) {
-            //     window.stream.getTracks().forEach(track => {
-            //     track.stop();
-            //     });
-            // }
-            //console.log(stream)
-            sendervideo.current.srcObject = stream
+        socket.on("connect", () => {
+            console.log('Connected with', socket.id);
             socket.emit("broadcaster", room)
-        })
+            navigator.mediaDevices.getUserMedia({video:{frameRate:24}, audio: audio_constraints}).then(stream => {
+                sendervideo.current.srcObject = stream            
+            })
+        })        
     },[])
 
     useEffect(() => {        
@@ -223,9 +220,9 @@ const VideoChat = ({socket, modelname, modelroom}) => {
             document.getElementById("videochatpermission").style.display = 'block'
         })
 
-
         return () => {
             console.log("Unmount all vidoe chat")
+            socket.close()
         }
         
     },[socket])

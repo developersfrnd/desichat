@@ -11677,3 +11677,25 @@ isotope portfolio and gallery pos
     bottom: 5px;
     cursor: pointer;
 }
+
+
+
+.panel-video {
+    width: 100% !important;
+    height: 0 !important;
+    position: relative;
+    font-size: 13px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+.panel-video .loader {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: url(../images/ajax-loader2.gif) center no-repeat scroll;
+  position: absolute;
+  left: 48%;
+  top: 45%;
+}

@@ -24,6 +24,7 @@ const PromptPopUp = ({isDirtystatus, modelroom, socket}) => {
         (isDirty &&
             usersModel.offlineuser()
             .then( () => {
+                socket.emit("leaveroom", room)
                 socket.close()
             })
             .catch((error) => { 
