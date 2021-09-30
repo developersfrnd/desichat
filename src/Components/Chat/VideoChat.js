@@ -239,13 +239,9 @@ const VideoChat = ({socket, modelname, modelroom}) => {
     }   
 
     return (
-        <div className="col-sm-12 bottommargin_40">
-            <PublicChat 
-                socket={socket}
-                modelname={name} 
-                modelroom={room}  
-            />
-            <div className="side-item event-item content-padding with_background">
+        <div className="col-sm-12 ">
+            
+            <div className="side-item event-item content-padding with_background bottommargin_40">
                 <div className="row">
                     <div className="col-md-12">
                         <div className="video-media">
@@ -261,6 +257,11 @@ const VideoChat = ({socket, modelname, modelroom}) => {
                     </div>
                 </div>
             </div>
+            <PublicChat 
+                socket={socket}
+                modelname={name} 
+                modelroom={room}  
+            />
         </div>
     );
 };

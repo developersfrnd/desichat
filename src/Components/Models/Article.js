@@ -13,10 +13,10 @@ import { toast } from 'react-toastify';
 import VolumeControl from '../Loaders/VolumeControl'
 import { ArrowsFullscreen } from 'react-bootstrap-icons';
 import ModelChat from '../Chat/ModelChat';
-import { AppContext } from '../../Context';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import VideoLoader from '../Loaders/VideoLoader';
+import authModel from '../../ApiManager/auth';
 
 
 const Article = ({ coin, socket, props }) => {
@@ -33,7 +33,6 @@ const Article = ({ coin, socket, props }) => {
     const [buttonhtml, setButtonHtml] = useState("Start Private Chat")
     const [disabledchatbutton, setDisabledChatButton] = useState(false)
     const [showLoader, setShowLoader] = useState(false)
-    const addcontext = useContext(AppContext)
     const partnerVideo = React.useRef()
     const liveVideo = React.useRef(false)
     const startinterval = React.useRef(0)
@@ -447,11 +446,9 @@ const Article = ({ coin, socket, props }) => {
 
     const updateCoin = (coin) => {
         setUpdatedCoin(coin)
+        let userObj = authModel.getAuthUserObj();
+        authModel.setAuthToken({...userObj,creditPoints:coin});
     }
-
-    
-
-    
 
     return (
         <>

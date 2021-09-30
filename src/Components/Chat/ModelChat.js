@@ -10,6 +10,8 @@ const ModelChat = ({ coin, socket, props}) => {
     const [name, setName] = useState('')
     let guestuser = React.useRef('')
 
+    const isAuthenticated = (authModel.getAuthToken()) ? true : false;
+
     useEffect(() => {
         async function getLoginUser() {
             let response = await authModel.getAuthUserObj()
@@ -64,10 +66,12 @@ const ModelChat = ({ coin, socket, props}) => {
 
 
             <div class="item-media">
-                <div class="item-content balance-coin">
-                    <span class="txt">Balance:</span>
-                    <span class="msg-balance" id="msg-balance">{coin} Coins</span>
-                </div>
+                {(!isAuthenticated) ? '' : 
+                    <div class="item-content balance-coin">
+                        <span class="txt">Balance:</span>
+                        <span class="msg-balance" id="msg-balance">{coin} Coins</span>
+                    </div>
+                }
                 <div class="item-content chat-body" id="chatmessage">
                     <ul class="media-list">
                         {renderChat()}
